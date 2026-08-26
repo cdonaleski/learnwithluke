@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pong — the classic paddle game, one player against the computer or two players side by side, on Learn With Luke">
+  <title>Pong · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="css/pong.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="pong-page">
+    <a href="../index.html" class="pong-back">← Back to Games</a>
+
+    <header class="pong-header">
+      <h1>🏓 Pong</h1>
+      <p class="pong-instructions" role="note">
+        <strong>Bounce the ball past your opponent to score.</strong>
+        Move your paddle with the mouse, your finger, or the <strong>W</strong> and <strong>S</strong> keys.
+        First to <strong>7 points</strong> wins!
+      </p>
+    </header>
+
+    <section class="pong-panel" aria-labelledby="pong-game-title">
+      <h2 id="pong-game-title" class="visually-hidden">Pong game</h2>
+
+      <div class="pong-scoreboard">
+        <div class="score-side score-side--left">
+          <span class="score-name" id="score-name-left">You</span>
+          <span class="score-value" id="score-left">0</span>
+        </div>
+        <span class="score-divider" aria-hidden="true">–</span>
+        <div class="score-side score-side--right">
+          <span class="score-name" id="score-name-right">Computer</span>
+          <span class="score-value" id="score-right">0</span>
+        </div>
+      </div>
+
+      <div class="pong-stage">
+        <canvas
+          id="pong-canvas"
+          class="pong-canvas"
+          width="800"
+          height="500"
+          tabindex="0"
+          role="img"
+          aria-label="Pong court. Your paddle is on the left, your opponent's paddle is on the right."
+        ></canvas>
+      </div>
+
+      <p class="pong-status" id="pong-status" role="status" aria-live="polite">
+        Press Start to play!
+      </p>
+
+      <div class="pong-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="pong-options">
+        <div class="option-group" role="group" aria-labelledby="mode-label">
+          <span class="option-label" id="mode-label">Players</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-mode="cpu" aria-pressed="true">🤖 1 Player</button>
+            <button type="button" class="option-btn" data-mode="two" aria-pressed="false">👫 2 Players</button>
+          </div>
+        </div>
+
+        <div class="option-group" id="difficulty-group" role="group" aria-labelledby="difficulty-label">
+          <span class="option-label" id="difficulty-label">Computer skill</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-difficulty="easy" aria-pressed="true">🐢 Easy</button>
+            <button type="button" class="option-btn" data-difficulty="medium" aria-pressed="false">🐇 Medium</button>
+            <button type="button" class="option-btn" data-difficulty="hard" aria-pressed="false">🚀 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pong-panel pong-help" aria-labelledby="pong-help-title">
+      <h2 id="pong-help-title">How to Play</h2>
+      <dl>
+        <dt>Move your paddle</dt>
+        <dd>Slide your mouse or finger up and down the court, or press <kbd>W</kbd> / <kbd>S</kbd> (<kbd>↑</kbd> / <kbd>↓</kbd> also work in 1 player mode).</dd>
+        <dt>Player 2</dt>
+        <dd>In 2 player mode, the player on the right uses the <kbd>↑</kbd> and <kbd>↓</kbd> arrow keys.</dd>
+        <dt>Pause</dt>
+        <dd>Press <kbd>Space</kbd> or the Pause button any time. Press it again to keep playing.</dd>
+        <dt>Scoring</dt>
+        <dd>You score a point when the ball goes past the other paddle. First player to reach 7 points wins the match.</dd>
+        <dt>Tip</dt>
+        <dd>Hit the ball with the <em>edge</em> of your paddle to send it flying at a sharper angle — and the ball speeds up a little with every hit!</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/pong.js"></script>
+</body>
+</html>

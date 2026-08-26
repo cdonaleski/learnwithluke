@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn With Luke — fun puzzles, games, and coding adventures for curious kids!">
+  <title>Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="hero-title">
+      <span class="hero-badge">Welcome, explorer! <span class="hero-wave" aria-hidden="true">👋</span></span>
+      <h1 id="hero-title">Learn With Luke</h1>
+      <p class="hero-subtitle">
+        Puzzles, games, and coding fun — pick an adventure and start learning today!
+      </p>
+    </section>
+
+    <section aria-labelledby="explore-title">
+      <div class="section-intro">
+        <h2 id="explore-title">Choose Your Adventure</h2>
+        <p>Tap a card to explore a section</p>
+      </div>
+
+      <div class="cards-grid">
+        <a href="puzzles/index.html" class="card card--puzzles">
+          <span class="card-icon" aria-hidden="true">🧩</span>
+          <h3>Puzzles</h3>
+          <p>Brain teasers, riddles, and logic challenges to stretch your mind.</p>
+          <span class="card-tag">Rubik's Cube live!</span>
+        </a>
+
+        <a href="games/index.html" class="card card--games">
+          <span class="card-icon" aria-hidden="true">🎮</span>
+          <h3>Games</h3>
+          <p>Playful games that make learning feel like the best kind of fun.</p>
+          <span class="card-tag">Pong live!</span>
+        </a>
+
+        <a href="code/index.html" class="card card--code">
+          <span class="card-icon" aria-hidden="true">💻</span>
+          <h3>Code</h3>
+          <p>Start your coding journey with friendly, step-by-step projects.</p>
+          <span class="card-tag">Coming soon</span>
+        </a>
+
+        <div class="card card--soon" aria-label="More sections coming soon">
+          <span class="card-icon" aria-hidden="true">✨</span>
+          <h3>More Coming Soon</h3>
+          <p>Art, science, stories, and more adventures are on the way!</p>
+          <span class="card-tag">Stay tuned</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="js/nav.js"></script>
+</body>
+</html>
