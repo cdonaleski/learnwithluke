@@ -29,10 +29,21 @@
   const LEFT_X = PADDLE_MARGIN;
   const RIGHT_X = W - PADDLE_MARGIN - PADDLE_W;
 
+  /**
+   * A miss needs the paddle to end up more than PADDLE_H / 2 + BALL_R away from
+   * the ball — 58px. An aim error smaller than that is completely invisible,
+   * which is why these numbers have to sit well past it.
+   *
+   * track:    chase the ball itself instead of working out where it will end
+   *           up. That is what a beginner actually looks like — bounces
+   *           wrong-foot them and a steep shot simply outruns the paddle.
+   * reaction: seconds between re-reads (track) or spent frozen before moving
+   *           at all (predict).
+   */
   const DIFFICULTY = {
-    easy: { speed: 235, reaction: 0.26, error: 48 },
-    medium: { speed: 340, reaction: 0.15, error: 26 },
-    hard: { speed: 470, reaction: 0.07, error: 9 },
+    easy: { speed: 150, reaction: 0.35, error: 70, track: true },
+    medium: { speed: 340, reaction: 0.20, error: 100 },
+    hard: { speed: 490, reaction: 0.09, error: 88 },
   };
 
   const COLORS = {
@@ -59,7 +70,10 @@
   };
 
   const left = { y: H / 2, up: false, down: false };
-  const right = { y: H / 2, up: false, down: false, targetY: H / 2, think: 0 };
+  const right = {
+    y: H / 2, up: false, down: false, targetY: H / 2,
+    think: 0, approaching: false,
+  };
   const ball = { x: W / 2, y: H / 2, vx: 0, vy: 0 };
   let trail = [];
   let pointerY = null;
@@ -144,6 +158,8 @@
     left.y = H / 2;
     right.y = H / 2;
     right.targetY = H / 2;
+    right.approaching = false;
+    right.think = 0;
     pointerY = null;
     trail = [];
     resetBall(Math.random() < 0.5 ? -1 : 1);
@@ -227,16 +243,44 @@
     return y + BALL_R;
   }
 
+  /**
+   * Triangular rather than flat: small misjudgements are common, big ones rare.
+   * A flat distribution makes difficulty cliff-edge — every setting is either
+   * inside the 58px catch window or outside it, with almost nothing in between.
+   */
+  function aimError(spread) {
+    return (Math.random() + Math.random() - 1) * spread;
+  }
+
   function updateCpu(dt) {
     const cfg = DIFFICULTY[state.difficulty];
-    right.think -= dt;
-    if (right.think <= 0) {
-      right.think = cfg.reaction;
-      right.targetY =
-        ball.vx > 0
-          ? predictBallY() + (Math.random() * 2 - 1) * cfg.error
-          : H / 2 + (Math.random() * 2 - 1) * cfg.error * 0.5;
+
+    if (cfg.track) {
+      right.think -= dt;
+      if (right.think <= 0) {
+        right.think = cfg.reaction;
+        right.targetY = (ball.vx > 0 ? ball.y : H / 2) + aimError(cfg.error);
+      }
+    } else if (ball.vx > 0) {
+      // Commit to ONE read per approach. Re-aiming every few frames averages
+      // back out to a perfect tracker however large the error is, which is what
+      // made all three settings play identically.
+      if (!right.approaching) {
+        right.approaching = true;
+        right.think = cfg.reaction;
+        right.targetY = predictBallY() + aimError(cfg.error);
+      }
+
+      // Hasn't reacted yet — stand still.
+      if (right.think > 0) {
+        right.think -= dt;
+        return;
+      }
+    } else {
+      right.approaching = false;
+      right.targetY = H / 2;
     }
+
     const diff = right.targetY - right.y;
     const step = cfg.speed * dt;
     right.y += Math.abs(diff) <= step ? diff : Math.sign(diff) * step;
