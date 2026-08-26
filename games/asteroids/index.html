@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Asteroids — the old-school arcade classic, rebuilt in vector graphics, on Learn With Luke">
+  <title>Asteroids · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="css/asteroids.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="arcade-page">
+    <a href="../index.html" class="arcade-back">← Back to Games</a>
+
+    <header class="arcade-header">
+      <h1>🚀 Asteroids</h1>
+      <p class="arcade-instructions" role="note">
+        <strong>The 1979 arcade classic, just like the original.</strong>
+        Turn with <kbd>←</kbd> <kbd>→</kbd>, thrust with <kbd>↑</kbd>, and shoot with <kbd>Space</kbd>.
+        Big rocks break into smaller ones — clear them all to reach the next wave!
+      </p>
+    </header>
+
+    <section class="arcade-panel" aria-labelledby="asteroids-game-title">
+      <h2 id="asteroids-game-title" class="visually-hidden">Asteroids game</h2>
+
+      <div class="arcade-stage">
+        <canvas
+          id="asteroids-canvas"
+          class="arcade-canvas"
+          width="800"
+          height="600"
+          tabindex="0"
+          role="img"
+          aria-label="Asteroids playfield: your ship, drifting rocks, and flying saucers."
+        ></canvas>
+      </div>
+
+      <p class="arcade-status" id="asteroids-status" role="status" aria-live="polite">
+        Press Start to launch!
+      </p>
+
+      <div class="arcade-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="touch-pad" id="touch-pad" aria-label="Touch controls">
+        <button type="button" class="touch-btn" data-hold="left" aria-label="Turn left">⟲</button>
+        <button type="button" class="touch-btn" data-hold="thrust" aria-label="Thrust">🔥</button>
+        <button type="button" class="touch-btn" data-hold="right" aria-label="Turn right">⟳</button>
+        <button type="button" class="touch-btn touch-btn--fire" data-hold="fire" aria-label="Fire">FIRE</button>
+        <button type="button" class="touch-btn" data-tap="hyperspace" aria-label="Hyperspace jump">✦</button>
+      </div>
+    </section>
+
+    <section class="arcade-panel arcade-help" aria-labelledby="asteroids-help-title">
+      <h2 id="asteroids-help-title">How to Play</h2>
+      <dl>
+        <dt>Steer</dt>
+        <dd><kbd>←</kbd> <kbd>→</kbd> (or <kbd>A</kbd> <kbd>D</kbd>) spin your ship. There is no brake — in space you keep drifting, so thrust the other way to slow down!</dd>
+        <dt>Thrust</dt>
+        <dd><kbd>↑</kbd> (or <kbd>W</kbd>) fires your engine.</dd>
+        <dt>Shoot</dt>
+        <dd><kbd>Space</kbd> fires. Only four shots can be in flight at once, so make them count.</dd>
+        <dt>Hyperspace</dt>
+        <dd><kbd>H</kbd> or <kbd>Shift</kbd> jumps you somewhere else on the screen — a great escape when you're surrounded.</dd>
+        <dt>Pause</dt>
+        <dd><kbd>P</kbd> or the Pause button.</dd>
+        <dt>Fly off the edge</dt>
+        <dd>Everything wraps around — leave the right side and you reappear on the left.</dd>
+        <dt>Points</dt>
+        <dd>Big rock <strong>20</strong> · medium rock <strong>50</strong> · small rock <strong>100</strong> · big saucer <strong>200</strong> · small saucer <strong>1000</strong>. You get an extra ship every 10,000 points.</dd>
+        <dt>Watch out</dt>
+        <dd>Saucers shoot back. The small one aims right at you!</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/asteroids.js"></script>
+</body>
+</html>

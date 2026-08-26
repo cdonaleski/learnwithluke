@@ -3,20 +3,32 @@
  * Injects header + footer and highlights the active page.
  */
 (function () {
+  const SECTIONS = ["puzzles", "games", "code"];
   const path = window.location.pathname;
-  const isPuzzles = path.includes("/puzzles");
-  const isGames = path.includes("/games");
-  const isCode = path.includes("/code");
-  const isHome = !isPuzzles && !isGames && !isCode;
+  const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
 
-  /** Depth from site root (e.g. puzzles/rubiks-cube → "../../"). */
-  function getRoot() {
-    const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
-    if (segments.length === 0) return "";
-    return "../".repeat(segments.length);
+  /**
+   * Which section folder this page lives in, searched from the end so a
+   * parent folder that happens to share a section name can't win.
+   * Counting from the section (instead of counting every URL segment) keeps
+   * the menu correct when the site is served from a subfolder or opened
+   * straight off disk with file://.
+   */
+  let sectionIndex = -1;
+  for (let i = segments.length - 1; i >= 0; i--) {
+    if (SECTIONS.indexOf(segments[i]) !== -1) {
+      sectionIndex = i;
+      break;
+    }
   }
 
-  const root = isHome ? "" : getRoot();
+  const isHome = sectionIndex === -1;
+  const isPuzzles = segments[sectionIndex] === "puzzles";
+  const isGames = segments[sectionIndex] === "games";
+  const isCode = segments[sectionIndex] === "code";
+
+  /** Path back to the site root (e.g. games/pong → "../../"). */
+  const root = isHome ? "" : "../".repeat(segments.length - sectionIndex);
 
   const navHTML = `
     <header class="site-header">
