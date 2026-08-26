@@ -29,6 +29,11 @@
   const NET_ORDER = ["U", "L", "F", "R", "B", "D"];
 
   const VIEW_STORAGE_KEY = "rubiks-cube-view";
+  /** Relative to this page. importScripts() inside it resolves alongside it. */
+  const WORKER_URI = "../../vendor/cubejs/worker.js";
+  /** How long to wait for the worker before giving up and using this thread. */
+  const WORKER_TIMEOUT_MS = 20000;
+  let useWorker = false;
   let viewMode = "3d";
   let cube3d = null;
 
@@ -404,28 +409,97 @@
     showStep(0);
   }
 
+  function markSolverReady() {
+    solverReady = true;
+    els.solverStatus.hidden = true;
+    els.btnSolve.disabled = false;
+  }
+
+  function markSolverFailed(text) {
+    els.solverStatus.hidden = false;
+    els.solverStatusText.textContent = text;
+    els.btnSolve.disabled = true;
+  }
+
+  /**
+   * Building the solver's lookup tables takes a few seconds. On the main
+   * thread that freezes the whole page — no painting, no scrolling, nothing.
+   * Run it in a Web Worker instead and keep the page alive while it loads.
+   * Workers are blocked on file:// pages, so fall back to this thread there.
+   */
+  function initSolverOnThisThread() {
+    setTimeout(function () {
+      try {
+        Cube.initSolver();
+        markSolverReady();
+      } catch (err) {
+        markSolverFailed("Could not start the solver. Please refresh the page.");
+      }
+    }, 50);
+  }
+
   function initSolver() {
     if (typeof Cube === "undefined" || typeof Cube.initSolver !== "function") {
-      els.solverStatus.hidden = false;
-      els.solverStatusText.textContent = "Solver failed to load. Check your internet connection and refresh.";
-      els.btnSolve.disabled = true;
+      markSolverFailed("Solver failed to load. Please refresh the page.");
       return;
     }
 
     els.solverStatus.hidden = false;
-    els.solverStatusText.textContent = "Getting solver ready (this takes a few seconds)…";
+    els.solverStatusText.textContent = "Getting the solver ready — you can start painting!";
     els.btnSolve.disabled = true;
+
+    if (!Cube.asyncOK || typeof Cube.asyncInit !== "function") {
+      initSolverOnThisThread();
+      return;
+    }
+
+    let settled = false;
+    function fallBackToThisThread() {
+      if (settled) return;
+      settled = true;
+      initSolverOnThisThread();
+    }
+
+    try {
+      Cube.asyncInit(WORKER_URI, function () {
+        if (settled) return;
+        settled = true;
+        useWorker = true;
+        markSolverReady();
+      });
+    } catch (err) {
+      // new Worker() throws outright on file:// pages.
+      fallBackToThisThread();
+      return;
+    }
+
+    // A worker that 404s or throws never calls back, so watch for both.
+    if (Cube._worker) {
+      Cube._worker.addEventListener("error", fallBackToThisThread);
+    }
+    setTimeout(fallBackToThisThread, WORKER_TIMEOUT_MS);
+  }
+
+  /** Runs the solver in the worker when we have one, otherwise on this thread. */
+  function runSolver(faceletString, done) {
+    if (useWorker) {
+      try {
+        Cube.fromString(faceletString).asyncSolve(function (algorithm) {
+          done(algorithm);
+        });
+      } catch (err) {
+        done(null);
+      }
+      return;
+    }
 
     setTimeout(function () {
       try {
-        Cube.initSolver();
-        solverReady = true;
-        els.solverStatus.hidden = true;
-        els.btnSolve.disabled = false;
+        done(Cube.fromString(faceletString).solve());
       } catch (err) {
-        els.solverStatusText.textContent = "Could not start the solver. Please refresh the page.";
+        done(null);
       }
-    }, 50);
+    }, 30);
   }
 
   function solveCube() {
@@ -453,33 +527,33 @@
     els.solverStatus.hidden = false;
     els.solverStatusText.textContent = "Finding the best moves…";
 
-    setTimeout(function () {
-      try {
-        const cube = Cube.fromString(validation.faceletString);
-        const algorithm = cube.solve();
-        if (!algorithm || !algorithm.trim()) {
-          throw new Error("empty");
-        }
-
-        // Safety net: never hand a kid moves that don't actually solve their cube.
-        const check = Cube.fromString(validation.faceletString);
-        check.move(algorithm);
-        if (!check.isSolved()) {
-          throw new Error("solution does not solve this cube");
-        }
-        els.solverStatus.hidden = true;
-        showMessage("Found a solution! Follow the steps on the right.", "success");
-        showSolution(algorithm);
-      } catch (err) {
-        els.solverStatus.hidden = true;
-        showMessage(
-          "Hmm, this cube state can't be solved — it might be impossible (like a sticker that was peeled and put back wrong). Check your colors!",
-          "error"
-        );
-        els.solutionPanel.hidden = true;
-      }
+    runSolver(validation.faceletString, function (algorithm) {
+      els.solverStatus.hidden = true;
       els.btnSolve.disabled = false;
-    }, 30);
+
+      if (algorithm && algorithm.trim() && solutionActuallyWorks(validation.faceletString, algorithm)) {
+        showMessage("Found a solution! Follow the steps one at a time.", "success");
+        showSolution(algorithm);
+        return;
+      }
+
+      showMessage(
+        "Hmm, this cube state can't be solved — it might be impossible (like a sticker that was peeled and put back wrong). Check your colors!",
+        "error"
+      );
+      els.solutionPanel.hidden = true;
+    });
+  }
+
+  /** Safety net: never hand a kid moves that don't actually solve their cube. */
+  function solutionActuallyWorks(faceletString, algorithm) {
+    try {
+      const check = Cube.fromString(faceletString);
+      check.move(algorithm);
+      return check.isSolved();
+    } catch (err) {
+      return false;
+    }
   }
 
   function resetCube() {
