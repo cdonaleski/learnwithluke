@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tic Tac Toe — three in a row against the computer or a friend, on Learn With Luke">
+  <title>Tic Tac Toe · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/tic-tac-toe.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>❌⭕ Tic Tac Toe</h1>
+      <p class="game-instructions" role="note">
+        <strong>Get three of your marks in a row to win</strong> — across, down, or corner to corner.
+        Play against the computer or hand the device back and forth with a friend.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="ttt-game-title">
+      <h2 id="ttt-game-title" class="visually-hidden">Tic Tac Toe game</h2>
+
+      <div class="game-stats">
+        <div class="stat">
+          <span class="stat-label" id="name-x">You</span>
+          <span class="stat-value" id="score-x">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Draws</span>
+          <span class="stat-value" id="score-draw">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label" id="name-o">Computer</span>
+          <span class="stat-value" id="score-o">0</span>
+        </div>
+      </div>
+
+      <div class="ttt-board" id="ttt-board" role="grid" aria-label="Tic Tac Toe board, three by three">
+        <!-- Populated by JS -->
+      </div>
+
+      <p class="game-status" id="ttt-status" role="status" aria-live="polite">
+        Your turn — place ✖️
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Round</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset-scores">🧹 Clear Scores</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="mode-label">
+          <span class="option-label" id="mode-label">Players</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-mode="cpu" aria-pressed="true">🤖 1 Player</button>
+            <button type="button" class="option-btn" data-mode="two" aria-pressed="false">👫 2 Players</button>
+          </div>
+        </div>
+
+        <div class="option-group" id="difficulty-group" role="group" aria-labelledby="difficulty-label">
+          <span class="option-label" id="difficulty-label">Computer skill</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-difficulty="easy" aria-pressed="true">🐢 Easy</button>
+            <button type="button" class="option-btn" data-difficulty="medium" aria-pressed="false">🐇 Medium</button>
+            <button type="button" class="option-btn" data-difficulty="hard" aria-pressed="false">🚀 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="ttt-help-title">
+      <h2 id="ttt-help-title">How to Play</h2>
+      <dl>
+        <dt>Take a turn</dt>
+        <dd>Click or tap any empty square. ✖️ always goes first in a round, and who opens swaps each new round so it's fair.</dd>
+        <dt>Winning</dt>
+        <dd>Three of your marks in a line — a row, a column, or a diagonal. The winning three light up.</dd>
+        <dt>Computer skill</dt>
+        <dd><strong>Easy</strong> plays almost at random and often misses a block. <strong>Medium</strong> plays well but slips up now and then. <strong>Hard</strong> plays perfectly — the very best you can do is a draw.</dd>
+        <dt>Two players</dt>
+        <dd>Switch to 👫 2 Players and take turns on the same screen. Player 1 is ✖️, Player 2 is ⭕.</dd>
+        <dt>Tip</dt>
+        <dd>Taking the centre square first is the strongest opening. Corners are next best.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/tic-tac-toe.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+/* Tic Tac Toe — page-specific styles */
+
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  width: min(100%, 22rem);
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+.ttt-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2.25rem, 12vw, 3.5rem);
+  line-height: 1;
+  background: var(--color-bg);
+  border: 3px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.12s, background 0.15s, border-color 0.15s;
+  aspect-ratio: 1;
+  padding: 0;
+}
+
+.ttt-cell:hover:not(:disabled),
+.ttt-cell:focus-visible:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: var(--color-sky);
+  background: #ffffff;
+  outline: none;
+}
+
+.ttt-cell:disabled {
+  cursor: default;
+}
+
+/* A filled square is not really "disabled" to a player — keep it readable. */
+.ttt-cell.is-x,
+.ttt-cell.is-o {
+  opacity: 1;
+  background: #ffffff;
+}
+
+.ttt-cell.is-x { border-color: #ffd0d0; }
+.ttt-cell.is-o { border-color: #cdeeeb; }
+
+.ttt-cell.is-win {
+  background: var(--color-sun);
+  border-color: var(--color-orange);
+  animation: ttt-pop 0.45s ease;
+}
+
+@keyframes ttt-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ttt-cell,
+  .ttt-cell.is-win {
+    transition: none;
+    animation: none;
+  }
+}

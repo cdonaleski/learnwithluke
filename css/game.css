@@ -1,0 +1,236 @@
+/* Learn With Luke — shared chrome for game pages.
+   Load after styles.css, before the game's own stylesheet.
+   Pong and Asteroids predate this file and carry their own copies. */
+
+.game-page {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.game-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+
+.game-back:hover,
+.game-back:focus-visible {
+  color: var(--color-coral);
+  outline: none;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.game-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  color: var(--color-coral);
+  margin-bottom: 0.75rem;
+}
+
+.game-instructions {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--color-text-muted);
+  font-size: 1.02rem;
+}
+
+.game-panel {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.game-panel h2 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+/* Stat strip — score, moves, timer, best */
+.game-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 5.5rem;
+}
+
+.stat-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.1;
+  color: var(--color-coral);
+}
+
+.stat--alt .stat-value {
+  color: var(--color-sky-dark);
+}
+
+.game-status {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-top: 1rem;
+  min-height: 1.6em;
+}
+
+.game-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Option pickers */
+.game-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px dashed #f0e6d6;
+}
+
+.option-group {
+  text-align: center;
+}
+
+.option-group[hidden] {
+  display: none;
+}
+
+.option-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.option-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.option-btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.option-btn:hover,
+.option-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-sky);
+  color: var(--color-text);
+  outline: none;
+}
+
+.option-btn.is-active {
+  background: var(--color-purple);
+  border-color: var(--color-purple);
+  color: white;
+}
+
+/* Help block */
+.game-help dl {
+  display: grid;
+  grid-template-columns: minmax(9rem, auto) 1fr;
+  gap: 0.6rem 1.25rem;
+  font-size: 0.98rem;
+}
+
+.game-help dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-coral);
+}
+
+.game-help dd {
+  color: var(--color-text-muted);
+}
+
+kbd {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+  border-bottom-width: 3px;
+  color: var(--color-text);
+}
+
+@media (max-width: 640px) {
+  .game-panel {
+    padding: 1rem;
+  }
+
+  .game-stats {
+    gap: 0.75rem;
+  }
+
+  .stat {
+    min-width: 4.5rem;
+  }
+
+  .game-actions .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .game-options {
+    gap: 1rem;
+  }
+
+  .game-help dl {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .game-help dd {
+    margin-bottom: 0.6rem;
+  }
+}

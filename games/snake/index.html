@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Snake — eat the apples, grow as long as you can, and don't bite yourself, on Learn With Luke">
+  <title>Snake · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/snake.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🐍 Snake</h1>
+      <p class="game-instructions" role="note">
+        <strong>Eat the apples to grow longer.</strong>
+        Steer with the arrow keys, <strong>W A S D</strong>, a swipe, or the buttons below.
+        Don't hit a wall — and don't bite your own tail!
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="snake-game-title">
+      <h2 id="snake-game-title" class="visually-hidden">Snake game</h2>
+
+      <div class="game-stats">
+        <div class="stat">
+          <span class="stat-label">Score</span>
+          <span class="stat-value" id="snake-score">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Length</span>
+          <span class="stat-value" id="snake-length">4</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Best</span>
+          <span class="stat-value" id="snake-best">0</span>
+        </div>
+      </div>
+
+      <div class="snake-stage">
+        <canvas
+          id="snake-canvas"
+          class="snake-canvas"
+          width="800"
+          height="500"
+          tabindex="0"
+          role="img"
+          aria-label="Snake board. Eat the apples and avoid the walls and your own tail."
+        ></canvas>
+      </div>
+
+      <p class="game-status" id="snake-status" role="status" aria-live="polite">
+        Press Start or an arrow key to begin!
+      </p>
+
+      <div class="snake-dpad" role="group" aria-label="Steer the snake">
+        <button type="button" class="dpad-btn dpad-btn--up" data-dir="0,-1" aria-label="Turn up">▲</button>
+        <button type="button" class="dpad-btn dpad-btn--left" data-dir="-1,0" aria-label="Turn left">◀</button>
+        <button type="button" class="dpad-btn dpad-btn--right" data-dir="1,0" aria-label="Turn right">▶</button>
+        <button type="button" class="dpad-btn dpad-btn--down" data-dir="0,1" aria-label="Turn down">▼</button>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="speed-label">
+          <span class="option-label" id="speed-label">Speed</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn" data-speed="slow" aria-pressed="false">🐢 Slow</button>
+            <button type="button" class="option-btn is-active" data-speed="normal" aria-pressed="true">🐇 Normal</button>
+            <button type="button" class="option-btn" data-speed="fast" aria-pressed="false">🚀 Fast</button>
+          </div>
+        </div>
+
+        <div class="option-group" role="group" aria-labelledby="walls-label">
+          <span class="option-label" id="walls-label">Walls</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-walls="on" aria-pressed="true">🧱 Solid</button>
+            <button type="button" class="option-btn" data-walls="off" aria-pressed="false">🌀 Pass through</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="snake-help-title">
+      <h2 id="snake-help-title">How to Play</h2>
+      <dl>
+        <dt>Steer</dt>
+        <dd>Press the arrow keys or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>. On a tablet or phone, swipe across the board or tap the arrow buttons.</dd>
+        <dt>Grow</dt>
+        <dd>Every apple adds 10 points and makes you two segments longer. The longer you get, the trickier it is to find room.</dd>
+        <dt>Pause</dt>
+        <dd>Press <kbd>Space</kbd>, tap the board, or use the Pause button.</dd>
+        <dt>Walls</dt>
+        <dd>On <strong>Solid</strong>, touching the edge ends the run. On <strong>Pass through</strong>, you slide out one side and reappear on the other — much friendlier while you're learning.</dd>
+        <dt>Best score</dt>
+        <dd>Each speed keeps its own best score, saved on this device. Changing speed or walls starts a fresh game.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/snake.js"></script>
+</body>
+</html>

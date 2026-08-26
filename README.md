@@ -10,8 +10,13 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Games** (`games/`) — game hub with links to individual games
 - **Pong** (`games/pong/`) — classic paddle game, 1 player vs the computer or 2 players on one keyboard
 - **Asteroids** (`games/asteroids/`) — old-school vector arcade remake with saucers, hyperspace, and a saved high score
+- **Snake** (`games/snake/`) — three speeds, solid or pass-through walls, best score per speed
+- **Tic Tac Toe** (`games/tic-tac-toe/`) — 1 player vs the computer (Hard is unbeatable) or 2 players
+- **Memory** (`games/memory/`) — themed pair matching with six card themes and three board sizes
 - **Code** (`code/`) — placeholder page (coming soon)
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
+- **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
+  help blocks used by the newer game pages
 - **Shared navigation** (`js/nav.js`) — header, footer, and mobile menu
 - **Vendored libraries** (`vendor/`) — Three.js and cubejs, checked in so the
   site works with no internet connection
@@ -90,6 +95,34 @@ Open **Games → Asteroids** (or go to `games/asteroids/index.html`).
 
 Vector rendering on a plain `<canvas>` — no libraries, no network calls.
 
+## Adding a Memory theme
+
+Open `games/memory/js/themes.js` and copy one of the blocks:
+
+```js
+{
+  id: "dinosaurs",
+  name: "Dinosaurs",
+  icon: "🦖",
+  cards: ["🦖", "🦕", "🦴", "🥚", "🌋", "🌿", "🐊", "🦎", "🐢", "🪨", "🌴", "☄️"],
+},
+```
+
+That's the whole job — the theme picker, the card faces and the shuffle all read
+from that list. Two rules:
+
+- Every face in a theme must be **different**. Two identical faces would look
+  like a match between unrelated cards, so a theme with duplicates is skipped
+  with a console warning rather than dealt.
+- Give a theme **12 faces** to unlock every board size. With fewer, the larger
+  boards are hidden for that theme and the smaller ones still work.
+
+Faces are plain text, so emoji, letters, numbers or short words all work.
+
+To add a board size instead, add an entry to `SIZES` at the top of
+`games/memory/js/memory.js` — `pairs` is how many pairs to deal and `columns` is
+how wide the grid should be.
+
 ## Adding new pages
 
 1. Create a new folder (e.g. `art/`) with an `index.html` file.
@@ -101,6 +134,7 @@ Vector rendering on a plain `<canvas>` — no libraries, no network calls.
 ## Tech stack
 
 - Vanilla HTML, CSS, and JavaScript — no build step, no package manager
+- Games are plain `<canvas>` or DOM — no game engine
 - Three.js r128 and cubejs 1.3.2, vendored in `vendor/`
 - [Fredoka](https://fonts.google.com/specimen/Fredoka) and [Nunito](https://fonts.google.com/specimen/Nunito) fonts via Google Fonts
 - Mobile-responsive layout with a collapsible navigation menu

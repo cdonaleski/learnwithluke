@@ -1,0 +1,106 @@
+/* Memory — page-specific styles */
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--memory-columns, 4), 1fr);
+  gap: 0.6rem;
+  width: min(100%, 34rem);
+  margin: 0 auto;
+}
+
+.memory-card {
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  perspective: 700px;
+  border-radius: var(--radius-sm);
+}
+
+.memory-card:focus-visible {
+  outline: 3px solid var(--color-coral);
+  outline-offset: 3px;
+}
+
+.memory-card:disabled {
+  cursor: default;
+}
+
+.memory-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+
+.memory-card.is-flipped .memory-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memory-card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.memory-card-back {
+  background: linear-gradient(140deg, var(--color-purple), var(--color-sky));
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  border: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.memory-card-front {
+  background: var(--color-bg-alt);
+  border: 3px solid #e8e2d8;
+  font-size: clamp(1.75rem, 7vw, 2.75rem);
+  line-height: 1;
+  transform: rotateY(180deg);
+}
+
+.memory-card:hover:not(:disabled) .memory-card-back {
+  filter: brightness(1.08);
+}
+
+.memory-card.is-matched .memory-card-front {
+  background: #f2fbf3;
+  border-color: var(--color-green);
+  animation: memory-pop 0.45s ease;
+}
+
+@keyframes memory-pop {
+  0% { transform: rotateY(180deg) scale(1); }
+  45% { transform: rotateY(180deg) scale(1.1); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
+/* Themes are chosen often, so let that row breathe on wide screens. */
+#theme-buttons {
+  max-width: 30rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-card-inner {
+    transition: none;
+  }
+  .memory-card.is-matched .memory-card-front {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .memory-grid {
+    gap: 0.4rem;
+  }
+}
