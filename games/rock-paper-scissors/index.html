@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rock Paper Scissors — best of five against the computer, with a Lizard and Spock mode, on Learn With Luke">
+  <title>Rock Paper Scissors · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/rps.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>✊✋✌️ Rock Paper Scissors</h1>
+      <p class="game-instructions" role="note">
+        <strong>Pick your move and see who wins.</strong>
+        First to your chosen number of wins takes the match. Try the Sharp computer —
+        it watches for patterns in how you play.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="rps-title">
+      <h2 id="rps-title" class="visually-hidden">Rock Paper Scissors game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">You</span><span class="stat-value" id="rps-score-you">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Draws</span><span class="stat-value" id="rps-score-draws">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Computer</span><span class="stat-value" id="rps-score-cpu">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Round</span><span class="stat-value" id="rps-round">0</span></div>
+      </div>
+
+      <div class="rps-arena">
+        <div class="rps-side">
+          <span class="rps-side-name">You</span>
+          <span class="rps-throw" id="rps-you-pick" aria-label="Your move">❔</span>
+        </div>
+        <span class="rps-vs" aria-hidden="true">vs</span>
+        <div class="rps-side">
+          <span class="rps-side-name">Computer</span>
+          <span class="rps-throw" id="rps-cpu-pick" aria-label="Computer's move">❔</span>
+        </div>
+      </div>
+
+      <p class="rps-verdict" id="rps-verdict"></p>
+
+      <div class="rps-choices" id="rps-choices" role="group" aria-label="Pick your move"></div>
+
+      <p class="game-status" id="rps-status" role="status" aria-live="polite">Pick your move!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Match</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="rules-label">
+          <span class="option-label" id="rules-label">Rules</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-rules="classic" aria-pressed="true">✊ Classic</button>
+            <button type="button" class="option-btn" data-rules="spock" aria-pressed="false">🖖 Lizard &amp; Spock</button>
+          </div>
+        </div>
+
+        <div class="option-group" role="group" aria-labelledby="skill-label">
+          <span class="option-label" id="skill-label">Computer</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-skill="fair" aria-pressed="true">🎲 Fair</button>
+            <button type="button" class="option-btn" data-skill="sharp" aria-pressed="false">🧠 Sharp</button>
+          </div>
+        </div>
+
+        <div class="option-group" role="group" aria-labelledby="target-label">
+          <span class="option-label" id="target-label">Play to</span>
+          <div class="option-buttons" id="target-buttons">
+            <button type="button" class="option-btn" data-target="3" aria-pressed="false">3</button>
+            <button type="button" class="option-btn is-active" data-target="5" aria-pressed="true">5</button>
+            <button type="button" class="option-btn" data-target="10" aria-pressed="false">10</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="rps-help-title">
+      <h2 id="rps-help-title">How to Play</h2>
+      <dl>
+        <dt>Classic rules</dt>
+        <dd>Rock crushes scissors, scissors cuts paper, paper covers rock. Same move on both sides is a draw.</dd>
+        <dt>Lizard &amp; Spock</dt>
+        <dd>Two extra moves, so draws are rarer. Lizard eats paper and poisons Spock; Spock smashes scissors and vaporises rock; rock also crushes lizard, paper is disproved by Spock, and scissors decapitates lizard.</dd>
+        <dt>Keyboard</dt>
+        <dd><kbd>R</kbd> rock, <kbd>P</kbd> paper, <kbd>S</kbd> scissors, and in the bigger game <kbd>L</kbd> lizard and <kbd>K</kbd> Spock.</dd>
+        <dt>Fair vs Sharp</dt>
+        <dd><strong>Fair</strong> picks completely at random, so it's a pure 50/50 over time. <strong>Sharp</strong> remembers what you tend to play after each of your own moves and tries to counter it.</dd>
+        <dt>How to beat Sharp</dt>
+        <dd>Be unpredictable — which is harder than it sounds! People repeat moves, or deliberately avoid repeating, and both are patterns. If you play genuinely randomly, even the Sharp computer can do no better than break even.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/rps.js"></script>
+</body>
+</html>

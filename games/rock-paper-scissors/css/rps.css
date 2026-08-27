@@ -1,0 +1,100 @@
+/* Rock Paper Scissors — page-specific styles */
+
+.rps-arena {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 5vw, 2.5rem);
+  padding: 1rem 0;
+}
+
+.rps-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.rps-side-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.rps-throw {
+  font-size: clamp(3rem, 16vw, 5rem);
+  line-height: 1;
+  width: clamp(4.5rem, 22vw, 7rem);
+  height: clamp(4.5rem, 22vw, 7rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 4px solid #e8e2d8;
+}
+
+.rps-vs {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--color-text-muted);
+}
+
+.rps-verdict {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.35rem, 5vw, 1.9rem);
+  min-height: 1.4em;
+  color: var(--color-text-muted);
+}
+
+.rps-verdict.is-win { color: var(--color-green); }
+.rps-verdict.is-lose { color: var(--color-coral); }
+.rps-verdict.is-draw { color: var(--color-text-muted); }
+
+.rps-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.rps-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.75rem 1.1rem;
+  border: 3px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.rps-choice:hover:not(:disabled),
+.rps-choice:focus-visible:not(:disabled) {
+  transform: translateY(-4px);
+  border-color: var(--color-sky);
+  background: #fff;
+  outline: none;
+}
+
+.rps-choice:disabled { opacity: 0.55; cursor: default; }
+
+.rps-choice-icon { font-size: 2.1rem; line-height: 1; }
+
+.rps-choice-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rps-choice { transition: none; }
+}
