@@ -1,0 +1,84 @@
+/* Connect Four — page-specific styles */
+
+.c4-board {
+  max-width: 30rem;
+  margin: 0 auto 0.5rem;
+}
+
+.c4-picker {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.c4-drop {
+  font-size: 1rem;
+  padding: 0.3rem 0;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: transform 0.12s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.c4-drop:hover:not(:disabled),
+.c4-drop:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--color-sky);
+  border-color: var(--color-sky);
+  color: #fff;
+  outline: none;
+}
+
+.c4-drop:disabled { opacity: 0.35; cursor: default; }
+
+.c4-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background: #4a90e2;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.c4-cell {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #eaf3fb;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.22);
+  transition: background 0.18s;
+}
+
+.c4-cell.is-you {
+  background: radial-gradient(circle at 35% 30%, #ff8f8f, #e04141);
+}
+
+.c4-cell.is-cpu {
+  background: radial-gradient(circle at 35% 30%, #ffe58a, #e8b91d);
+}
+
+.c4-cell.is-last {
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.22), 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+
+.c4-cell.is-win {
+  animation: c4-pop 0.6s ease infinite alternate;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.22), 0 0 0 4px var(--color-sun);
+}
+
+@keyframes c4-pop {
+  from { transform: scale(1); }
+  to { transform: scale(1.09); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c4-cell.is-win { animation: none; }
+  .c4-drop { transition: none; }
+}
+
+@media (max-width: 480px) {
+  .c4-grid, .c4-picker { gap: 0.25rem; }
+}

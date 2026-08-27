@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Connect Four — drop discs and get four in a row, against the computer or a friend, on Learn With Luke">
+  <title>Connect Four · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/connect-four.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🔴🟡 Connect Four</h1>
+      <p class="game-instructions" role="note">
+        <strong>Drop your discs and get four in a row.</strong>
+        Across, down or diagonally — they all count. Discs always fall to the bottom,
+        so think about what you're building underneath.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="c4-title">
+      <h2 id="c4-title" class="visually-hidden">Connect Four game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label" id="c4-name-you">You</span><span class="stat-value" id="c4-you">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Draws</span><span class="stat-value" id="c4-draw">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label" id="c4-name-cpu">Computer</span><span class="stat-value" id="c4-cpu">0</span></div>
+      </div>
+
+      <div class="c4-board" id="c4-board" aria-label="Connect Four board, seven columns by six rows"></div>
+
+      <p class="game-status" id="c4-status" role="status" aria-live="polite">Your turn — drop a disc.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Round</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset-scores">🧹 Clear Scores</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="mode-label">
+          <span class="option-label" id="mode-label">Players</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-mode="cpu" aria-pressed="true">🤖 1 Player</button>
+            <button type="button" class="option-btn" data-mode="two" aria-pressed="false">👫 2 Players</button>
+          </div>
+        </div>
+
+        <div class="option-group" id="level-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">Computer skill</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-level="easy" aria-pressed="true">🐢 Easy</button>
+            <button type="button" class="option-btn" data-level="medium" aria-pressed="false">🐇 Medium</button>
+            <button type="button" class="option-btn" data-level="hard" aria-pressed="false">🚀 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="c4-help-title">
+      <h2 id="c4-help-title">How to Play</h2>
+      <dl>
+        <dt>Dropping a disc</dt>
+        <dd>Tap the ▼ above a column, or press <kbd>1</kbd>–<kbd>7</kbd>. Your disc falls to the lowest free space in that column.</dd>
+        <dt>Winning</dt>
+        <dd>Four of your discs in a straight line — across, down, or either diagonal. The winning four light up.</dd>
+        <dt>Computer skill</dt>
+        <dd><strong>Easy</strong> mostly plays at random. <strong>Medium</strong> looks a few moves ahead but slips now and then. <strong>Hard</strong> looks six moves ahead and does not slip — it will spot a trap you set two turns before it closes.</dd>
+        <dt>Two players</dt>
+        <dd>Switch to 👫 2 Players and take turns on the same screen. Red goes first, and who starts swaps each round.</dd>
+        <dt>Tip</dt>
+        <dd>Play in the middle column when you can. A disc in the centre can be part of more winning lines than one at the edge, which is why the computer grabs it early.</dd>
+        <dt>Watch out</dt>
+        <dd>Before you drop, look at what your disc puts <em>underneath</em> your opponent — filling a square can hand them the space right above it.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/connect-four.js"></script>
+</body>
+</html>
