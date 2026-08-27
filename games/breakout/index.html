@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Breakout — bounce the ball off your paddle and knock out every brick, on Learn With Luke">
+  <title>Breakout · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/breakout.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🧱 Breakout</h1>
+      <p class="game-instructions" role="note">
+        <strong>Knock out every brick without dropping the ball.</strong>
+        Slide the paddle with your finger, the mouse, or the arrow keys. Where the ball
+        hits the paddle decides which way it goes — so the paddle is a steering wheel.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="breakout-title">
+      <h2 id="breakout-title" class="visually-hidden">Breakout game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Score</span><span class="stat-value" id="breakout-score">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Balls</span><span class="stat-value" id="breakout-lives">3</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Stage</span><span class="stat-value" id="breakout-stage">1</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="breakout-best">—</span></div>
+      </div>
+
+      <div class="breakout-stage">
+        <canvas id="breakout-canvas" class="breakout-canvas" width="720" height="560" tabindex="0"
+                role="img" aria-label="Breakout board. Your paddle is at the bottom, bricks are at the top."></canvas>
+      </div>
+
+      <p class="game-status" id="breakout-status" role="status" aria-live="polite">Tap the board to launch the ball!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">Difficulty</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-level="easy" aria-pressed="true">🐢 Easy</button>
+            <button type="button" class="option-btn" data-level="medium" aria-pressed="false">🐇 Medium</button>
+            <button type="button" class="option-btn" data-level="hard" aria-pressed="false">🚀 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="breakout-help-title">
+      <h2 id="breakout-help-title">How to Play</h2>
+      <dl>
+        <dt>Moving</dt>
+        <dd>Slide your finger or the mouse across the board, or hold <kbd>←</kbd> and <kbd>→</kbd>. <kbd>Space</kbd> launches the ball and pauses.</dd>
+        <dt>Steering the ball</dt>
+        <dd>The ball doesn't just bounce straight off. Hit it with the <strong>middle</strong> of the paddle and it goes nearly straight up; hit it with the <strong>edge</strong> and it flies off sideways. That's how you reach bricks tucked in the corners.</dd>
+        <dt>Scoring</dt>
+        <dd>Higher rows are worth more. Knock out several bricks <em>without touching the paddle in between</em> and each one is worth more than the last — up to five times.</dd>
+        <dt>Stages</dt>
+        <dd>Clear the wall and a new one appears, with more rows and a faster ball. From stage 2 the top row needs two hits — you'll see it flash white when it's damaged.</dd>
+        <dt>Tip</dt>
+        <dd>The best move is to punch a hole up one side and let the ball loose above the bricks. It'll bounce around up there clearing rows on its own while you wait.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/breakout.js"></script>
+</body>
+</html>
