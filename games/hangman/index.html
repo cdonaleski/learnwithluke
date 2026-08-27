@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hangman — guess the hidden word one letter at a time, on Learn With Luke">
+  <title>Word Guess · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/hangman.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🚀 Word Guess</h1>
+      <p class="game-instructions" role="note">
+        <strong>Guess the hidden word one letter at a time.</strong>
+        Every wrong letter adds another piece to the launch — six wrong and the rocket
+        leaves without you!
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="hm-title">
+      <h2 id="hm-title" class="visually-hidden">Word Guess game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Guesses left</span><span class="stat-value" id="hm-lives">6</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Won</span><span class="stat-value" id="hm-wins">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Lost</span><span class="stat-value" id="hm-losses">0</span></div>
+      </div>
+
+      <div class="hm-rocket" id="hm-rocket" aria-hidden="true"></div>
+
+      <div class="hm-word" id="hm-word" role="img" aria-label="Word so far"></div>
+
+      <p class="hm-hint" id="hm-hint" hidden></p>
+
+      <p class="game-status" id="hm-status" role="status" aria-live="polite">Guess a letter to begin!</p>
+
+      <div class="hm-keyboard" id="hm-keyboard" role="group" aria-label="Pick a letter"></div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Word</button>
+        <button type="button" class="btn btn-secondary" id="btn-hint">💡 Hint</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="category-label">
+          <span class="option-label" id="category-label">Category</span>
+          <div class="option-buttons" id="category-buttons"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="hm-help-title">
+      <h2 id="hm-help-title">How to Play</h2>
+      <dl>
+        <dt>Guessing</dt>
+        <dd>Tap a letter, or just press it on a keyboard. If the word contains that letter it appears everywhere it belongs — a letter that turns up twice costs you only one guess.</dd>
+        <dt>Wrong letters</dt>
+        <dd>Six wrong letters and the round is over. Used letters turn green if they were in the word and grey if they weren't, so you never waste a guess repeating yourself.</dd>
+        <dt>Stuck?</dt>
+        <dd>Press 💡 Hint for a clue about what the word means. It doesn't cost you a guess.</dd>
+        <dt>Categories</dt>
+        <dd>Animals, Food, Space, School and Nature. Your choice is remembered next time, and words won't repeat straight away.</dd>
+        <dt>Tip</dt>
+        <dd>Start with vowels — <kbd>A</kbd>, <kbd>E</kbd>, <kbd>I</kbd>, <kbd>O</kbd>, <kbd>U</kbd> — then the common consonants like R, S, T, L and N. Most words hide fewer places than you'd think once the vowels are showing.</dd>
+        <dt>Grown-ups: adding words</dt>
+        <dd>Open <code>games/hangman/js/words.js</code> and copy one of the blocks. Each entry needs a <code>word</code> and a <code>hint</code>. Words must be letters only — no spaces or apostrophes — since the keyboard only offers A–Z.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/words.js"></script>
+  <script src="js/hangman.js"></script>
+</body>
+</html>

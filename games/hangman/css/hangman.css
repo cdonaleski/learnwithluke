@@ -1,0 +1,103 @@
+/* Word Guess (hangman) — page-specific styles */
+
+.hm-rocket {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: clamp(1.75rem, 7vw, 2.5rem);
+  margin-bottom: 1rem;
+  min-height: 2.75rem;
+}
+
+.hm-part {
+  opacity: 0.15;
+  filter: grayscale(1);
+  transition: opacity 0.3s, filter 0.3s, transform 0.3s;
+}
+
+.hm-part.is-on {
+  opacity: 1;
+  filter: none;
+  transform: translateY(-3px);
+}
+
+.hm-word {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.hm-letter {
+  width: clamp(1.6rem, 7vw, 2.4rem);
+  height: clamp(2.1rem, 9vw, 3rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 5vw, 1.7rem);
+  border-bottom: 4px solid var(--color-sky);
+  color: var(--color-text);
+}
+
+.hm-letter.is-shown { border-bottom-color: var(--color-green); }
+.hm-letter.is-missed { color: var(--color-coral); border-bottom-color: var(--color-coral); }
+
+.hm-hint {
+  text-align: center;
+  font-family: var(--font-display);
+  color: var(--color-text-muted);
+  background: var(--color-sun);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.hm-keyboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(2.1rem, 1fr));
+  gap: 0.35rem;
+  max-width: 30rem;
+  margin: 0.75rem auto 0;
+}
+
+.hm-key {
+  aspect-ratio: 1;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.85rem, 3.5vw, 1rem);
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.12s, background 0.15s, border-color 0.15s;
+}
+
+.hm-key:hover:not(:disabled),
+.hm-key:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--color-sky);
+  background: #fff;
+  outline: none;
+}
+
+.hm-key.is-right {
+  background: #dcfce7;
+  border-color: var(--color-green);
+  color: #16a34a;
+}
+
+.hm-key.is-wrong {
+  background: #f1eae0;
+  border-color: #ded5c8;
+  color: #a8a094;
+}
+
+.hm-key:disabled { cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-part, .hm-key { transition: none; }
+}
