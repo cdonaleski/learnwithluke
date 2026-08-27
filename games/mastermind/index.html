@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mastermind — crack the hidden colour code from the clues, on Learn With Luke">
+  <title>Mastermind · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/mastermind.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🎨 Mastermind</h1>
+      <p class="game-instructions" role="note">
+        <strong>A secret colour code is hidden. Work it out from the clues.</strong>
+        Pick colours to fill the row, press Check, and read what the little clue dots tell you.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="mm-title">
+      <h2 id="mm-title" class="visually-hidden">Mastermind game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Tries left</span><span class="stat-value" id="mm-tries">12</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Cracked</span><span class="stat-value" id="mm-wins">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Played</span><span class="stat-value" id="mm-played">0</span></div>
+      </div>
+
+      <div class="mm-secret" id="mm-secret" hidden></div>
+
+      <div class="mm-board" id="mm-board" role="log" aria-label="Guesses so far"></div>
+
+      <div class="mm-palette" id="mm-palette" role="toolbar" aria-label="Pick a colour"></div>
+
+      <p class="game-status" id="mm-status" role="status" aria-live="polite">Crack the code!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-check">✅ Check</button>
+        <button type="button" class="btn btn-secondary" id="btn-clear">🧽 Clear Row</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Code</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">Difficulty</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-level="easy" aria-pressed="true">🐣 Easy</button>
+            <button type="button" class="option-btn" data-level="medium" aria-pressed="false">🐤 Medium</button>
+            <button type="button" class="option-btn" data-level="hard" aria-pressed="false">🦅 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="mm-help-title">
+      <h2 id="mm-help-title">How to Play</h2>
+      <dl>
+        <dt>Make a guess</dt>
+        <dd>Tap a colour to drop it into the highlighted slot, or tap a slot first to choose where it goes. On a keyboard, <kbd>1</kbd>–<kbd>8</kbd> pick colours, arrows move between slots, <kbd>Backspace</kbd> clears one and <kbd>Enter</kbd> checks.</dd>
+        <dt>Reading the clues</dt>
+        <dd>Each guess gets a set of small dots. A <strong>black dot</strong> means one peg is the right colour <em>in the right place</em>. A <strong>white dot</strong> means a peg is the right colour but <em>in the wrong place</em>. The dots don't tell you <em>which</em> pegs — that's the puzzle!</dd>
+        <dt>Important</dt>
+        <dd>Each peg only ever earns one dot. If the code has one red and you guess three reds, you get one dot for red, not three.</dd>
+        <dt>Difficulty</dt>
+        <dd><strong>Easy</strong> is 4 pegs from 6 colours with no repeats and 12 tries. <strong>Medium</strong> allows repeated colours. <strong>Hard</strong> is 5 pegs from 8 colours with repeats and 10 tries.</dd>
+        <dt>Tip</dt>
+        <dd>Start by trying a row of one colour, then a row of another. That tells you exactly how many of each colour the code contains before you worry about where they go.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/mastermind.js"></script>
+</body>
+</html>
