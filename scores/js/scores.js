@@ -60,6 +60,9 @@
     { id: "farkle", name: "Farkle", icon: "🎲", href: "../games/farkle/index.html",
       metric: { label: "Score", better: "higher", format: "number" },
       categories: [{ id: "all", label: "All" }] },
+    { id: "tower-stack", name: "Tower Stack", icon: "🏗️", href: "../games/tower-stack/index.html",
+      metric: { label: "Score", better: "higher", format: "number" },
+      categories: [{ id: "all", label: "All" }] },
   ];
 
   const el = {

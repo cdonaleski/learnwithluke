@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tower Stack — drop each block to build the tallest tower you can, on Learn With Luke">
+  <title>Tower Stack · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/tower-stack.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🏗️ Tower Stack</h1>
+      <p class="game-instructions" role="note">
+        <strong>Drop each block right on top of the last one.</strong>
+        Anything hanging over the edge gets cut off — so every wobbly drop makes
+        the next one harder. How high can you get?
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="stack-title">
+      <h2 id="stack-title" class="visually-hidden">Tower Stack game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Score</span><span class="stat-value" id="stack-score">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Height</span><span class="stat-value" id="stack-height">1</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Perfect</span><span class="stat-value" id="stack-perfect">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="stack-best">—</span></div>
+      </div>
+
+      <div class="stack-stage">
+        <canvas id="stack-canvas" class="stack-canvas" width="480" height="640" tabindex="0"
+                role="img" aria-label="Tower Stack. A block slides across the top of your tower — tap to drop it."></canvas>
+      </div>
+
+      <p class="game-status" id="stack-status" role="status" aria-live="polite">Tap the tower to start!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-drop">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Tower</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="stack-help-title">
+      <h2 id="stack-help-title">How to Play</h2>
+      <dl>
+        <dt>Dropping</dt>
+        <dd>The block slides back and forth across the top. Tap the tower, press the Drop button, or hit <kbd>Space</kbd> to let it go.</dd>
+        <dt>The one rule</dt>
+        <dd>Only the part sitting on the block <em>below</em> stays. The bit hanging over the edge is sliced off and tumbles away — and your next block is that bit narrower.</dd>
+        <dt>Perfect drops</dt>
+        <dd>Line it up almost exactly and it snaps flush without losing any width at all. Do it several times in a row and each one is worth more.</dd>
+        <dt>Getting harder</dt>
+        <dd>Nothing changes the difficulty except you. Every sloppy drop narrows the tower, and the block speeds up as you climb. It ends when the tower gets too narrow to hit.</dd>
+        <dt>The dotted lines</dt>
+        <dd>Those show the exact edges of the block below. Watch the lines rather than the block — it's much easier to judge.</dd>
+        <dt>Tip</dt>
+        <dd>Don't drop at the moment it <em>looks</em> right — drop a fraction early. The block is still moving while it falls, and everyone is late at first.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/tower-stack.js"></script>
+</body>
+</html>
