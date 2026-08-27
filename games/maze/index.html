@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Maze — find your way from the corner to the flag, on Learn With Luke">
+  <title>Maze · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/maze.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🧭 Maze</h1>
+      <p class="game-instructions" role="note">
+        <strong>Get from the top-left corner to the flag.</strong>
+        Steer with the arrow keys, <strong>W A S D</strong>, a swipe, or the buttons below.
+        Every maze is brand new, and every one has a way through.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="maze-title">
+      <h2 id="maze-title" class="visually-hidden">Maze game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Moves</span><span class="stat-value" id="maze-moves">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Time</span><span class="stat-value" id="maze-time">0:00</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="maze-best">—</span></div>
+      </div>
+
+      <div class="maze-stage">
+        <canvas id="maze-canvas" class="maze-canvas" width="760" height="580" tabindex="0"
+                role="img" aria-label="Maze. You start in the top-left corner; the flag is bottom-right."></canvas>
+      </div>
+
+      <p class="game-status" id="maze-status" role="status" aria-live="polite">Find your way to the flag!</p>
+
+      <div class="maze-dpad" role="group" aria-label="Move">
+        <button type="button" class="dpad-btn dpad-btn--up" data-dir="-1,0" aria-label="Move up">▲</button>
+        <button type="button" class="dpad-btn dpad-btn--left" data-dir="0,-1" aria-label="Move left">◀</button>
+        <button type="button" class="dpad-btn dpad-btn--right" data-dir="0,1" aria-label="Move right">▶</button>
+        <button type="button" class="dpad-btn dpad-btn--down" data-dir="1,0" aria-label="Move down">▼</button>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Maze</button>
+        <button type="button" class="btn btn-secondary" id="btn-hint">💡 Show the Way</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="size-label">
+          <span class="option-label" id="size-label">Size</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-size="small" aria-pressed="true">🐣 Small</button>
+            <button type="button" class="option-btn" data-size="medium" aria-pressed="false">🐤 Medium</button>
+            <button type="button" class="option-btn" data-size="large" aria-pressed="false">🦅 Large</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="maze-help-title">
+      <h2 id="maze-help-title">How to Play</h2>
+      <dl>
+        <dt>Moving</dt>
+        <dd>Arrow keys or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>. On a tablet, swipe across the maze or use the arrow buttons. You can't walk through walls, so a move that doesn't work means there's one in the way.</dd>
+        <dt>Your trail</dt>
+        <dd>Squares you've already visited glow faintly, which makes it much easier to spot the parts you haven't tried yet.</dd>
+        <dt>Stuck?</dt>
+        <dd>💡 Show the Way draws the route from where you're standing to the flag. It doesn't cost anything — but the timer keeps running!</dd>
+        <dt>Every maze has an answer</dt>
+        <dd>Mazes are carved so that every square can be reached and there's exactly <em>one</em> route between any two squares. So there are no loops to go round in, and no dead ends that aren't really dead ends.</dd>
+        <dt>Tip</dt>
+        <dd>Try keeping your hand on one wall — always turning the same way at every junction. In a maze like this, following one wall will always get you out eventually.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/maze.js"></script>
+</body>
+</html>
