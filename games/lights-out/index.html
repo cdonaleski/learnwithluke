@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lights Out — switch every light off, but each press flips its neighbours too, on Learn With Luke">
+  <title>Lights Out · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/lights-out.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>💡 Lights Out</h1>
+      <p class="game-instructions" role="note">
+        <strong>Switch every light off.</strong>
+        The catch: pressing a light also flips the ones above, below, left and right of it.
+        Every puzzle can be solved — the trick is working out how.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="lo-title">
+      <h2 id="lo-title" class="visually-hidden">Lights Out puzzle</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Moves</span><span class="stat-value" id="lo-moves">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Still on</span><span class="stat-value" id="lo-lit">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="lo-best">—</span></div>
+      </div>
+
+      <div class="lo-board" id="lo-board" aria-label="Lights"></div>
+
+      <p class="game-status" id="lo-status" role="status" aria-live="polite">Turn every light off!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Puzzle</button>
+        <button type="button" class="btn btn-secondary" id="btn-hint">💡 Hint</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="size-label">
+          <span class="option-label" id="size-label">Size</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-size="small" aria-pressed="true">🐣 Easy</button>
+            <button type="button" class="option-btn" data-size="medium" aria-pressed="false">🐤 Medium</button>
+            <button type="button" class="option-btn" data-size="large" aria-pressed="false">🦅 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="lo-help-title">
+      <h2 id="lo-help-title">How to Play</h2>
+      <dl>
+        <dt>The rule</dt>
+        <dd>Press any square and it flips — on becomes off, off becomes on. So do the squares directly above, below, left and right of it. Corners and edges just flip fewer neighbours.</dd>
+        <dt>Winning</dt>
+        <dd>Every single light off. That's it.</dd>
+        <dt>Order doesn't matter</dt>
+        <dd>You can make the same presses in any order and end up at exactly the same board. And pressing the same square twice is the same as never pressing it at all — so if you're going round in circles, you may be undoing your own work.</dd>
+        <dt>Stuck?</dt>
+        <dd>💡 Hint highlights one square that genuinely still needs pressing. It doesn't cost you anything except a slightly higher move count.</dd>
+        <dt>Every puzzle can be solved</dt>
+        <dd>Not every pattern of lights <em>can</em> be turned off — so puzzles are built backwards, starting from an all-off board and pressing random squares. Whatever presses made the puzzle will unmake it.</dd>
+        <dt>Tip</dt>
+        <dd>Work top to bottom. Clear the top row by pressing the squares in the row <em>underneath</em> each light that's still on, then repeat. It's a surprisingly powerful trick once it clicks.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/lights-out.js"></script>
+</body>
+</html>
