@@ -14,6 +14,9 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Tic Tac Toe** (`games/tic-tac-toe/`) — 1 player vs the computer (Hard is unbeatable) or 2 players
 - **Memory** (`games/memory/`) — themed pair matching with six card themes and three board sizes
 - **Bubble Shooter** (`games/bubble-shooter/`) — match-three bubble popper with a Math Mode that puts sums on the shooter, see below
+- **Tools** (`tools/`) — helper hub
+- **Timer** (`tools/timer/`) — countdown and stopwatch with laps, driven by the wall clock so it never drifts
+- **Coin Flip** (`tools/coin-flip/`) — heads or tails with a saved tally, plus batch flips that show the odds settling
 - **Code** (`code/`) — placeholder page (coming soon)
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
 - **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
@@ -160,8 +163,9 @@ being dealt.
 1. Create a new folder (e.g. `art/`) with an `index.html` file.
 2. Copy the structure from an existing section page (e.g. `puzzles/index.html`).
 3. Update the page title, heading, and icon.
-4. Add the folder name to the `SECTIONS` array in `js/nav.js`, then add a card
-   on `index.html`.
+4. If it's a whole new **section**, add `{ id: "art", label: "Art" }` to the
+   `SECTIONS` array in `js/nav.js` — the menu builds itself from that list, so
+   it's the only navigation edit. Then add a card on `index.html`.
 
 ## Tech stack
 

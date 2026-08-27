@@ -1,0 +1,136 @@
+/* Coin Flip — page-specific styles */
+
+.coin-stage {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0 0.5rem;
+  perspective: 1000px;
+}
+
+.coin {
+  position: relative;
+  width: min(58vw, 12rem);
+  aspect-ratio: 1;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 1.1s cubic-bezier(0.33, 0.02, 0.2, 1);
+}
+
+.coin:focus-visible {
+  outline: 3px solid var(--color-coral);
+  outline-offset: 8px;
+  border-radius: 50%;
+}
+
+.coin-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 10px 26px rgba(45, 52, 54, 0.25);
+  border: 7px solid rgba(255, 255, 255, 0.5);
+}
+
+.coin-heads {
+  background: radial-gradient(circle at 34% 30%, #ffe98a, var(--color-sun) 45%, #e3ac1f);
+}
+
+.coin-tails {
+  background: radial-gradient(circle at 34% 30%, #dfe6e9, #b9c4c9 48%, #8d9aa1);
+  transform: rotateY(180deg);
+}
+
+.coin-emoji {
+  font-size: clamp(2.5rem, 13vw, 3.75rem);
+  line-height: 1;
+}
+
+.coin-word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.75rem, 3vw, 0.95rem);
+  letter-spacing: 0.14em;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.coin-result {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  color: var(--color-text-muted);
+  min-height: 1.3em;
+  margin-top: 0.5rem;
+}
+
+.coin-result.is-heads { color: #d69a10; }
+.coin-result.is-tails { color: #6b7a82; }
+
+/* Odds bar */
+.odds-bar {
+  height: 1.4rem;
+  border-radius: 999px;
+  background: #b9c4c9;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  border: 2px solid #e8e2d8;
+}
+
+.odds-bar-heads {
+  height: 100%;
+  width: 50%;
+  background: var(--color-sun);
+  transition: width 0.4s ease;
+}
+
+.odds-bar-label {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-top: 0.4rem;
+}
+
+/* History chips */
+.coin-history {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.history-chip {
+  width: 1.85rem;
+  height: 1.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.history-chip.is-heads {
+  background: var(--color-sun);
+  color: #7a5b00;
+}
+
+.history-chip.is-tails {
+  background: #cfd8dc;
+  color: #46545c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin { transition: transform 0.25s linear; }
+  .odds-bar-heads { transition: none; }
+}

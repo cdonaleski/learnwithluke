@@ -1,0 +1,165 @@
+/* Timer — page-specific styles */
+
+.timer-face {
+  position: relative;
+  width: min(100%, 20rem);
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+.timer-ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-ring-track,
+.timer-ring {
+  fill: none;
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+.timer-ring-track {
+  stroke: #efe7db;
+}
+
+.timer-ring {
+  stroke: var(--color-sky);
+  transition: stroke-dashoffset 0.2s linear, stroke 0.3s;
+}
+
+.timer-ring.is-low {
+  stroke: var(--color-coral);
+}
+
+.timer-readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.timer-mode-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.timer-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 15vw, 4.5rem);
+  line-height: 1;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-display.is-running {
+  color: var(--color-sky-dark);
+}
+
+.timer-display.is-finished {
+  color: var(--color-coral);
+  animation: timer-flash 1s ease-in-out infinite;
+}
+
+@keyframes timer-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Custom time entry */
+.custom-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.custom-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.custom-field input {
+  width: 4rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.45rem 0.5rem;
+  text-align: center;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.custom-field input:focus-visible {
+  outline: none;
+  border-color: var(--color-sky);
+}
+
+.custom-unit {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Laps */
+.lap-head,
+.lap-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  padding: 0.45rem 0.25rem;
+  align-items: baseline;
+}
+
+.lap-head {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-bottom: 2px dashed #f0e6d6;
+}
+
+.lap-list {
+  list-style: none;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.lap-row {
+  border-bottom: 1px solid #f4efe6;
+}
+
+.lap-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.lap-split,
+.lap-total {
+  font-variant-numeric: tabular-nums;
+}
+
+.lap-split {
+  color: var(--color-sky-dark);
+  font-weight: 700;
+}
+
+.lap-total {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timer-display.is-finished { animation: none; }
+  .timer-ring { transition: none; }
+}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Timer — a countdown timer and stopwatch for homework, practice and games, on Learn With Luke">
+  <title>Timer · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/timer.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Tools</a>
+
+    <header class="game-header">
+      <h1>⏱️ Timer</h1>
+      <p class="game-instructions" role="note">
+        <strong>Count down to zero, or time how long something takes.</strong>
+        Handy for homework sprints, reading practice, tidying races and turn-taking.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="timer-title">
+      <h2 id="timer-title" class="visually-hidden">Timer</h2>
+
+      <div class="timer-face">
+        <svg class="timer-ring-svg" viewBox="0 0 300 300" aria-hidden="true">
+          <circle class="timer-ring-track" cx="150" cy="150" r="130" />
+          <circle class="timer-ring" id="timer-ring" cx="150" cy="150" r="130" />
+        </svg>
+        <div class="timer-readout">
+          <span class="timer-mode-label" id="timer-label">Countdown</span>
+          <span class="timer-display" id="timer-display" role="timer" aria-live="off">5:00</span>
+        </div>
+      </div>
+
+      <p class="game-status" id="timer-status" role="status" aria-live="polite">
+        Ready — press Start.
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset">↺ Reset</button>
+        <button type="button" class="btn btn-secondary" id="btn-lap" hidden>🚩 Lap</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="mode-label">
+          <span class="option-label" id="mode-label">Mode</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-mode="countdown" aria-pressed="true">⏳ Countdown</button>
+            <button type="button" class="option-btn" data-mode="stopwatch" aria-pressed="false">⏱️ Stopwatch</button>
+          </div>
+        </div>
+
+        <div class="option-group" id="preset-group" role="group" aria-labelledby="preset-label">
+          <span class="option-label" id="preset-label">How long?</span>
+          <div class="option-buttons" id="preset-buttons">
+            <!-- Built by JS -->
+          </div>
+        </div>
+
+        <div class="option-group" id="custom-group" role="group" aria-labelledby="custom-label">
+          <span class="option-label" id="custom-label">Or set your own</span>
+          <div class="custom-time">
+            <label class="custom-field">
+              <span class="visually-hidden">Minutes</span>
+              <input type="number" id="custom-minutes" min="0" max="99" value="2" inputmode="numeric">
+              <span class="custom-unit">min</span>
+            </label>
+            <label class="custom-field">
+              <span class="visually-hidden">Seconds</span>
+              <input type="number" id="custom-seconds" min="0" max="59" value="30" inputmode="numeric">
+              <span class="custom-unit">sec</span>
+            </label>
+            <button type="button" class="option-btn" id="btn-set-custom">Set</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel lap-panel" id="lap-panel" aria-labelledby="lap-title" hidden>
+      <h2 id="lap-title">Laps</h2>
+      <div class="lap-head">
+        <span>Lap</span><span>Split</span><span>Total</span>
+      </div>
+      <ol class="lap-list" id="lap-list"></ol>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="timer-help-title">
+      <h2 id="timer-help-title">How to Use It</h2>
+      <dl>
+        <dt>Countdown</dt>
+        <dd>Pick one of the preset times or type your own, then press Start. When it reaches zero the ring empties and a chime plays.</dd>
+        <dt>Stopwatch</dt>
+        <dd>Switch to ⏱️ Stopwatch to count upwards instead. Press 🚩 Lap to record a split without stopping the clock.</dd>
+        <dt>Keyboard</dt>
+        <dd><kbd>Space</kbd> starts and pauses, <kbd>R</kbd> resets, and <kbd>L</kbd> records a lap.</dd>
+        <dt>Pausing</dt>
+        <dd>Pause keeps your place — pressing Start again picks up exactly where you left off, not from the beginning.</dd>
+        <dt>Switching tabs</dt>
+        <dd>The timer follows the real clock rather than counting frames, so it stays accurate even if you switch to another tab and come back. The chime only sounds once you return, though.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/timer.js"></script>
+</body>
+</html>

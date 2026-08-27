@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coin Flip — flip a coin, keep a tally, and watch the odds settle towards 50/50, on Learn With Luke">
+  <title>Coin Flip · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/coin-flip.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Tools</a>
+
+    <header class="game-header">
+      <h1>🪙 Coin Flip</h1>
+      <p class="game-instructions" role="note">
+        <strong>Heads or tails — tap the coin to flip it.</strong>
+        Settle an argument, pick who goes first, or flip a hundred times at once
+        and watch the odds creep towards half and half.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="coin-title">
+      <h2 id="coin-title" class="visually-hidden">Coin flip</h2>
+
+      <div class="coin-stage">
+        <button type="button" class="coin" id="coin" aria-label="Flip the coin">
+          <span class="coin-face coin-heads" aria-hidden="true">
+            <span class="coin-emoji">👑</span>
+            <span class="coin-word">HEADS</span>
+          </span>
+          <span class="coin-face coin-tails" aria-hidden="true">
+            <span class="coin-emoji">🦁</span>
+            <span class="coin-word">TAILS</span>
+          </span>
+        </button>
+      </div>
+
+      <p class="coin-result" id="coin-result">Ready</p>
+
+      <p class="game-status" id="coin-status" role="status" aria-live="polite">
+        Tap the coin or press Flip to begin.
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-flip">🪙 Flip</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset">🧹 Clear Tally</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat">
+          <span class="stat-label">Heads</span>
+          <span class="stat-value" id="stat-heads">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Tails</span>
+          <span class="stat-value" id="stat-tails">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Flips</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Heads %</span>
+          <span class="stat-value" id="stat-percent">—</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Best run</span>
+          <span class="stat-value" id="stat-streak">0</span>
+        </div>
+      </div>
+
+      <div class="odds-bar" role="img" aria-labelledby="odds-bar-label">
+        <div class="odds-bar-heads" id="odds-bar-heads"></div>
+      </div>
+      <p class="odds-bar-label" id="odds-bar-label">Flip a coin to start the tally</p>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="batch-label">
+          <span class="option-label" id="batch-label">Flip lots at once</span>
+          <div class="option-buttons" id="batch-buttons">
+            <button type="button" class="option-btn" data-batch="10">× 10</button>
+            <button type="button" class="option-btn" data-batch="100">× 100</button>
+            <button type="button" class="option-btn" data-batch="1000">× 1000</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel" id="history-panel" aria-labelledby="history-title" hidden>
+      <h2 id="history-title">Last 50 Flips</h2>
+      <ol class="coin-history" id="coin-history"></ol>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="coin-help-title">
+      <h2 id="coin-help-title">How to Use It</h2>
+      <dl>
+        <dt>Flip</dt>
+        <dd>Tap the coin, press the Flip button, or hit <kbd>Space</kbd>. Heads is the crown, tails is the lion.</dd>
+        <dt>The tally</dt>
+        <dd>Every flip is counted, and the last 50 are shown as a row of H and T chips. Your tally is saved on this device, so it's still there tomorrow. Clear Tally starts again from zero.</dd>
+        <dt>Best run</dt>
+        <dd>The longest streak of the same side in a row. Runs of four or five are much more common than people expect!</dd>
+        <dt>Try this</dt>
+        <dd>Flip <strong>× 10</strong> and look at the Heads %. It's often nowhere near 50 — maybe 80% or 30%. Now press <strong>× 1000</strong> a few times and watch the bar settle close to half and half. A coin has no memory, but the more you flip, the closer the average gets to fair. That's the law of large numbers.</dd>
+        <dt>Is it really fair?</dt>
+        <dd>Yes — each flip is an independent 50/50, and nothing is nudged by what came before. A long run of heads does <em>not</em> make tails "due" next.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/coin-flip.js"></script>
+</body>
+</html>

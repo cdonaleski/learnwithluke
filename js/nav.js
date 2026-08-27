@@ -3,7 +3,16 @@
  * Injects header + footer and highlights the active page.
  */
 (function () {
-  const SECTIONS = ["puzzles", "games", "code"];
+  /**
+   * The site's sections, in menu order. Adding one here is the only edit the
+   * navigation needs — the folder name must match the `id`.
+   */
+  const SECTIONS = [
+    { id: "puzzles", label: "Puzzles" },
+    { id: "games", label: "Games" },
+    { id: "tools", label: "Tools" },
+    { id: "code", label: "Code" },
+  ];
   const path = window.location.pathname;
   const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
 
@@ -16,16 +25,14 @@
    */
   let sectionIndex = -1;
   for (let i = segments.length - 1; i >= 0; i--) {
-    if (SECTIONS.indexOf(segments[i]) !== -1) {
+    if (SECTIONS.some((section) => section.id === segments[i])) {
       sectionIndex = i;
       break;
     }
   }
 
   const isHome = sectionIndex === -1;
-  const isPuzzles = segments[sectionIndex] === "puzzles";
-  const isGames = segments[sectionIndex] === "games";
-  const isCode = segments[sectionIndex] === "code";
+  const activeSection = isHome ? null : segments[sectionIndex];
 
   /** Path back to the site root (e.g. games/pong → "../../"). */
   const root = isHome ? "" : "../".repeat(segments.length - sectionIndex);
@@ -40,9 +47,10 @@
         <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
         <ul class="nav-links" role="navigation" aria-label="Main navigation">
           <li><a href="${root}index.html"${isHome ? ' class="active" aria-current="page"' : ""}>Home</a></li>
-          <li><a href="${root}puzzles/index.html"${isPuzzles ? ' class="active" aria-current="page"' : ""}>Puzzles</a></li>
-          <li><a href="${root}games/index.html"${isGames ? ' class="active" aria-current="page"' : ""}>Games</a></li>
-          <li><a href="${root}code/index.html"${isCode ? ' class="active" aria-current="page"' : ""}>Code</a></li>
+          ${SECTIONS.map((section) => {
+            const active = section.id === activeSection ? ' class="active" aria-current="page"' : "";
+            return `<li><a href="${root}${section.id}/index.html"${active}>${section.label}</a></li>`;
+          }).join("\n          ")}
         </ul>
       </div>
     </header>
