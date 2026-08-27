@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Number Memory — a number flashes up, then you type it back. One more digit every round. On Learn With Luke">
+  <title>Number Memory · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/number-memory.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🔢 Number Memory</h1>
+      <p class="game-instructions" role="note">
+        <strong>A number flashes up. Remember it, then type it back.</strong>
+        Get it right and the next one is a digit longer. How far can you get?
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="nm-title">
+      <h2 id="nm-title" class="visually-hidden">Number Memory game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Digits</span><span class="stat-value" id="nm-level">1</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Lives</span><span class="stat-value" id="nm-lives">3</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="nm-best">—</span></div>
+      </div>
+
+      <div class="nm-stage" id="nm-stage" role="status" aria-live="polite"></div>
+
+      <p class="game-status" id="nm-status">A number will flash up. Remember it!</p>
+
+      <div class="nm-keypad" id="nm-keypad" role="group" aria-label="Type the number" hidden></div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Go</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ Start Again</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">How long you get to look</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn" data-level="relaxed" aria-pressed="false">🐢 Relaxed</button>
+            <button type="button" class="option-btn is-active" data-level="normal" aria-pressed="true">🐇 Normal</button>
+            <button type="button" class="option-btn" data-level="sharp" aria-pressed="false">🚀 Sharp</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="nm-help-title">
+      <h2 id="nm-help-title">How to Play</h2>
+      <dl>
+        <dt>Each round</dt>
+        <dd>Press <strong>Go</strong>. A number appears with a bar showing how long is left. When it vanishes, type what you saw and press ✅ — or use the number keys and <kbd>Enter</kbd>.</dd>
+        <dt>Getting longer</dt>
+        <dd>Every correct answer adds one more digit. Get one wrong and you lose a life; run out and the game shows you what the number really was.</dd>
+        <dt>How long you get to look</dt>
+        <dd>Longer numbers stay on screen longer — flashing a ten-digit number for the same instant as a two-digit one wouldn't be fair. <strong>Relaxed</strong> gives you plenty of time and three lives; <strong>Sharp</strong> is quick and gives you one.</dd>
+        <dt>How many should I manage?</dt>
+        <dd>Most grown-ups get around <strong>seven</strong>. That's not a lack of trying — it's roughly how many separate things anyone can hold in their head at once. Seven is a good score, and nine is excellent.</dd>
+        <dt>The trick everyone uses</dt>
+        <dd><strong>Chunking.</strong> Don't remember 4 8 2 9 3 1 as six things — remember it as "48, 29, 31", which is three. It's the same trick that makes phone numbers easier to remember than a random string, and it works brilliantly here.</dd>
+        <dt>Say it out loud</dt>
+        <dd>Repeating the number under your breath while it's on screen genuinely helps. Your ears give you a second copy to check against.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/number-memory.js"></script>
+</body>
+</html>

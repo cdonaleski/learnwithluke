@@ -66,6 +66,9 @@
     { id: "frogger", name: "Frogger", icon: "🐸", href: "../games/frogger/index.html",
       metric: { label: "Score", better: "higher", format: "number" },
       categories: [{ id: "easy", label: "Easy" }, { id: "medium", label: "Medium" }, { id: "hard", label: "Hard" }] },
+    { id: "number-memory", name: "Number Memory", icon: "🔢", href: "../games/number-memory/index.html",
+      metric: { label: "Digits", better: "higher", format: "number" },
+      categories: [{ id: "relaxed", label: "Relaxed" }, { id: "normal", label: "Normal" }, { id: "sharp", label: "Sharp" }] },
   ];
 
   const el = {
