@@ -57,6 +57,9 @@
     { id: "breakout", name: "Breakout", icon: "🧱", href: "../games/breakout/index.html",
       metric: { label: "Score", better: "higher", format: "number" },
       categories: [{ id: "easy", label: "Easy" }, { id: "medium", label: "Medium" }, { id: "hard", label: "Hard" }] },
+    { id: "farkle", name: "Farkle", icon: "🎲", href: "../games/farkle/index.html",
+      metric: { label: "Score", better: "higher", format: "number" },
+      categories: [{ id: "all", label: "All" }] },
   ];
 
   const el = {

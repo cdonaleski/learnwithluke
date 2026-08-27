@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Farkle — push your luck with six dice, bank your points or risk them all, on Learn With Luke">
+  <title>Farkle · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/farkle.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🎲 Farkle</h1>
+      <p class="game-instructions" role="note">
+        <strong>Roll six dice, keep the ones that score, then decide: bank it or risk it.</strong>
+        Roll nothing that scores and you lose everything you'd built up that turn.
+        First to 4000 wins.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="farkle-title">
+      <h2 id="farkle-title" class="visually-hidden">Farkle game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">This turn</span><span class="stat-value" id="farkle-turn">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Banked</span><span class="stat-value" id="farkle-total">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Target</span><span class="stat-value" id="farkle-target">4000</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="farkle-best">—</span></div>
+      </div>
+
+      <div class="farkle-tray" id="farkle-tray" aria-label="Your dice"></div>
+
+      <p class="farkle-hint" id="farkle-hint"></p>
+
+      <p class="game-status" id="farkle-status" role="status" aria-live="polite">Roll six dice to begin!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-roll">🎲 Roll</button>
+        <button type="button" class="btn btn-secondary" id="btn-bank">🏦 Bank It</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="farkle-help-title">
+      <h2 id="farkle-help-title">How to Play</h2>
+      <dl>
+        <dt>A turn</dt>
+        <dd>Roll six dice. Tap the ones that score to keep them, then either <strong>Roll Again</strong> with what's left, or <strong>Bank It</strong> to add your points to your total. Keys <kbd>1</kbd>–<kbd>6</kbd> pick dice, <kbd>Space</kbd> rolls and <kbd>B</kbd> banks.</dd>
+        <dt>Farkle!</dt>
+        <dd>If a roll contains <em>nothing</em> that scores, that's a Farkle — everything you'd built up this turn vanishes. That's the whole tension: the more you have, the more you're risking.</dd>
+        <dt>What scores</dt>
+        <dd>
+          Single <strong>1</strong> = 100 · Single <strong>5</strong> = 50<br>
+          Three 1s = 1000 · Three 2s = 200 · Three 3s = 300 · Three 4s = 400 · Three 5s = 500 · Three 6s = 600<br>
+          Each extra die past three <strong>doubles</strong> it — four 1s = 2000, five 1s = 4000, six 1s = 8000<br>
+          Run of 1-2-3-4-5-6 = 1500 · Three pairs = 1500 · Two triples = 2500
+        </dd>
+        <dt>Every die you pick must score</dt>
+        <dd>You can't keep a 3 just because it came up alongside a 1. If any picked die isn't part of something that scores, the pick isn't allowed.</dd>
+        <dt>Hot dice</dt>
+        <dd>If all six dice end up scoring, you get all six back and keep everything so far. That's how really big turns happen.</dd>
+        <dt>Getting started</dt>
+        <dd>Your first bank of the game has to be at least <strong>300</strong> in one turn. Below that you have to keep rolling.</dd>
+        <dt>When to stop</dt>
+        <dd>With one die left you'll Farkle two times in three — only a 1 or a 5 saves you. With three or more left you're usually safe enough to risk another roll.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/farkle.js"></script>
+</body>
+</html>

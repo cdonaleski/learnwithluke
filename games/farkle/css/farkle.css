@@ -1,0 +1,67 @@
+/* Farkle — page-specific styles */
+
+.farkle-tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 5rem;
+  padding: 1rem 0;
+}
+
+.farkle-empty {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  align-self: center;
+}
+
+.farkle-die {
+  width: clamp(3rem, 12vw, 4rem);
+  aspect-ratio: 1;
+  border-radius: 18%;
+  border: 3px solid #e5dbc8;
+  background: linear-gradient(150deg, #ffffff, #f0e9dc);
+  box-shadow: 0 5px 0 #d9cdb8;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.farkle-die:hover:not(:disabled) { transform: translateY(-3px); }
+
+.farkle-die.is-held {
+  border-color: var(--color-green);
+  background: #e9f9ec;
+  box-shadow: 0 5px 0 #a8dcb4;
+  transform: translateY(-5px);
+}
+
+.farkle-die.is-set {
+  border-color: var(--color-sky);
+  background: #e6f6fa;
+  box-shadow: none;
+  opacity: 0.85;
+  cursor: default;
+}
+
+.farkle-die:disabled { cursor: default; }
+
+.farkle-die:focus-visible {
+  outline: 3px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+.farkle-hint {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  min-height: 1.5em;
+  color: var(--color-sky-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .farkle-die { transition: none; }
+}
