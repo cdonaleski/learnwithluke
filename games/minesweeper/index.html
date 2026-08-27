@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Minesweeper — clear the board without setting off a mine, on Learn With Luke">
+  <title>Minesweeper · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/minesweeper.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>💣 Minesweeper</h1>
+      <p class="game-instructions" role="note">
+        <strong>Open every square that isn't a mine.</strong>
+        The numbers tell you how many mines are touching that square — use them to
+        work out where the mines must be. Your very first tap is always safe.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="ms-title">
+      <h2 id="ms-title" class="visually-hidden">Minesweeper game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Mines left</span><span class="stat-value" id="ms-mines">10</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Time</span><span class="stat-value" id="ms-time">0:00</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="ms-best">—</span></div>
+      </div>
+
+      <div class="ms-board" id="ms-board" aria-label="Minefield"></div>
+
+      <p class="game-status" id="ms-status" role="status" aria-live="polite">Tap any square to begin.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-flag" aria-pressed="false">🚩 Flag Mode: Off</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">Difficulty</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-level="easy" aria-pressed="true">🐣 Easy</button>
+            <button type="button" class="option-btn" data-level="medium" aria-pressed="false">🐤 Medium</button>
+            <button type="button" class="option-btn" data-level="hard" aria-pressed="false">🦅 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="ms-help-title">
+      <h2 id="ms-help-title">How to Play</h2>
+      <dl>
+        <dt>Digging</dt>
+        <dd>Tap a square to open it. If it's blank, all the squares around it open too, which is how you clear big areas quickly.</dd>
+        <dt>What the numbers mean</dt>
+        <dd>A <strong>3</strong> means exactly three of the eight squares touching it are mines. That's your only clue — and it's always enough.</dd>
+        <dt>Flags</dt>
+        <dd>When you're sure a square is a mine, flag it so you don't tap it by mistake. Turn on 🚩 <strong>Flag Mode</strong> (or press <kbd>F</kbd>) and tapping plants flags instead of digging. On a computer you can also just right-click.</dd>
+        <dt>The quick trick</dt>
+        <dd>Once a number has that many flags around it, tap the number itself and everything else beside it opens at once. Careful — if a flag is in the wrong place, this sets off the mine.</dd>
+        <dt>Your first tap is safe</dt>
+        <dd>The mines aren't placed until after you tap, and they're kept away from that square and its neighbours. So you'll never lose on move one, and you always start with a nice big opening.</dd>
+        <dt>Tip</dt>
+        <dd>If a <strong>1</strong> already has one flag next to it, every other square touching that 1 is safe. Most of Minesweeper is that one idea, used over and over.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/minesweeper.js"></script>
+</body>
+</html>

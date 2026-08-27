@@ -1,0 +1,59 @@
+/* Minesweeper — page-specific styles */
+
+.ms-board {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ms-cols, 9), 1fr);
+  gap: 2px;
+  background: #cbbfae;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 3px solid var(--color-orange);
+  width: min(100%, 34rem);
+}
+
+.ms-cell {
+  aspect-ratio: 1;
+  min-width: 1.1rem;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: #efe6d8;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.12), inset 2px 2px 0 rgba(255, 255, 255, 0.85);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.6rem, 2.2vw, 1rem);
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ms-cell:hover:not(.is-open) { background: #fff8ec; }
+
+.ms-cell:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 1px;
+  z-index: 1;
+}
+
+.ms-cell.is-open {
+  background: #e2d8c8;
+  box-shadow: none;
+  cursor: default;
+}
+
+.ms-cell.is-flag { background: #ffe9c9; }
+
+.ms-cell.is-mine {
+  background: var(--color-coral);
+}
+
+@media (max-width: 640px) {
+  .ms-grid { gap: 1px; padding: 2px; }
+}
