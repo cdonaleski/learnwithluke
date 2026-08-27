@@ -34,7 +34,8 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Dice Roller** (`tools/dice/`) — up to six dice of six kinds, with a chart of how often each total comes up
 - **Hall of Fame** (`scores/`) — the best score from every game, gathered in one place
 - **Leaderboards** (`js/leaderboard.js`) — shared by 13 games; see below
-- **Code** (`code/`) — placeholder page (coming soon)
+- **Code** (`code/`) — coding hub
+- **Code Playground** (`code/playground/`) — live HTML/CSS/JS editor with a sandboxed preview, friendly error hints, and share-by-link; projects live in `js/projects.js`
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
 - **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
   help blocks used by the newer game pages
@@ -115,6 +116,27 @@ Open **Games → Asteroids** (or go to `games/asteroids/index.html`).
 - On touch screens an on-screen control pad appears under the playfield.
 
 Vector rendering on a plain `<canvas>` — no libraries, no network calls.
+
+## Adding a Playground project
+
+Open `code/playground/js/projects.js` and copy one of the blocks. Each project
+needs an `id`, `name`, `blurb`, three `tries`, and starting `html`, `css` and
+`js`. Write the code as an array of lines joined with `"\n"` — it keeps the
+quoting sane and the diffs readable.
+
+The offline tests parse every project's JavaScript, so a starter that would not
+run fails the build rather than reaching a child.
+
+**How the preview is isolated.** The child's code runs in an iframe with
+`sandbox="allow-scripts"` and deliberately *no* `allow-same-origin`, so it
+cannot reach this page's DOM, its localStorage, or the rest of the site. The
+cost is that `localStorage` does not work inside the preview either. Console
+output and errors are relayed out by a small runtime injected ahead of the
+child's script, and the parent only accepts messages from that exact frame.
+
+Error line numbers are translated from the assembled document back to a line of
+the child's own `script.js`, because the line number in the generated page would
+mean nothing to them.
 
 ## Leaderboards
 

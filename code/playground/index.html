@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Code Playground — write HTML, CSS and JavaScript and watch it run straight away, on Learn With Luke">
+  <title>Code Playground · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/playground.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page pg-page">
+    <a href="../index.html" class="game-back">← Back to Code</a>
+
+    <header class="game-header">
+      <h1>&lt;/&gt; Code Playground</h1>
+      <p class="game-instructions" role="note">
+        <strong>Write code on the left, watch it happen on the right.</strong>
+        Pick a project to start from, then change things and see what breaks. You
+        cannot hurt anything — Start Over always brings the original back.
+      </p>
+    </header>
+
+    <nav class="pg-rail" id="pg-rail" aria-label="Starter projects"></nav>
+
+    <div class="pg-viewswitch" role="group" aria-label="Show code or result">
+      <button type="button" class="option-btn is-active" data-view="code" aria-pressed="true">✏️ Code</button>
+      <button type="button" class="option-btn" data-view="result" aria-pressed="false">▶️ Result</button>
+    </div>
+
+    <div class="pg-bench show-code" id="pg-bench">
+      <div class="pg-col pg-col--code">
+        <section class="game-panel pg-brief">
+          <p class="pg-kicker" id="pg-kicker">Project 1</p>
+          <h2 id="pg-title">Hello, World</h2>
+          <p id="pg-blurb"></p>
+          <p class="pg-kicker">Try this</p>
+          <ul class="pg-tries" id="pg-tries"></ul>
+        </section>
+
+        <section class="game-panel pg-editor">
+          <div class="pg-tabs" role="tablist" aria-label="Files">
+            <button type="button" class="pg-tab is-active" data-file="html" role="tab" aria-selected="true">index.html</button>
+            <button type="button" class="pg-tab" data-file="css" role="tab" aria-selected="false">style.css</button>
+            <button type="button" class="pg-tab" data-file="js" role="tab" aria-selected="false">script.js</button>
+          </div>
+          <div class="pg-editor-wrap">
+            <div class="pg-gutter" id="pg-gutter" aria-hidden="true">1</div>
+            <textarea id="pg-code" spellcheck="false" autocomplete="off" autocapitalize="off"
+                      autocorrect="off" aria-label="Code editor"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <div class="pg-col pg-col--result">
+        <section class="game-panel pg-stage">
+          <div class="pg-stage-head">
+            <span>Your page</span>
+            <span class="pg-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <iframe id="pg-preview" title="Live preview of your code" sandbox="allow-scripts allow-modals"></iframe>
+          <div class="pg-console">
+            <div class="pg-console-head">
+              <span>What the computer says</span>
+              <button type="button" id="btn-clear">clear</button>
+            </div>
+            <div class="pg-lines" id="pg-lines"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <p class="game-status" id="pg-status" role="status" aria-live="polite">Pick a project and start changing things!</p>
+
+    <div class="game-actions">
+      <button type="button" class="btn btn-primary" id="btn-run">▶ Run</button>
+      <button type="button" class="btn btn-secondary" id="btn-stop">⏹ Stop</button>
+      <button type="button" class="btn btn-secondary" id="btn-share">🔗 Copy Link</button>
+      <button type="button" class="btn btn-secondary" id="btn-reset">↺ Start Over</button>
+      <label class="pg-switch"><input type="checkbox" id="pg-autorun" checked> Run as I type</label>
+    </div>
+
+    <section class="game-panel game-help" aria-labelledby="pg-help-title">
+      <h2 id="pg-help-title">How to Use It</h2>
+      <dl>
+        <dt>The three files</dt>
+        <dd><strong>index.html</strong> is what's on the page, <strong>style.css</strong> is what it looks like, and <strong>script.js</strong> is what it <em>does</em>. Tap the tabs to move between them.</dd>
+        <dt>Running it</dt>
+        <dd>It runs by itself a moment after you stop typing. Press <strong>Run</strong> — or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> — to run it straight away, and turn off "Run as I type" if you'd rather do it yourself.</dd>
+        <dt>Stuck in a loop?</dt>
+        <dd>If you write something that never finishes — like <code>while (true)</code> — the page will freeze. Press <strong>Stop</strong> to throw it away and get back to normal.</dd>
+        <dt>What the computer says</dt>
+        <dd>Anything you <code>console.log</code> shows up under the page, and so do mistakes. Errors come with a plain-English hint and the line number in <em>your</em> script.js.</dd>
+        <dt>Sharing</dt>
+        <dd><strong>Copy Link</strong> puts your whole project inside the web address. Send it to someone and they'll see exactly what you made — no accounts, nothing saved anywhere.</dd>
+        <dt>Your work is kept</dt>
+        <dd>Whatever you type is remembered on this device, so you can close the page and come back to it. <strong>Start Over</strong> throws your changes away and brings back the starting code — it asks first.</dd>
+        <dt>Grown-ups</dt>
+        <dd>Code runs in a sandboxed frame with no access to this page or the rest of the site. That also means <code>localStorage</code> won't work inside the preview. Add projects by copying a block in <code>code/playground/js/projects.js</code>.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div class="pg-toast" id="pg-toast" role="status" aria-live="polite"></div>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/playground.js"></script>
+</body>
+</html>
