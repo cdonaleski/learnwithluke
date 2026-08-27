@@ -1,0 +1,98 @@
+/* Hall of Fame — page-specific styles */
+
+.scores-summary {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.scores-empty {
+  text-align: center;
+  max-width: 30rem;
+  margin: 0 auto 2rem;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.score-card {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1.25rem;
+  border-top: 6px solid var(--color-sun);
+}
+
+.score-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 0.75rem;
+}
+
+.score-card-head:hover h3,
+.score-card-head:focus-visible h3 {
+  color: var(--color-coral);
+  outline: none;
+}
+
+.score-icon { font-size: 1.75rem; line-height: 1; }
+
+.score-card-head h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  transition: color 0.15s;
+}
+
+.score-rows { list-style: none; }
+
+.score-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f4efe6;
+}
+
+.score-cat {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  min-width: 3.5rem;
+}
+
+.score-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.score-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-coral);
+  font-variant-numeric: tabular-nums;
+}
+
+.score-note {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.6rem;
+}
+
+.scores-note {
+  text-align: center;
+  max-width: 34rem;
+  margin: 1.5rem auto 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}

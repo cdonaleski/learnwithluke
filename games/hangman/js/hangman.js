@@ -133,6 +133,7 @@
       if (revealed()) {
         state.phase = "won";
         state.wins += 1;
+        winStreak += 1;
         fanfare();
         setStatus("🎉 You got it — " + state.word + "!");
       } else {
@@ -144,6 +145,7 @@
       if (state.wrong >= MAX_WRONG) {
         state.phase = "lost";
         state.losses += 1;
+        endStreak();
         setStatus("🚀 Out of guesses! The word was " + state.word + ".");
       } else {
         const left = MAX_WRONG - state.wrong;
@@ -222,6 +224,7 @@
       button.textContent = cat.icon + " " + cat.name;
       button.setAttribute("aria-pressed", String(cat.id === state.categoryId));
       button.addEventListener("click", () => {
+        endStreak();
         state.categoryId = cat.id;
         state.recent = [];
         try { window.localStorage.setItem(CATEGORY_KEY, cat.id); } catch (err) { /* ok */ }
@@ -260,6 +263,22 @@
     const saved = window.localStorage.getItem(CATEGORY_KEY);
     if (saved && categories.some((c) => c.id === saved)) state.categoryId = saved;
   } catch (err) { /* defaults fine */ }
+
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "hangman",
+    gameName: "Word Guess",
+    metric: { label: "Win streak", better: "higher", format: "number" },
+    categories: [],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+  /** Longest run of wins in a row. Offered when the run ends. */
+  let winStreak = 0;
+  function endStreak() {
+    if (board && winStreak > 0) board.offer(winStreak);
+    winStreak = 0;
+  }
 
   renderCategories();
   newGame();

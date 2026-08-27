@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hall of Fame — the best scores from every game on this device, on Learn With Luke">
+  <title>Hall of Fame · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/game.css">
+  <link rel="stylesheet" href="css/scores.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="page-title">
+      <span class="hero-badge">🏆 Top scores</span>
+      <h1 id="page-title">Hall of Fame</h1>
+      <p class="hero-subtitle">
+        The best score from every game — all in one place.
+      </p>
+      <p class="scores-summary" id="scores-summary"></p>
+    </section>
+
+    <section aria-labelledby="scores-heading">
+      <h2 id="scores-heading" class="visually-hidden">Best scores by game</h2>
+
+      <p class="scores-empty" id="scores-empty" hidden>
+        No scores yet! Go and play something, and whenever you do well enough
+        you'll be asked for your name.
+      </p>
+
+      <div class="scores-grid" id="scores-list"></div>
+
+      <div class="game-actions">
+        <a href="../games/index.html" class="btn btn-primary">🎮 Go and play</a>
+        <button type="button" class="btn btn-secondary" id="btn-clear-all" hidden>🧹 Clear every board</button>
+      </div>
+
+      <p class="scores-note">
+        Scores are saved in this browser, on this device. They aren't sent anywhere
+        and nobody else can see them — so everyone who plays on this tablet or computer
+        shares the same boards.
+      </p>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../js/nav.js"></script>
+  <script src="../js/leaderboard.js"></script>
+  <script src="js/scores.js"></script>
+</body>
+</html>

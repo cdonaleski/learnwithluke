@@ -179,6 +179,7 @@
     if (isSolved(state.grid)) {
       state.solved = true;
       const isBest = recordBest();
+      if (board) board.offer(state.moves, state.sizeId);
       fanfare();
       setStatus(isBest
         ? "🏆 All out in " + state.moves + " moves — a new best!"
@@ -246,6 +247,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       newPuzzle();
+      if (board) board.setCategory(state.sizeId);
     });
   });
 
@@ -260,8 +262,19 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "lights-out",
+    gameName: "Lights Out",
+    metric: { label: "Moves", better: "lower", format: "number" },
+    categories: [{ id: "small", label: "🐣 Easy" }, { id: "medium", label: "🐤 Medium" }, { id: "large", label: "🦅 Hard" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   loadBest();
   newPuzzle();
+  if (board) board.setCategory(state.sizeId);
 
   window.LightsOutGame = {
     state, press, blank, litCount, isSolved, makePuzzle, remainingPresses, tap, newPuzzle, SIZES,

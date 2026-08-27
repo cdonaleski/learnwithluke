@@ -250,8 +250,15 @@
       state.phase = "over";
       state.winner = state.turn;
       state.winningCells = line;
-      if (state.turn === YOU) { state.scores.you += 1; fanfare(); }
-      else { state.scores.cpu += 1; beep(170, 0.3, "sawtooth"); }
+      if (state.turn === YOU) {
+        state.scores.you += 1;
+        fanfare();
+        if (state.mode === "cpu") winStreak += 1;
+      } else {
+        state.scores.cpu += 1;
+        beep(170, 0.3, "sawtooth");
+        if (state.mode === "cpu") endStreak();
+      }
       setStatus("🎉 " + playerName(state.turn) + " got four in a row!");
       render();
       return;
@@ -260,6 +267,7 @@
     if (isFull(state.grid)) {
       state.phase = "over";
       state.scores.draw += 1;
+      if (state.mode === "cpu") endStreak();
       setStatus("😄 The board is full — it's a draw!");
       render();
       return;
@@ -376,6 +384,7 @@
         other.classList.toggle("is-active", active);
         other.setAttribute("aria-pressed", String(active));
       });
+      endStreak();
       state.scores = { you: 0, cpu: 0, draw: 0 };
       state.starter = YOU;
       newRound(true);
@@ -390,7 +399,9 @@
         other.classList.toggle("is-active", active);
         other.setAttribute("aria-pressed", String(active));
       });
+      endStreak();
       state.starter = YOU;
+      if (board) board.setCategory(state.levelId);
       newRound(true);
     });
   });
@@ -402,7 +413,24 @@
     playColumn(Number(match[1]) - 1);
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "connect-four",
+    gameName: "Connect Four",
+    metric: { label: "Win streak", better: "higher", format: "number" },
+    categories: [{ id: "easy", label: "🐢 Easy" }, { id: "medium", label: "🐇 Medium" }, { id: "hard", label: "🚀 Hard" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+  /** Longest run of wins in a row. Offered when the run ends. */
+  let winStreak = 0;
+  function endStreak() {
+    if (board && winStreak > 0) board.offer(winStreak, state.levelId);
+    winStreak = 0;
+  }
+
   newRound(true);
+  if (board) board.setCategory(state.levelId);
 
   window.ConnectFourGame = {
     state, COLS, ROWS, EMPTY, YOU, CPU, LEVELS,

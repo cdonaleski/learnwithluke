@@ -246,6 +246,7 @@
     stopTimer();
     state.elapsed = state.startedAt ? Date.now() - state.startedAt : state.elapsed;
     const isBest = recordBest();
+    if (board) board.offer(state.elapsed, state.sizeId);
     fanfare();
     setStatus(isBest
       ? "🏆 Out in " + formatTime(state.elapsed) + " and " + state.moves + " moves — a new best!"
@@ -399,6 +400,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       newMaze();
+      if (board) board.setCategory(state.sizeId);
     });
   });
 
@@ -413,8 +415,19 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "maze",
+    gameName: "Maze",
+    metric: { label: "Time", better: "lower", format: "time" },
+    categories: [{ id: "small", label: "🐣 Small" }, { id: "medium", label: "🐤 Medium" }, { id: "large", label: "🦅 Large" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   loadBest();
   newMaze();
+  if (board) board.setCategory(state.sizeId);
 
   window.MazeGame = { state, generate, solve, move, newMaze, showHint, DIRS, SIZES, N, E, S, W: Wa };
 })();

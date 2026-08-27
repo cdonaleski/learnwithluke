@@ -202,6 +202,7 @@
     state.phase = "over";
     beep(150, 0.3, "sawtooth");
     const isBest = recordBest();
+    if (board) board.offer(state.score, state.speed);
     setStatus(
       isBest
         ? "🏆 New best score — " + state.score + "! Press New Game to go again."
@@ -407,6 +408,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       newGame();
+      if (board) board.setCategory(state.speed);
       setStatus("Speed set to " + SPEEDS[state.speed].label + ".");
     });
   });
@@ -461,8 +463,19 @@
   });
   window.addEventListener("blur", pauseGame);
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "snake",
+    gameName: "Snake",
+    metric: { label: "Score", better: "higher", format: "number" },
+    categories: [{ id: "slow", label: "🐢 Slow" }, { id: "normal", label: "🐇 Normal" }, { id: "fast", label: "🚀 Fast" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   loadBest();
   newGame();
+  if (board) board.setCategory(state.speed);
   setStatus("Press Start or an arrow key to begin!");
   state.rafId = window.requestAnimationFrame(loop);
 })();

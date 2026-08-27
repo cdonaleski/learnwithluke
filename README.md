@@ -26,6 +26,9 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Tools** (`tools/`) — helper hub
 - **Timer** (`tools/timer/`) — countdown and stopwatch with laps, driven by the wall clock so it never drifts
 - **Coin Flip** (`tools/coin-flip/`) — heads or tails with a saved tally, plus batch flips that show the odds settling
+- **Dice Roller** (`tools/dice/`) — up to six dice of six kinds, with a chart of how often each total comes up
+- **Hall of Fame** (`scores/`) — the best score from every game, gathered in one place
+- **Leaderboards** (`js/leaderboard.js`) — shared by 13 games; see below
 - **Code** (`code/`) — placeholder page (coming soon)
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
 - **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
@@ -107,6 +110,36 @@ Open **Games → Asteroids** (or go to `games/asteroids/index.html`).
 - On touch screens an on-screen control pad appears under the playfield.
 
 Vector rendering on a plain `<canvas>` — no libraries, no network calls.
+
+## Leaderboards
+
+Thirteen games keep a top-ten board. When a run is good enough the game asks
+for a name, and the score appears on that game's page and on the Hall of Fame
+at `scores/`.
+
+**Scores are stored in the browser, on the device.** They are not sent anywhere
+and nobody outside that device can see them, so everyone who plays on the same
+tablet shares the same boards. Sharing boards between devices would need a
+server, which the site deliberately does not have.
+
+Adding a board to a game takes three things:
+
+1. `<script src="../../js/leaderboard.js"></script>` and an empty
+   `<section class="game-panel" id="leaderboard-panel"></section>` in its page.
+2. A `Leaderboard.create({...})` call, then `board.mount(...)`.
+3. `board.offer(value)` when a run ends, and `board.setCategory(id)` whenever
+   the player changes difficulty.
+
+`metric.better` is `"higher"` for scores and `"lower"` for times, moves and
+guesses; `metric.format` is `"time"` for milliseconds. Each game needs its own
+`gameId` — it is the storage key, so a duplicate would merge two games' scores.
+
+For head-to-head games the metric is a winning streak, banked when the run ends:
+a loss or draw, or switching difficulty. Without that last part a player who
+never loses would never get on the board.
+
+If you add a board, also add the game to the `GAMES` list in
+`scores/js/scores.js` so it shows up on the Hall of Fame.
 
 ## Adding a Memory theme
 

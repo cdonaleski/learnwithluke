@@ -1,0 +1,130 @@
+/* Dice Roller — page-specific styles */
+
+.dice-tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 5rem;
+  padding: 1rem 0;
+  cursor: pointer;
+}
+
+.die {
+  width: clamp(3.25rem, 14vw, 4.5rem);
+  aspect-ratio: 1;
+  border-radius: 18%;
+  background: linear-gradient(150deg, #ffffff, #f0e9dc);
+  box-shadow: 0 6px 0 #d9cdb8, var(--shadow-soft);
+  border: 2px solid #e5dbc8;
+  display: grid;
+  place-items: center;
+}
+
+.die--pips {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 14%;
+  gap: 6%;
+}
+
+.pip {
+  border-radius: 50%;
+  background: transparent;
+}
+
+.pip.is-on { background: var(--color-text); }
+
+.die--number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  color: var(--color-coral);
+}
+
+.die.is-tumbling { animation: die-tumble 0.14s linear infinite; }
+
+@keyframes die-tumble {
+  0% { transform: rotate(-7deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-5px); }
+  100% { transform: rotate(-7deg) translateY(0); }
+}
+
+.dice-total {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 9vw, 3.25rem);
+  line-height: 1;
+  color: var(--color-coral);
+}
+
+/* Totals chart */
+.dice-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 9rem;
+  padding-top: 0.5rem;
+  overflow-x: auto;
+}
+
+.chart-col {
+  flex: 1 1 1.25rem;
+  min-width: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.chart-bar {
+  width: 100%;
+  min-height: 2px;
+  background: linear-gradient(180deg, var(--color-sky), var(--color-sky-dark));
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.chart-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+.dice-history-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.dice-history {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.dice-chip {
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .die.is-tumbling { animation: none; }
+  .chart-bar { transition: none; }
+}

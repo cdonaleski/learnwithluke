@@ -164,9 +164,9 @@
 
     state.round += 1;
     const result = judge(you, cpu);
-    if (result === 1) state.you += 1;
-    else if (result === -1) state.cpu += 1;
-    else state.draws += 1;
+    if (result === 1) { state.you += 1; winStreak += 1; }
+    else if (result === -1) { state.cpu += 1; endStreak(); }
+    else { state.draws += 1; endStreak(); }
 
     showThrow(you, cpu, result);
 
@@ -288,6 +288,8 @@
         other.classList.toggle("is-active", active);
         other.setAttribute("aria-pressed", String(active));
       });
+      endStreak();
+      if (board) board.setCategory(state.skill);
       newMatch();
     });
   });
@@ -318,7 +320,24 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "rock-paper-scissors",
+    gameName: "Rock Paper Scissors",
+    metric: { label: "Win streak", better: "higher", format: "number" },
+    categories: [{ id: "fair", label: "🎲 Fair" }, { id: "sharp", label: "🧠 Sharp" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+  /** Longest run of wins in a row. Offered when the run ends. */
+  let winStreak = 0;
+  function endStreak() {
+    if (board && winStreak > 0) board.offer(winStreak, state.skill);
+    winStreak = 0;
+  }
+
   newMatch();
+  if (board) board.setCategory(state.skill);
 
   window.RpsGame = { state, judge, cpuMove, play, newMatch, moveNames, countersTo, MOVES, TARGETS };
 })();

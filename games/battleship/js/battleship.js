@@ -349,6 +349,7 @@
       state.phase = "over";
       state.winner = "player";
       fanfare();
+      if (board) board.offer(state.playerShots);
       setStatus("🏆 You sank the whole enemy fleet in " + state.playerShots + " shots!");
       render();
       return;
@@ -497,6 +498,16 @@
     setStatus("Place your Carrier (5 squares). Tap your own waters on the left.");
     render();
   }
+
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "battleship",
+    gameName: "Battleship",
+    metric: { label: "Shots", better: "lower", format: "number" },
+    categories: [],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
 
   newGame();
 

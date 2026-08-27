@@ -290,12 +290,14 @@ main {
 .card--games::before { background: var(--color-green); }
 .card--code::before { background: var(--color-sky); }
 .card--tools::before { background: var(--color-coral); }
+.card--scores::before { background: var(--color-sun); }
 .card--soon::before { background: var(--color-orange); }
 
 .card--puzzles:hover { border-color: var(--color-purple); }
 .card--games:hover { border-color: var(--color-green); }
 .card--code:hover { border-color: var(--color-sky); }
 .card--tools:hover { border-color: var(--color-coral); }
+.card--scores:hover { border-color: var(--color-sun); }
 .card--soon { cursor: default; opacity: 0.85; }
 .card--soon:hover { transform: none; box-shadow: var(--shadow-soft); border-color: transparent; }
 
@@ -331,6 +333,7 @@ main {
 .card--games .card-tag { background: #dcfce7; color: #16a34a; }
 .card--code .card-tag { background: #ccfbf1; color: #0d9488; }
 .card--tools .card-tag { background: #ffe3e3; color: #d64545; }
+.card--scores .card-tag { background: #fff4c9; color: #a37a00; }
 .card--soon .card-tag { background: #ffedd5; color: #ea580c; }
 
 /* Coming soon page */

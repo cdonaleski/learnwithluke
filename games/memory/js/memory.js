@@ -272,6 +272,7 @@
     state.finished = true;
     stopTimer();
     const isBest = recordBest();
+    if (board) board.offer(state.moves, state.sizeId);
     playFanfare();
     setStatus(
       (isBest ? "🏆 New best — " : "🎉 All pairs found! ") +
@@ -367,6 +368,7 @@
       button.addEventListener("click", () => {
         state.sizeId = size.id;
         writeStored(SIZE_KEY, size.id);
+        if (board) board.setCategory(size.id);
         renderSizeButtons();
         newGame();
       });
@@ -399,9 +401,20 @@
     el.sound.setAttribute("aria-pressed", String(soundOn));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "memory",
+    gameName: "Memory",
+    metric: { label: "Moves", better: "lower", format: "number" },
+    categories: [{ id: "small", label: "🐣 Easy" }, { id: "medium", label: "🐤 Medium" }, { id: "large", label: "🦅 Hard" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   renderThemeButtons();
   renderSizeButtons();
   newGame();
+  if (board) board.setCategory(state.sizeId);
 
   // Exposed purely so the offline tests can inspect a dealt deck.
   window.MemoryGame = { state, buildDeck, sizesFor, isUsableTheme, SIZES };

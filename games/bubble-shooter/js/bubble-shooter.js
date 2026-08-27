@@ -484,6 +484,7 @@
         /* Private browsing — the score just won't persist. */
       }
     }
+    if (board) board.offer(state.score, state.mode);
     setStatus(
       isBest
         ? "🏆 New best score — " + state.score + "! Press New Game to go again."
@@ -770,6 +771,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       newGame();
+      if (board) board.setCategory(state.mode);
       setStatus(
         isMath()
           ? "Math Mode — work out the sum on your bubble, then shoot at that number!"
@@ -836,8 +838,19 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "bubble-shooter",
+    gameName: "Bubble Shooter",
+    metric: { label: "Score", better: "higher", format: "number" },
+    categories: [{ id: "classic", label: "🫧 Classic" }, { id: "math", label: "🔢 Math Mode" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   renderLevelButtons();
   newGame();
+  if (board) board.setCategory(state.mode);
   window.requestAnimationFrame(loop);
 
   // Exposed purely so the offline tests can drive the engine.

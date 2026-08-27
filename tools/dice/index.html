@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dice Roller — roll up to six dice of any kind and watch the totals build up, on Learn With Luke">
+  <title>Dice Roller · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/dice.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Tools</a>
+
+    <header class="game-header">
+      <h1>🎲 Dice Roller</h1>
+      <p class="game-instructions" role="note">
+        <strong>Tap the dice to roll them.</strong>
+        Pick how many, and which kind. Lost the dice from a board game? Borrow these.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="dice-title">
+      <h2 id="dice-title" class="visually-hidden">Dice roller</h2>
+
+      <div class="dice-tray" id="dice-tray" role="img" aria-label="The dice"></div>
+
+      <p class="dice-total" id="dice-total">—</p>
+
+      <p class="game-status" id="dice-status" role="status" aria-live="polite">Tap the dice to roll!</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-roll">🎲 Roll</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset">🧹 Clear Tally</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Rolls</span><span class="stat-value" id="dice-rolls">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Average total</span><span class="stat-value" id="dice-average">—</span></div>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="count-label">
+          <span class="option-label" id="count-label">How many?</span>
+          <div class="option-buttons" id="count-buttons"></div>
+        </div>
+
+        <div class="option-group" role="group" aria-labelledby="type-label">
+          <span class="option-label" id="type-label">Kind of dice</span>
+          <div class="option-buttons" id="type-buttons"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel" id="chart-panel" aria-labelledby="chart-title" hidden>
+      <h2 id="chart-title">How often each total comes up</h2>
+      <div class="dice-chart" id="dice-chart" role="img" aria-label="Bar chart of totals rolled so far"></div>
+      <p class="lb-note">Keep rolling — with two or more dice the middle totals pull ahead.</p>
+      <h3 class="dice-history-title">Recent rolls</h3>
+      <ol class="dice-history" id="dice-history"></ol>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="dice-help-title">
+      <h2 id="dice-help-title">How to Use It</h2>
+      <dl>
+        <dt>Rolling</dt>
+        <dd>Tap the dice, press the Roll button, or hit <kbd>Space</kbd>. Roll up to six at once.</dd>
+        <dt>Different dice</dt>
+        <dd>A normal die is a <strong>D6</strong> — six sides. The others have 4, 8, 10, 12 or 20 sides, the kind used in adventure games. Six-sided dice show dots; the rest show numbers.</dd>
+        <dt>The chart</dt>
+        <dd>Every roll is counted, and the bars show how often each total has come up. Changing the number or kind of dice starts the tally fresh, since the totals mean something different.</dd>
+        <dt>Try this</dt>
+        <dd>Set it to <strong>2</strong> dice and roll thirty or forty times. The bars build into a hill, with <strong>7</strong> tallest. That's not luck: there are six ways to make 7 (1+6, 2+5, 3+4, 4+3, 5+2, 6+1) but only one way to make 2. Six times as many ways means it comes up about six times as often.</dd>
+        <dt>Average total</dt>
+        <dd>With two normal dice this settles near <strong>7</strong>. With one die it settles near <strong>3.5</strong> — a number you can never actually roll, which surprises most people.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/dice.js"></script>
+</body>
+</html>

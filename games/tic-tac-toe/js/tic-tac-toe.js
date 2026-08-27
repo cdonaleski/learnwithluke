@@ -209,6 +209,9 @@
       state.phase = "over";
       state.winningLine = line;
       state.scores[winner] += 1;
+      if (state.mode === "cpu") {
+        if (winner === state.human) winStreak += 1; else endStreak();
+      }
       playFanfare();
       setStatus(
         state.mode === "cpu" && winner !== state.human
@@ -218,6 +221,7 @@
     } else if (isFull(state.cells)) {
       state.phase = "over";
       state.scores.draw += 1;
+      if (state.mode === "cpu") endStreak();
       setStatus("😄 It's a draw! Nobody wins this round.");
     } else {
       state.turn = other(state.turn);
@@ -318,6 +322,7 @@
         other2.classList.toggle("is-active", active);
         other2.setAttribute("aria-pressed", String(active));
       });
+      endStreak();
       state.scores = { X: 0, O: 0, draw: 0 };
       state.starter = "X";
       newRound(true);
@@ -332,7 +337,9 @@
         other2.classList.toggle("is-active", active);
         other2.setAttribute("aria-pressed", String(active));
       });
+      endStreak();
       state.starter = "X";
+      if (scoreBoard) scoreBoard.setCategory(state.difficulty);
       newRound(true);
     });
   });
@@ -349,8 +356,25 @@
     el.sound.setAttribute("aria-pressed", String(soundOn));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const scoreBoard = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "tic-tac-toe",
+    gameName: "Tic Tac Toe",
+    metric: { label: "Win streak", better: "higher", format: "number" },
+    categories: [{ id: "easy", label: "🐢 Easy" }, { id: "medium", label: "🐇 Medium" }, { id: "hard", label: "🚀 Hard" }],
+  }) : null;
+  if (scoreBoard) scoreBoard.mount(document.getElementById("leaderboard-panel"));
+  /** Longest run of wins in a row. Offered when the run ends. */
+  let winStreak = 0;
+  function endStreak() {
+    if (scoreBoard && winStreak > 0) scoreBoard.offer(winStreak, state.difficulty);
+    winStreak = 0;
+  }
+
   buildBoard();
   newRound(true);
+  if (scoreBoard) scoreBoard.setCategory(state.difficulty);
 
   // Exposed purely so the offline tests can drive the rules engine.
   window.TicTacToeRules = { winnerOf, isFull, other, emptyIndexes, perfectMove, chooseMove, LINES };

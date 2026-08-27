@@ -265,6 +265,7 @@
       }
     }
     const isBest = recordBest();
+    if (board) board.offer(state.elapsed, state.levelId);
     fanfare();
     setStatus(isBest
       ? "🏆 Cleared in " + formatTime(state.elapsed) + " — a new best!"
@@ -370,6 +371,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       newGame();
+      if (board) board.setCategory(state.levelId);
     });
   });
 
@@ -391,8 +393,19 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "minesweeper",
+    gameName: "Minesweeper",
+    metric: { label: "Time", better: "lower", format: "time" },
+    categories: [{ id: "easy", label: "🐣 Easy" }, { id: "medium", label: "🐤 Medium" }, { id: "hard", label: "🦅 Hard" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   loadBest();
   newGame();
+  if (board) board.setCategory(state.levelId);
 
   window.MinesweeperGame = {
     state, LEVELS, newGame, open, toggleFlag, chord, layMines, neighbours, checkWin, level,

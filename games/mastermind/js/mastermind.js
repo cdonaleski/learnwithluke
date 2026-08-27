@@ -191,6 +191,7 @@
       state.wins += 1;
       state.played += 1;
       fanfare();
+      if (board) board.offer(state.rows.length, state.levelId);
       setStatus("🎉 Cracked it in " + state.rows.length + (state.rows.length === 1 ? " try!" : " tries!"));
     } else if (state.rows.length >= level().tries) {
       state.phase = "lost";
@@ -336,6 +337,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       newGame();
+      if (board) board.setCategory(state.levelId);
     });
   });
 
@@ -369,7 +371,18 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "mastermind",
+    gameName: "Mastermind",
+    metric: { label: "Tries", better: "lower", format: "number" },
+    categories: [{ id: "easy", label: "🐣 Easy" }, { id: "medium", label: "🐤 Medium" }, { id: "hard", label: "🦅 Hard" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   newGame();
+  if (board) board.setCategory(state.levelId);
 
   window.MastermindGame = { state, score, makeSecret, checkGuess, placeColour, clearGuess, LEVELS, COLORS, level };
 })();

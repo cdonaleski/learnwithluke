@@ -292,6 +292,7 @@
     state.solved = true;
     stopTimer();
     const isBest = recordBest();
+    if (board) board.offer(state.elapsed, state.levelId);
     fanfare();
     setStatus(isBest
       ? "🏆 Solved in " + formatTime(state.elapsed) + " — a new best!"
@@ -437,6 +438,7 @@
         other.setAttribute("aria-pressed", String(active));
       });
       setStatus("Building a new puzzle…");
+      if (board) board.setCategory(state.levelId);
       window.setTimeout(newGame, 20);
     });
   });
@@ -466,8 +468,19 @@
     button.setAttribute("aria-pressed", String(active));
   });
 
+
+  /* ---------- Leaderboard ---------- */
+  const board = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "sudoku",
+    gameName: "Sudoku",
+    metric: { label: "Time", better: "lower", format: "time" },
+    categories: [{ id: "easy", label: "🐣 Easy" }, { id: "medium", label: "🐤 Medium" }, { id: "hard", label: "🦅 Hard" }],
+  }) : null;
+  if (board) board.mount(document.getElementById("leaderboard-panel"));
+
   loadBest();
   newGame();
+  if (board) board.setCategory(state.levelId);
 
   window.SudokuGame = {
     state, LEVELS, emptyGrid, cloneGrid, allowed, fillGrid, countSolutions, makePuzzle,

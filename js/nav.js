@@ -11,6 +11,7 @@
     { id: "puzzles", label: "Puzzles" },
     { id: "games", label: "Games" },
     { id: "tools", label: "Tools" },
+    { id: "scores", label: "Scores" },
     { id: "code", label: "Code" },
   ];
   const path = window.location.pathname;
