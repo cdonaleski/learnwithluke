@@ -13,6 +13,7 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Snake** (`games/snake/`) — three speeds, solid or pass-through walls, best score per speed
 - **Tic Tac Toe** (`games/tic-tac-toe/`) — 1 player vs the computer (Hard is unbeatable) or 2 players
 - **Memory** (`games/memory/`) — themed pair matching with six card themes and three board sizes
+- **Bubble Shooter** (`games/bubble-shooter/`) — match-three bubble popper with a Math Mode that puts sums on the shooter, see below
 - **Code** (`code/`) — placeholder page (coming soon)
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
 - **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
@@ -122,6 +123,37 @@ Faces are plain text, so emoji, letters, numbers or short words all work.
 To add a board size instead, add an entry to `SIZES` at the top of
 `games/memory/js/memory.js` — `pairs` is how many pairs to deal and `columns` is
 how wide the grid should be.
+
+## Adding a Bubble Shooter maths level
+
+Math Mode and Classic Mode run the same engine. A bubble's identity is always an
+index into a six-slot palette; the mode only decides how it is drawn and what the
+loaded bubble is labelled with. In Math Mode the loaded bubble shows a sum and
+hides its colour, so working out the answer is the only way to know where to aim.
+
+Open `games/bubble-shooter/js/math-levels.js` and copy one of the blocks:
+
+```js
+{
+  id: "doubles",
+  name: "Doubles",
+  icon: "✌️",
+  values: [2, 4, 6, 8, 10, 12],
+  problem: function (value) {
+    return (value / 2) + " + " + (value / 2);
+  },
+},
+```
+
+The rules:
+
+- `values` must be **exactly six** different numbers — one per bubble colour.
+- `problem(value)` must return a string whose answer is **exactly** that value.
+  The board is built from `values`, so a mismatch would be unsolvable. The
+  offline tests check every level against this.
+
+A level that breaks either rule is skipped with a console warning rather than
+being dealt.
 
 ## Adding new pages
 

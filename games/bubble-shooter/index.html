@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bubble Shooter — match three to pop, or switch on Math Mode and shoot the answer, on Learn With Luke">
+  <title>Bubble Shooter · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/bubble-shooter.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🫧 Bubble Shooter</h1>
+      <p class="game-instructions" role="note">
+        <strong>Match three or more bubbles to pop them.</strong>
+        Aim with the mouse or your finger and tap to shoot — you can bounce off the side walls.
+        Flip on <strong>Math Mode</strong> and your bubble shows a sum instead of a colour:
+        work out the answer, then shoot at that number!
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="bubble-game-title">
+      <h2 id="bubble-game-title" class="visually-hidden">Bubble Shooter game</h2>
+
+      <div class="game-stats">
+        <div class="stat">
+          <span class="stat-label">Score</span>
+          <span class="stat-value" id="bubble-score">0</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Level</span>
+          <span class="stat-value" id="bubble-level">1</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Until drop</span>
+          <span class="stat-value" id="bubble-shots">8</span>
+        </div>
+        <div class="stat stat--alt">
+          <span class="stat-label">Best</span>
+          <span class="stat-value" id="bubble-best">0</span>
+        </div>
+      </div>
+
+      <div class="bubble-stage">
+        <canvas
+          id="bubble-canvas"
+          class="bubble-canvas"
+          width="672"
+          height="640"
+          tabindex="0"
+          role="img"
+          aria-label="Bubble Shooter board. Aim from the bottom and shoot bubbles at the stack above."
+        ></canvas>
+      </div>
+
+      <p class="game-status" id="bubble-status" role="status" aria-live="polite">
+        Match three or more of the same colour to pop them.
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-swap">🔄 Swap Bubble</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="mode-label">
+          <span class="option-label" id="mode-label">Game mode</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-mode="classic" aria-pressed="true">🫧 Classic</button>
+            <button type="button" class="option-btn" data-mode="math" aria-pressed="false">🔢 Math Mode</button>
+          </div>
+        </div>
+
+        <div class="option-group" id="math-level-group" role="group" aria-labelledby="math-level-label" hidden>
+          <span class="option-label" id="math-level-label">Maths</span>
+          <div class="option-buttons" id="math-level-buttons">
+            <!-- Built from js/math-levels.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="bubble-help-title">
+      <h2 id="bubble-help-title">How to Play</h2>
+      <dl>
+        <dt>Aim and shoot</dt>
+        <dd>Move the mouse or your finger to aim — the dotted line shows where the bubble will go. Click or tap to fire. On a keyboard, <kbd>←</kbd> and <kbd>→</kbd> aim and <kbd>Space</kbd> shoots.</dd>
+        <dt>Popping</dt>
+        <dd>Land a bubble so that three or more of the same kind are touching and the whole group pops. Any bubbles left dangling with nothing above them fall too — those are worth double.</dd>
+        <dt>Bank shots</dt>
+        <dd>Bubbles bounce off the left and right walls, so you can curl a shot around the side of the stack to reach the back.</dd>
+        <dt>Swap</dt>
+        <dd>Not keen on the bubble you've got? Press <kbd>S</kbd> or the Swap button to switch it with the next one.</dd>
+        <dt>The drop</dt>
+        <dd>Every 8 shots a fresh row appears at the top and pushes everything down — Math Mode gives you 12, since working out a sum takes longer. The <strong>Until drop</strong> counter shows how many you have left. If the stack crosses the red line the run is over, so pop the bottom rows to push it back up.</dd>
+        <dt>Math Mode</dt>
+        <dd>Your bubble shows a sum like <strong>5 + 3</strong> instead of a colour, and every bubble on the board has a number on it. Work out the answer and shoot at three matching numbers. Pick <strong>Adding</strong>, <strong>Add &amp; Subtract</strong>, <strong>Bigger Sums</strong> or <strong>Times Tables</strong>.</dd>
+        <dt>Grown-ups: adding a maths level</dt>
+        <dd>Open <code>games/bubble-shooter/js/math-levels.js</code> and copy one of the blocks. Give it an <code>id</code>, <code>name</code>, <code>icon</code>, exactly six different <code>values</code>, and a <code>problem</code> function that returns a sum working out to the value it's given. It appears in the Maths row straight away.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../../js/nav.js"></script>
+  <script src="js/math-levels.js"></script>
+  <script src="js/bubble-shooter.js"></script>
+</body>
+</html>
