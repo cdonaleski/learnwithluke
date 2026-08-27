@@ -31,7 +31,9 @@ function randomInt(min, max) {
 function factorPairs(n, maxFactor) {
   const pairs = [];
   for (let a = 2; a <= maxFactor; a++) {
-    if (n % a === 0 && n / a <= maxFactor) pairs.push([a, n / a]);
+    const b = n / a;
+    // Both factors must be real ones — "6 × 1" is not a times-table fact.
+    if (n % a === 0 && b >= 2 && b <= maxFactor) pairs.push([a, b]);
   }
   return pairs;
 }
@@ -82,6 +84,7 @@ window.BubbleMathLevels = [
     values: [6, 8, 12, 16, 18, 24],
     problem: function (value) {
       const pairs = factorPairs(value, 12);
+      if (!pairs.length) return value + " × 1";
       const pair = pairs[Math.floor(Math.random() * pairs.length)];
       return pair[0] + " × " + pair[1];
     },

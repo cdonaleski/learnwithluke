@@ -33,6 +33,12 @@
   const POP_POINTS = 10;
   const DROP_POINTS = 20;
   const CLEAR_BONUS = 250;
+  /**
+   * Once the board is down to this few bubbles, stop sending new rows. A full
+   * board is ~68 bubbles and a drop arrives every 8 shots, so without this the
+   * board can never actually be cleared and levelUp() is unreachable.
+   */
+  const MERCY_THRESHOLD = 14;
 
   const COLORS = ["#ff5a5a", "#3fc0b6", "#ffd12e", "#9b7bf7", "#54bf62", "#ff8e2b"];
   const NEUTRAL = "#f3ece1";
@@ -52,7 +58,6 @@
     phase: "ready",                  // ready | flying | resolving | over
     score: 0,
     level: 1,
-    shots: 0,
     shotsLeft: SHOTS_PER_DROP,
     best: 0,
     angle: -Math.PI / 2,
@@ -321,8 +326,13 @@
       value: state.loaded.value,
       problem: state.loaded.problem,
     };
+    // Advance the queue: what was next is now in the barrel, and a fresh
+    // bubble takes its place. Without this the same bubble - and in Math
+    // Mode the same sum - is served for the whole game.
+    state.loaded = state.next;
+    state.next = makeBubble();
+
     state.phase = "flying";
-    state.shots += 1;
     beep(320, 0.05, "square");
   }
 
@@ -354,7 +364,13 @@
 
     const cell = snapCell(shot.x, shot.y);
     if (!cell) {
+      // Nothing to attach to — normally means the board just emptied.
+      if (!occupiedCells().length) {
+        levelUp();
+        return;
+      }
       state.phase = "ready";
+      syncUI();
       return;
     }
 
@@ -372,11 +388,14 @@
       });
       popped = cluster.length;
 
+      // Count only what THIS shot knocked loose — bubbles from earlier shots
+      // may still be animating their way off the bottom of the screen.
+      const alreadyFalling = state.falling.length;
       floatingCells().forEach(([r, c]) => {
         state.falling.push({ x: cellX(r, c), y: cellY(r), vy: 60, value: state.grid[r][c] });
         state.grid[r][c] = null;
       });
-      dropped = state.falling.length;
+      dropped = state.falling.length - alreadyFalling;
 
       state.score += popped * POP_POINTS + dropped * DROP_POINTS;
       beep(dropped ? 880 : 660, 0.1, "triangle");
@@ -392,7 +411,9 @@
 
     state.shotsLeft -= 1;
     if (state.shotsLeft <= 0) {
-      addRow();
+      // Hold the drops back when the player is close to clearing the board,
+      // so finishing it off is actually possible.
+      if (occupiedCells().length > MERCY_THRESHOLD) addRow();
       state.shotsLeft = shotsPerDrop();
     }
 
@@ -442,6 +463,8 @@
     state.parity = 0;
     state.grid = makeBoard(Math.min(START_ROWS + state.level - 1, 8));
     state.shotsLeft = shotsPerDrop();
+    state.popping = [];
+    state.falling = [];
     refillQueue();
     state.phase = "ready";
     playFanfare();
@@ -547,8 +570,16 @@
       ctx.fillStyle = opts.neutral ? "#2d3436" : "rgba(0, 0, 0, 0.72)";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const size = label.length > 3 ? 15 : label.length > 2 ? 17 : 20;
+      // Measure and shrink to fit: sums vary from "8" to "12 × 2", and a
+      // label the player cannot read makes Math Mode unplayable.
+      const radius = opts.radius || R - 1;
+      const maxWidth = radius * 1.62;
+      let size = Math.round(radius * 0.86);
       ctx.font = "700 " + size + "px Fredoka, Segoe UI, sans-serif";
+      while (size > 8 && ctx.measureText(label).width > maxWidth) {
+        size -= 1;
+        ctx.font = "700 " + size + "px Fredoka, Segoe UI, sans-serif";
+      }
       ctx.fillText(label, x, y + 1);
     }
     ctx.restore();
@@ -565,9 +596,9 @@
     const points = [{ x, y }];
     let bounces = 0;
 
-    for (let i = 0; i < 900; i++) {
-      x += vx * 6;
-      y += vy * 6;
+    for (let i = 0; i < 400; i++) {
+      x += vx * 9;
+      y += vy * 9;
       if (x - R <= 0 || x + R >= W) {
         vx = -vx;
         x = Math.max(R, Math.min(W - R, x));
@@ -642,7 +673,7 @@
       ctx.fillText("next", W - 62, SHOOTER_Y - 26);
       ctx.restore();
       drawBubble(W - 62, SHOOTER_Y, state.next.value, {
-        radius: R * 0.72,
+        radius: isMath() ? R * 0.95 : R * 0.72,
         neutral: isMath(),
         label: isMath() ? state.next.problem : "",
       });
@@ -775,7 +806,6 @@
     state.phase = "ready";
     state.score = 0;
     state.level = 1;
-    state.shots = 0;
     state.shotsLeft = shotsPerDrop();
     state.angle = -Math.PI / 2;
     state.projectile = null;
@@ -813,7 +843,7 @@
   // Exposed purely so the offline tests can drive the engine.
   window.BubbleShooterGame = {
     state, neighbours, matchingCluster, floatingCells, snapCell, cellX, cellY,
-    rowLength, isIndented, occupiedCells, valuesInPlay, makeBubble, shoot,
+    rowLength, isIndented, occupiedCells, valuesInPlay, makeBubble, shoot, landProjectile,
     setAngle, isMath, labelFor, problemFor, mathLevels, COLORS, R, D, ROW_H, COLS, W, H, SHOOTER_Y,
   };
 })();
