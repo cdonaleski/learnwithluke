@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Frogger — hop across the road and ride the logs over the river, on Learn With Luke">
+  <title>Frogger · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/frogger.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🐸 Frogger</h1>
+      <p class="game-instructions" role="note">
+        <strong>Get five frogs safely home to the lily pads.</strong>
+        Dodge the traffic, then ride the logs across the river. Careful — on the road
+        you must touch <em>nothing</em>, but on the river you must touch <em>something</em>!
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="frogger-title">
+      <h2 id="frogger-title" class="visually-hidden">Frogger game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Score</span><span class="stat-value" id="frogger-score">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Lives</span><span class="stat-value" id="frogger-lives">3</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Home</span><span class="stat-value" id="frogger-homes">0/5</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="frogger-best">—</span></div>
+      </div>
+
+      <div class="frogger-stage">
+        <canvas id="frogger-canvas" class="frogger-canvas" width="572" height="616" tabindex="0"
+                role="img" aria-label="Frogger board. Road at the bottom, river in the middle, lily pads at the top."></canvas>
+      </div>
+
+      <p class="game-status" id="frogger-status" role="status" aria-live="polite">Press Start or an arrow key!</p>
+
+      <div class="frogger-dpad" role="group" aria-label="Hop">
+        <button type="button" class="dpad-btn dpad-btn--up" data-hop="0,-1" aria-label="Hop up">▲</button>
+        <button type="button" class="dpad-btn dpad-btn--left" data-hop="-1,0" aria-label="Hop left">◀</button>
+        <button type="button" class="dpad-btn dpad-btn--right" data-hop="1,0" aria-label="Hop right">▶</button>
+        <button type="button" class="dpad-btn dpad-btn--down" data-hop="0,1" aria-label="Hop down">▼</button>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">Difficulty</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-level="easy" aria-pressed="true">🐢 Easy</button>
+            <button type="button" class="option-btn" data-level="medium" aria-pressed="false">🐇 Medium</button>
+            <button type="button" class="option-btn" data-level="hard" aria-pressed="false">🚀 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="frogger-help-title">
+      <h2 id="frogger-help-title">How to Play</h2>
+      <dl>
+        <dt>Hopping</dt>
+        <dd>Arrow keys or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>. On a tablet, swipe on the board or use the arrow buttons. A tap on the board hops you forward.</dd>
+        <dt>The road</dt>
+        <dd>Touch a car and you're squashed. Wait in the gaps between lanes — you don't have to cross in one go.</dd>
+        <dt>The river</dt>
+        <dd>This is the opposite! Water is deadly, so you <em>must</em> land on a log or a turtle. Once you're on one it carries you along, so jump off before it reaches the edge.</dd>
+        <dt>Getting home</dt>
+        <dd>Five lily pads at the top, and each one takes a frog. Land on a pad and you start again from the bottom with the next frog. Fill all five and the whole thing starts over, faster.</dd>
+        <dt>Scoring</dt>
+        <dd>10 points every time you get a row further than you've been on that life, 60 for getting a frog home, and 250 for filling all five pads.</dd>
+        <dt>Tip</dt>
+        <dd>On the river, hop onto the <em>back</em> end of a log rather than the front. It buys you time to look for the next one before your ride runs out.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/frogger.js"></script>
+</body>
+</html>

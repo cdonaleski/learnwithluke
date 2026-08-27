@@ -63,6 +63,9 @@
     { id: "tower-stack", name: "Tower Stack", icon: "🏗️", href: "../games/tower-stack/index.html",
       metric: { label: "Score", better: "higher", format: "number" },
       categories: [{ id: "all", label: "All" }] },
+    { id: "frogger", name: "Frogger", icon: "🐸", href: "../games/frogger/index.html",
+      metric: { label: "Score", better: "higher", format: "number" },
+      categories: [{ id: "easy", label: "Easy" }, { id: "medium", label: "Medium" }, { id: "hard", label: "Hard" }] },
   ];
 
   const el = {
