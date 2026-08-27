@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Robot Blocks — tap blocks together to steer a robot to the treasure, on Learn With Luke">
+  <title>Robot Blocks · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/blocks.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Code</a>
+
+    <header class="game-header">
+      <h1>🤖 Robot Blocks</h1>
+      <p class="game-instructions" role="note">
+        <strong>Tap blocks to tell the robot what to do, then press Run.</strong>
+        Get it to the 💎 using as few blocks as you can. There are eight puzzles,
+        and each one teaches one new idea.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="rb-title">
+      <h2 id="rb-title" class="visually-hidden">Robot Blocks puzzle</h2>
+
+      <p class="rb-level-name" id="rb-level-name">1. Straight On</p>
+      <p class="rb-teaches" id="rb-teaches"></p>
+
+      <div class="rb-board" id="rb-board" aria-label="The robot's world"></div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Blocks used</span><span class="stat-value" id="rb-count">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best possible</span><span class="stat-value" id="rb-par">3</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Your stars</span><span class="stat-value" id="rb-stars">—</span></div>
+      </div>
+
+      <p class="game-status" id="rb-status" role="status" aria-live="polite">Build a program to get the robot to the 💎.</p>
+
+      <div class="rb-columns">
+        <div class="rb-side">
+          <h3 class="rb-heading">Your program</h3>
+          <ol class="rb-program" id="rb-program"></ol>
+          <button type="button" class="option-btn rb-out" id="btn-out" hidden>⬅ Out of the loop</button>
+        </div>
+
+        <div class="rb-side">
+          <h3 class="rb-heading">Blocks you can use</h3>
+          <div class="rb-palette" id="rb-palette" role="group" aria-label="Blocks"></div>
+        </div>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-run">▶ Run</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset">🧹 Clear</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="rb-levels-label">
+          <span class="option-label" id="rb-levels-label">Puzzles</span>
+          <div class="option-buttons" id="rb-levels"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="rb-help-title">
+      <h2 id="rb-help-title">How to Play</h2>
+      <dl>
+        <dt>Building a program</dt>
+        <dd>Tap a block on the right and it joins your program on the left. Tap the ✕ on a block to take it away. Then press <strong>Run</strong> and watch the robot follow your instructions, one at a time.</dd>
+        <dt>Putting blocks inside a loop</dt>
+        <dd>Tap a <strong>🔁 Repeat</strong> block and it opens up — everything you tap next goes <em>inside</em> it, and appears indented. Press <strong>⬅ Out of the loop</strong> when you want to add blocks after it instead. Use − and + to change how many times it repeats.</dd>
+        <dt>Stars</dt>
+        <dd>Getting the treasure is a win. Getting it in the fewest possible blocks is ⭐⭐⭐. The "best possible" number is always shown, so you know what you're aiming for.</dd>
+        <dt>Bonk!</dt>
+        <dd>If the robot walks into a wall it stops and shakes. Look at where it got stuck — that's the part of your program to fix.</dd>
+        <dt>The big idea</dt>
+        <dd>The robot only does exactly what you tell it, in exactly the order you say. When it goes wrong, the robot isn't being silly — the instructions were. Finding out which one is the whole job of programming.</dd>
+        <dt>When you've finished these</dt>
+        <dd>Try the <a href="../playground/index.html">Code Playground</a>, where you type real code instead of tapping blocks.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/blocks.js"></script>
+</body>
+</html>

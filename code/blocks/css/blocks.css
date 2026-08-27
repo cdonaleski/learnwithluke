@@ -1,0 +1,157 @@
+/* Robot Blocks — page-specific styles */
+
+.rb-level-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.rb-teaches {
+  text-align: center;
+  color: var(--color-text-muted);
+  max-width: 34rem;
+  margin: 0.25rem auto 1rem;
+}
+
+.rb-board { display: flex; justify-content: center; margin-bottom: 1rem; }
+
+.rb-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--rb-cols, 6), 1fr);
+  gap: 3px;
+  width: min(100%, 26rem);
+  padding: 5px;
+  background: #cbbfae;
+  border-radius: var(--radius-sm);
+  border: 3px solid var(--color-orange);
+}
+
+.rb-cell {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: #f7f1e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.9rem, 3.6vw, 1.4rem);
+  line-height: 1;
+}
+
+.rb-cell.is-wall { background: #7d6a52; }
+.rb-cell.is-goal { background: #fff0b3; }
+
+.rb-cell.is-bumped { animation: rb-bonk 0.35s ease; background: #ffd6d6; }
+
+@keyframes rb-bonk {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Program and palette */
+.rb-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.rb-heading {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.rb-program {
+  list-style: none;
+  min-height: 8rem;
+  padding: 0.5rem;
+  background: var(--color-bg);
+  border: 2px dashed #e8e2d8;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.rb-empty { color: var(--color-text-muted); font-size: 0.9rem; padding: 0.5rem; }
+
+.rb-row { display: flex; }
+
+.rb-block {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.rb-block.is-open { border-color: var(--color-coral); }
+
+.rb-block-main {
+  flex: 1 1 auto;
+  text-align: left;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #23303d;
+}
+
+.rb-mini {
+  border: none;
+  width: 1.7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.12);
+  color: #23303d;
+}
+
+.rb-mini--bin { background: rgba(0, 0, 0, 0.2); }
+.rb-mini:hover:not(:disabled) { background: rgba(0, 0, 0, 0.28); }
+
+.rb-block--move .rb-block-main { background: #b9e4c9; }
+.rb-block--turn .rb-block-main { background: #ffe1a8; }
+.rb-block--loop .rb-block-main { background: #d6c7f7; }
+.rb-block--test .rb-block-main { background: #a8dbe8; }
+
+.rb-palette { display: flex; flex-direction: column; gap: 0.45rem; }
+
+.rb-palette-btn {
+  text-align: left;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #23303d;
+  transition: transform 0.12s;
+}
+
+.rb-palette-btn:hover:not(:disabled),
+.rb-palette-btn:focus-visible:not(:disabled) { transform: translateY(-2px); outline: none; }
+.rb-palette-btn:disabled { opacity: 0.5; cursor: default; }
+
+.rb-palette-btn.rb-block--move { background: #b9e4c9; }
+.rb-palette-btn.rb-block--turn { background: #ffe1a8; }
+.rb-palette-btn.rb-block--loop { background: #d6c7f7; }
+.rb-palette-btn.rb-block--test { background: #a8dbe8; }
+
+.rb-out { margin-top: 0.5rem; width: 100%; }
+
+@media (max-width: 640px) {
+  .rb-columns { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-cell.is-bumped { animation: none; }
+  .rb-palette-btn { transition: none; }
+}

@@ -34,7 +34,8 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Dice Roller** (`tools/dice/`) — up to six dice of six kinds, with a chart of how often each total comes up
 - **Hall of Fame** (`scores/`) — the best score from every game, gathered in one place
 - **Leaderboards** (`js/leaderboard.js`) — shared by 13 games; see below
-- **Code** (`code/`) — coding hub
+- **Code** (`code/`) — coding hub, two paths in
+- **Robot Blocks** (`code/blocks/`) — tap-to-build block puzzles for younger coders; levels in `js/levels.js`
 - **Code Playground** (`code/playground/`) — live HTML/CSS/JS editor with a sandboxed preview, friendly error hints, and share-by-link; projects live in `js/projects.js`
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
 - **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
@@ -116,6 +117,29 @@ Open **Games → Asteroids** (or go to `games/asteroids/index.html`).
 - On touch screens an on-screen control pad appears under the playfield.
 
 Vector rendering on a plain `<canvas>` — no libraries, no network calls.
+
+## Adding a Robot Blocks level
+
+Open `code/blocks/js/levels.js` and copy a block. Draw the world as rows of
+characters — `.` floor, `#` wall, `R` the robot, `T` the treasure — then say
+which way the robot faces, which blocks the palette offers, and the par.
+
+Two rules the tests enforce, because breaking either hands a child something
+impossible:
+
+- Every level carries a `solution`, a known-good program. The tests run it and
+  fail if it does not reach the treasure, walks into a wall, or needs more
+  blocks than `par`. The child never sees it.
+- A level's solution may only use blocks that level actually offers.
+
+`par` is the fewest blocks we know of, not a proof of the minimum — three stars
+means matching it. Blocks inside a loop count towards the total, so
+`repeat [forward]` is two blocks, not one.
+
+The interpreter is deliberately separate from the drawing, which is what lets
+the tests prove a level is solvable with no browser involved. It is also
+step-bounded, so an `Until` that can never succeed stops rather than hanging
+the page.
 
 ## Adding a Playground project
 
