@@ -1,0 +1,95 @@
+/* Sudoku — page-specific styles */
+
+.su-board { display: flex; justify-content: center; }
+
+.su-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 1px;
+  width: min(100%, 30rem);
+  aspect-ratio: 1;
+  background: #d8cfc0;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 3px solid var(--color-purple);
+}
+
+.su-cell {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: #fffdf8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.85rem, 3.6vw, 1.4rem);
+  color: var(--color-sky-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+
+/* Thicker lines between the three-by-three boxes */
+.su-cell.box-right { box-shadow: 2px 0 0 var(--color-purple); }
+.su-cell.box-bottom { box-shadow: 0 2px 0 var(--color-purple); }
+.su-cell.box-right.box-bottom { box-shadow: 2px 0 0 var(--color-purple), 0 2px 0 var(--color-purple); }
+
+.su-cell.is-given { color: var(--color-text); background: #f6f1e7; cursor: default; }
+.su-cell.is-peer { background: #f0f7fb; }
+.su-cell.is-same { background: #dcefff; }
+.su-cell.is-selected { background: var(--color-sun); }
+.su-cell.is-wrong { color: var(--color-coral); }
+
+.su-cell:focus-visible { outline: 2px solid var(--color-coral); outline-offset: -2px; z-index: 2; }
+.su-cell:disabled { cursor: default; }
+
+.su-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  font-size: 0.5em;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  line-height: 1;
+}
+
+.su-notes span { display: flex; align-items: center; justify-content: center; }
+
+/* Number pad */
+.su-pad {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.35rem;
+  max-width: 30rem;
+  margin: 1rem auto 0;
+}
+
+.su-key {
+  aspect-ratio: 1;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 3.4vw, 1.15rem);
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.12s, background 0.15s, border-color 0.15s;
+}
+
+.su-key:hover:not(:disabled),
+.su-key:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--color-purple);
+  background: #fff;
+  outline: none;
+}
+
+.su-key.is-done { opacity: 0.35; }
+.su-key--erase { color: var(--color-coral); }
+
+@media (max-width: 480px) {
+  .su-pad { gap: 0.2rem; }
+}

@@ -14,6 +14,15 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Tic Tac Toe** (`games/tic-tac-toe/`) — 1 player vs the computer (Hard is unbeatable) or 2 players
 - **Memory** (`games/memory/`) — themed pair matching with six card themes and three board sizes
 - **Bubble Shooter** (`games/bubble-shooter/`) — match-three bubble popper with a Math Mode that puts sums on the shooter, see below
+- **Mastermind** (`games/mastermind/`) — crack a colour code from black/white clue dots
+- **Rock Paper Scissors** (`games/rock-paper-scissors/`) — classic or Lizard & Spock, with a pattern-spotting computer
+- **Battleship** (`games/battleship/`) — place a fleet and trade shots with a hunt/target computer
+- **Word Guess** (`games/hangman/`) — hangman with five word categories, in `js/words.js`
+- **Connect Four** (`games/connect-four/`) — minimax at depth 6 on Hard, or two players
+- **Maze** (`games/maze/`) — freshly carved every time, always solvable
+- **Minesweeper** (`games/minesweeper/`) — three sizes, flags, chording, first tap always safe
+- **Lights Out** (`games/lights-out/`) — every puzzle solvable by construction
+- **Sudoku** (`games/sudoku/`) — generated with a guaranteed-unique answer
 - **Tools** (`tools/`) — helper hub
 - **Timer** (`tools/timer/`) — countdown and stopwatch with laps, driven by the wall clock so it never drifts
 - **Coin Flip** (`tools/coin-flip/`) — heads or tails with a saved tally, plus batch flips that show the odds settling

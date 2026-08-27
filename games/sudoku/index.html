@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sudoku — fill every row, column and box with 1 to 9, on Learn With Luke">
+  <title>Sudoku · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/sudoku.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🔢 Sudoku</h1>
+      <p class="game-instructions" role="note">
+        <strong>Fill the grid so every row, column and small box holds 1 to 9 — each exactly once.</strong>
+        Tap a square, then tap a number. Every puzzle has exactly one answer, so you never have to guess.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="su-title">
+      <h2 id="su-title" class="visually-hidden">Sudoku puzzle</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="su-time">0:00</span></div>
+        <div class="stat stat--alt"><span class="stat-label">To go</span><span class="stat-value" id="su-empty">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Slips</span><span class="stat-value" id="su-mistakes">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="su-best">—</span></div>
+      </div>
+
+      <div class="su-board" id="su-board" aria-label="Sudoku grid"></div>
+
+      <div class="su-pad" id="su-pad" role="group" aria-label="Numbers"></div>
+
+      <p class="game-status" id="su-status" role="status" aria-live="polite">Fill every row, column and box with 1 to 9.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Puzzle</button>
+        <button type="button" class="btn btn-secondary" id="btn-notes" aria-pressed="false">✏️ Notes: Off</button>
+        <button type="button" class="btn btn-secondary" id="btn-check">💡 Fill One In</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="level-label">
+          <span class="option-label" id="level-label">Difficulty</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-level="easy" aria-pressed="true">🐣 Easy</button>
+            <button type="button" class="option-btn" data-level="medium" aria-pressed="false">🐤 Medium</button>
+            <button type="button" class="option-btn" data-level="hard" aria-pressed="false">🦅 Hard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="su-help-title">
+      <h2 id="su-help-title">How to Play</h2>
+      <dl>
+        <dt>The rule</dt>
+        <dd>Every row, every column and every three-by-three box must contain the numbers 1 to 9, each one exactly once. That's the whole game.</dd>
+        <dt>Filling squares</dt>
+        <dd>Tap a square to select it, then tap a number — or just press a number key. <kbd>Backspace</kbd> or ⌫ clears it. Arrow keys move around the grid.</dd>
+        <dt>Notes</dt>
+        <dd>Turn on ✏️ Notes (or press <kbd>N</kbd>) to pencil in small numbers when you know a square is one of two or three possibilities. Filling the square in properly clears its notes.</dd>
+        <dt>Helpful highlights</dt>
+        <dd>Selecting a square shades its row, column and box, and every other square holding the same number lights up. Wrong numbers turn red straight away, so a slip never spoils the whole puzzle.</dd>
+        <dt>Every puzzle has one answer</dt>
+        <dd>Clues are removed one at a time, and any removal that would leave the puzzle with more than one possible answer is put straight back. So the puzzle can always be reasoned out — you never have to guess and hope.</dd>
+        <dt>Tip</dt>
+        <dd>Look for the row, column or box that already has the most numbers in it. The fewer squares left, the fewer things they can be.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/sudoku.js"></script>
+</body>
+</html>
