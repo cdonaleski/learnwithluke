@@ -1,0 +1,100 @@
+/* Battleship — page-specific styles */
+
+.bs-boards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.bs-board-wrap {
+  flex: 1 1 18rem;
+  max-width: 24rem;
+}
+
+.bs-board-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.bs-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  background: #b9d6e2;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 3px solid var(--color-sky);
+  aspect-ratio: 1;
+}
+
+.bs-cell {
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: #dff1f7;
+  cursor: pointer;
+  transition: background 0.12s, transform 0.1s;
+}
+
+.bs-cell:hover:not(:disabled) {
+  background: #fff;
+  transform: scale(1.12);
+}
+
+.bs-cell:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 1px;
+}
+
+.bs-cell:disabled { cursor: default; }
+
+.bs-cell.is-ship { background: #7d8c94; }
+.bs-cell.is-miss { background: #aebfc7; }
+.bs-cell.is-hit {
+  background: var(--color-coral);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.bs-fleet-panel { margin-top: 1.25rem; }
+
+.bs-fleet {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.bs-fleet-item {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+  color: var(--color-text-muted);
+}
+
+.bs-fleet-item.is-next {
+  border-color: var(--color-coral);
+  color: var(--color-text);
+  background: #fff;
+}
+
+.bs-fleet-item.is-placed { opacity: 0.55; }
+
+.bs-fleet-item.is-sunk {
+  background: #ffe3e3;
+  border-color: var(--color-coral);
+  color: #d64545;
+  text-decoration: line-through;
+}
+
+@media (max-width: 700px) {
+  .bs-board-wrap { flex: 1 1 100%; }
+}

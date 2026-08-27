@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Battleship — place your fleet and sink the computer's ships, on Learn With Luke">
+  <title>Battleship · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/battleship.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🚢 Battleship</h1>
+      <p class="game-instructions" role="note">
+        <strong>Hide your five ships, then hunt down the computer's.</strong>
+        Tap your own waters to place a ship, then fire at the enemy grid. First to sink
+        the whole fleet wins.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="bs-title">
+      <h2 id="bs-title" class="visually-hidden">Battleship game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Your shots</span><span class="stat-value" id="bs-shots">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Your ships</span><span class="stat-value" id="bs-your-left">5</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Enemy ships</span><span class="stat-value" id="bs-enemy-left">5</span></div>
+      </div>
+
+      <p class="game-status" id="bs-status" role="status" aria-live="polite">Place your Carrier.</p>
+
+      <div class="bs-boards">
+        <div class="bs-board-wrap">
+          <h3 class="bs-board-title">Your waters</h3>
+          <div id="bs-player-board" class="bs-board" aria-label="Your fleet"></div>
+        </div>
+
+        <div class="bs-board-wrap" id="bs-enemy-panel" hidden>
+          <h3 class="bs-board-title">Enemy waters</h3>
+          <div id="bs-enemy-board" class="bs-board" aria-label="Enemy waters — fire here"></div>
+        </div>
+      </div>
+
+      <div class="bs-fleet-panel">
+        <h3 class="bs-board-title">Fleet</h3>
+        <ul class="bs-fleet" id="bs-fleet"></ul>
+      </div>
+
+      <div class="game-actions" id="bs-placing-panel">
+        <button type="button" class="btn btn-secondary" id="btn-rotate">↔️ Across</button>
+        <button type="button" class="btn btn-primary" id="btn-auto">🎲 Place For Me</button>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-restart">↺ New Game</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="bs-help-title">
+      <h2 id="bs-help-title">How to Play</h2>
+      <dl>
+        <dt>Place your fleet</dt>
+        <dd>Tap a square in <strong>your waters</strong> to drop the next ship there — the square you tap is its top or left end. Use <strong>Across / Down</strong> (or press <kbd>R</kbd>) to turn it, or press <strong>Place For Me</strong> to scatter the whole fleet at random.</dd>
+        <dt>Your ships</dt>
+        <dd>Carrier (5), Battleship (4), Cruiser (3), Submarine (3) and Destroyer (2). Ships can't overlap, but they may sit right next to each other.</dd>
+        <dt>Firing</dt>
+        <dd>Tap a square in the enemy waters. A red square is a hit, a pale one is a miss. Sink every enemy ship to win — but the computer is firing back at your fleet each turn too.</dd>
+        <dt>How the computer plays</dt>
+        <dd>It fires more or less at random until it hits something, then works outwards from that hit. Once it lands two hits in a row it knows which way the ship is lying and follows the line.</dd>
+        <dt>Tip</dt>
+        <dd>Every ship is at least two squares long, so you never need to fire at two squares side by side — checking every <em>other</em> square still finds every ship, in half the shots.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/battleship.js"></script>
+</body>
+</html>
