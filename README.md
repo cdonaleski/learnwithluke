@@ -17,12 +17,17 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Mastermind** (`games/mastermind/`) — crack a colour code from black/white clue dots
 - **Rock Paper Scissors** (`games/rock-paper-scissors/`) — classic or Lizard & Spock, with a pattern-spotting computer
 - **Battleship** (`games/battleship/`) — place a fleet and trade shots with a hunt/target computer
-- **Word Guess** (`games/hangman/`) — hangman with five word categories, in `js/words.js`
+- **Word Guess** (`games/hangman/`) — hangman with three difficulties and five word categories, in `js/words.js`
 - **Connect Four** (`games/connect-four/`) — minimax at depth 6 on Hard, or two players
 - **Maze** (`games/maze/`) — freshly carved every time, always solvable
 - **Minesweeper** (`games/minesweeper/`) — three sizes, flags, chording, first tap always safe
 - **Lights Out** (`games/lights-out/`) — every puzzle solvable by construction
 - **Sudoku** (`games/sudoku/`) — generated with a guaranteed-unique answer
+- **Tower of Hanoi** (`games/tower-of-hanoi/`) — 3-8 discs, with a provably optimal target and a Show Me solver
+- **Breakout** (`games/breakout/`) — paddle-steered ball, stages, three difficulties
+- **Farkle** (`games/farkle/`) — push-your-luck dice, first to 4000
+- **Tower Stack** (`games/tower-stack/`) — drop blocks, overhang gets sliced off
+- **Frogger** (`games/frogger/`) — road then river, five frogs to get home
 - **Tools** (`tools/`) — helper hub
 - **Timer** (`tools/timer/`) — countdown and stopwatch with laps, driven by the wall clock so it never drifts
 - **Coin Flip** (`tools/coin-flip/`) — heads or tails with a saved tally, plus batch flips that show the odds settling

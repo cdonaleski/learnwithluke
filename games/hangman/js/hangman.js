@@ -13,6 +13,18 @@
   const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   const MAX_WRONG = 6;
   const CATEGORY_KEY = "hangman-category";
+  const LEVEL_KEY = "hangman-level";
+
+  /**
+   * Difficulty changes the word pool and the guesses allowed, rather than
+   * anything hidden. Easy also reveals a letter to start, which is a big help
+   * to a younger reader without making the round trivial.
+   */
+  const LEVELS = {
+    easy: { label: "🐣 Easy", maxLength: 6, wrong: 8, freeLetter: true },
+    medium: { label: "🐤 Medium", maxLength: 8, wrong: 6, freeLetter: false },
+    hard: { label: "🦅 Hard", maxLength: 99, wrong: 5, freeLetter: false },
+  };
 
   /** Each wrong guess adds one piece of the rocket. */
   const PARTS = [
@@ -22,6 +34,7 @@
   const categories = (Array.isArray(window.HangmanWords) ? window.HangmanWords : []).filter(isUsable);
 
   const state = {
+    levelId: "medium",
     categoryId: categories.length ? categories[0].id : null,
     word: "",
     hint: "",
@@ -50,7 +63,13 @@
     restart: document.getElementById("btn-restart"),
     sound: document.getElementById("btn-sound"),
     categoryButtons: document.getElementById("category-buttons"),
+    levelButtons: document.getElementById("level-buttons"),
   };
+
+  function level() { return LEVELS[state.levelId] || LEVELS.medium; }
+
+  /** Wrong guesses allowed at this difficulty. */
+  function allowedWrong() { return level().wrong; }
 
   /* ---------- Word list validation ---------- */
   function isUsable(category) {
@@ -97,9 +116,12 @@
   /* ---------- Game ---------- */
   function pickWord() {
     const words = category().words;
+    // Keep to words this difficulty allows, but never end up with nothing.
+    const byLength = words.filter((w) => w.word.length <= level().maxLength);
+    const sized = byLength.length ? byLength : words;
     // Avoid the last few so the same word doesn't come round twice in a row.
-    const fresh = words.filter((w) => state.recent.indexOf(w.word) === -1);
-    const pool = fresh.length ? fresh : words;
+    const fresh = sized.filter((w) => state.recent.indexOf(w.word) === -1);
+    const pool = fresh.length ? fresh : sized;
     const chosen = pool[Math.floor(Math.random() * pool.length)];
     state.recent.push(chosen.word);
     if (state.recent.length > Math.min(5, words.length - 1)) state.recent.shift();
@@ -114,8 +136,20 @@
     state.wrong = 0;
     state.phase = "playing";
     state.hintShown = false;
+
+    if (level().freeLetter) {
+      // Give away a letter that appears only once, so it helps without
+      // handing over half the word.
+      const letters = state.word.split("");
+      const singles = letters.filter((ch, i) => letters.indexOf(ch) === letters.lastIndexOf(ch) && i >= 0);
+      const pool = singles.length ? singles : letters;
+      state.guessed.add(pool[Math.floor(Math.random() * pool.length)]);
+    }
+
     render();
-    setStatus("Guess a letter to begin!");
+    setStatus(level().freeLetter
+      ? "Here's one letter to start you off. Guess another!"
+      : "Guess a letter to begin!");
   }
 
   function revealed() {
@@ -142,13 +176,13 @@
     } else {
       state.wrong += 1;
       beep(220, 0.12, "square");
-      if (state.wrong >= MAX_WRONG) {
+      if (state.wrong >= allowedWrong()) {
         state.phase = "lost";
         state.losses += 1;
         endStreak();
         setStatus("🚀 Out of guesses! The word was " + state.word + ".");
       } else {
-        const left = MAX_WRONG - state.wrong;
+        const left = allowedWrong() - state.wrong;
         setStatus("No " + letter + ". " + left + (left === 1 ? " guess left!" : " guesses left."));
       }
     }
@@ -196,15 +230,15 @@
 
     // Rocket, one piece per wrong guess
     el.rocket.innerHTML = "";
-    for (let i = 0; i < MAX_WRONG; i++) {
+    for (let i = 0; i < allowedWrong(); i++) {
       const part = document.createElement("span");
       part.className = "hm-part" + (i < state.wrong ? " is-on" : "");
-      part.textContent = PARTS[i];
+      part.textContent = PARTS[i % PARTS.length];
       part.setAttribute("aria-hidden", "true");
       el.rocket.appendChild(part);
     }
 
-    el.lives.textContent = String(Math.max(0, MAX_WRONG - state.wrong));
+    el.lives.textContent = String(Math.max(0, allowedWrong() - state.wrong));
     el.wins.textContent = String(state.wins);
     el.losses.textContent = String(state.losses);
 
@@ -214,6 +248,28 @@
   }
 
   function setStatus(text) { el.status.textContent = text; }
+
+  function renderLevels() {
+    if (!el.levelButtons) return;
+    el.levelButtons.innerHTML = "";
+    Object.keys(LEVELS).forEach((id) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "option-btn" + (id === state.levelId ? " is-active" : "");
+      button.textContent = LEVELS[id].label;
+      button.setAttribute("aria-pressed", String(id === state.levelId));
+      button.addEventListener("click", () => {
+        endStreak();
+        state.levelId = id;
+        state.recent = [];
+        try { window.localStorage.setItem(LEVEL_KEY, id); } catch (err) { /* ok */ }
+        renderLevels();
+        newGame();
+        setStatus(LEVELS[id].label + " — " + LEVELS[id].wrong + " wrong guesses allowed.");
+      });
+      el.levelButtons.appendChild(button);
+    });
+  }
 
   function renderCategories() {
     el.categoryButtons.innerHTML = "";
@@ -280,8 +336,15 @@
     winStreak = 0;
   }
 
+  try {
+    const savedLevel = window.localStorage.getItem(LEVEL_KEY);
+    if (savedLevel && LEVELS[savedLevel]) state.levelId = savedLevel;
+  } catch (err) { /* defaults fine */ }
+
+  renderLevels();
   renderCategories();
   newGame();
 
-  window.HangmanGame = { state, guess, newGame, revealed, categories, MAX_WRONG, ALPHABET, isUsable, showHint };
+  window.HangmanGame = { state, guess, newGame, revealed, categories, MAX_WRONG, ALPHABET,
+    isUsable, showHint, LEVELS, level, allowedWrong, pickWord };
 })();
