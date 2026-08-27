@@ -29,6 +29,7 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Tower Stack** (`games/tower-stack/`) — drop blocks, overhang gets sliced off
 - **Frogger** (`games/frogger/`) — road then river, five frogs to get home
 - **Number Memory** (`games/number-memory/`) — a number flashes, type it back, one digit longer each round
+- **Mini Golf** (`games/mini-golf/`) — nine holes with bouncing walls; the course lives in `js/holes.js`
 - **Tools** (`tools/`) — helper hub
 - **Timer** (`tools/timer/`) — countdown and stopwatch with laps, driven by the wall clock so it never drifts
 - **Coin Flip** (`tools/coin-flip/`) — heads or tails with a saved tally, plus batch flips that show the odds settling

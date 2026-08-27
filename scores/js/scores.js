@@ -69,6 +69,9 @@
     { id: "number-memory", name: "Number Memory", icon: "🔢", href: "../games/number-memory/index.html",
       metric: { label: "Digits", better: "higher", format: "number" },
       categories: [{ id: "relaxed", label: "Relaxed" }, { id: "normal", label: "Normal" }, { id: "sharp", label: "Sharp" }] },
+    { id: "mini-golf", name: "Mini Golf", icon: "⛳", href: "../games/mini-golf/index.html",
+      metric: { label: "Shots", better: "lower", format: "number" },
+      categories: [{ id: "all", label: "All" }] },
   ];
 
   const el = {

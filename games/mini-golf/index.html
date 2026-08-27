@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mini Golf — nine holes of putting, bounce off the walls and get the ball in the cup. On Learn With Luke">
+  <title>Mini Golf · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/mini-golf.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>⛳ Mini Golf</h1>
+      <p class="game-instructions" role="note">
+        <strong>Nine holes. Get the ball in the cup in as few shots as you can.</strong>
+        Drag from the ball in the direction you want it to go — the further you drag,
+        the harder you hit it.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="golf-title">
+      <h2 id="golf-title" class="visually-hidden">Mini Golf game</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Hole</span><span class="stat-value" id="golf-hole">1/9</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Par</span><span class="stat-value" id="golf-par">2</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Shots</span><span class="stat-value" id="golf-strokes">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Total</span><span class="stat-value" id="golf-total">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="golf-best">—</span></div>
+      </div>
+
+      <div class="golf-stage">
+        <canvas id="golf-canvas" class="golf-canvas" width="640" height="440" tabindex="0"
+                role="img" aria-label="Mini golf hole. Drag from the ball towards the cup to putt."></canvas>
+      </div>
+
+      <p class="game-status" id="golf-status" role="status" aria-live="polite">Drag from the ball towards the hole, then let go.</p>
+
+      <ol class="golf-card" id="golf-card" aria-label="Scorecard"></ol>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-next">➡️ Next Hole</button>
+        <button type="button" class="btn btn-secondary" id="btn-retry">↺ Replay Hole</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">🔁 New Round</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="golf-help-title">
+      <h2 id="golf-help-title">How to Play</h2>
+      <dl>
+        <dt>Taking a shot</dt>
+        <dd>Press on the ball and drag in the direction you want it to go — <em>towards</em> the hole, not away from it. A dotted line shows your aim and the little bar shows how hard you'll hit it. Let go to putt.</dd>
+        <dt>How hard?</dt>
+        <dd>The bar goes green, then yellow, then red. Red is a very big hit — useful for a long straight hole, and usually a mistake anywhere near the cup.</dd>
+        <dt>Par</dt>
+        <dd>Par is how many shots a hole <em>should</em> take. Finishing in fewer is under par, which is good. Your total across all nine is what counts, and the leaderboard keeps the lowest.</dd>
+        <dt>Bouncing</dt>
+        <dd>The ball bounces off the wooden walls, losing a little speed each time. On the trickier holes bouncing off a wall on purpose is much easier than trying to curve round.</dd>
+        <dt>Rimming out</dt>
+        <dd>Hit it too hard and the ball will run straight over the cup instead of dropping in. If you keep skipping over the hole, try it gentler.</dd>
+        <dt>Stuck?</dt>
+        <dd>After ten shots on one hole the ball is picked up and you move on. <strong>Replay Hole</strong> starts the current hole again and forgets what it cost you.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/holes.js"></script>
+  <script src="js/mini-golf.js"></script>
+</body>
+</html>

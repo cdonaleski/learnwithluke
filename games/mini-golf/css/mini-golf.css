@@ -1,0 +1,53 @@
+/* Mini Golf — page-specific styles */
+
+.golf-stage {
+  display: flex;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.golf-canvas {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  background: #3f8f4f;
+  border-radius: var(--radius-sm);
+  border: 4px solid #8a5a2b;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.golf-canvas:focus-visible {
+  outline: 3px solid var(--color-coral);
+  outline-offset: 3px;
+}
+
+/* Scorecard */
+.golf-card {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0.9rem 0 0.25rem;
+}
+
+.golf-card-item {
+  min-width: 3rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.golf-card-item.is-current { border-color: var(--color-coral); color: var(--color-text); }
+.golf-card-item.is-under { background: #dcfce7; border-color: var(--color-green); color: #16a34a; }
+.golf-card-item.is-par { background: #e6f6fa; border-color: var(--color-sky); color: #0d7f92; }
+.golf-card-item.is-over { background: #fff1e6; border-color: var(--color-orange); color: #b8630f; }
