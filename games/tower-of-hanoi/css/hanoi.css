@@ -1,0 +1,102 @@
+/* Tower of Hanoi — page-specific styles */
+
+.hanoi-pegs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  align-items: end;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.hanoi-peg {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 14rem;
+  padding: 0 0.35rem 0;
+  border: 3px dashed transparent;
+  border-radius: var(--radius);
+  background: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.hanoi-peg:hover:not(:disabled) { background: #fffaf0; }
+
+.hanoi-peg.is-holding {
+  border-color: var(--color-coral);
+  background: #fff4f0;
+}
+
+.hanoi-peg.is-target .hanoi-base { background: var(--color-green); }
+
+.hanoi-peg:focus-visible {
+  outline: 3px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+.hanoi-peg:disabled { cursor: default; }
+
+.hanoi-post {
+  position: absolute;
+  bottom: 2.1rem;
+  width: 10px;
+  height: 10.5rem;
+  border-radius: 5px;
+  background: #cbbfae;
+  z-index: 0;
+}
+
+.hanoi-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  z-index: 1;
+  margin-bottom: 0.35rem;
+}
+
+.hanoi-disc {
+  height: 1.35rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.55);
+  box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  transition: width 0.15s;
+}
+
+.hanoi-base {
+  width: 100%;
+  height: 0.7rem;
+  border-radius: 6px;
+  background: #b3a894;
+  z-index: 1;
+}
+
+.hanoi-peg-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 520px) {
+  .hanoi-peg { min-height: 11rem; }
+  .hanoi-post { height: 8rem; }
+  .hanoi-disc { height: 1.1rem; font-size: 0.65rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hanoi-disc, .hanoi-peg { transition: none; }
+}

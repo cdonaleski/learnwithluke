@@ -51,6 +51,9 @@
     { id: "sudoku", name: "Sudoku", icon: "🔢", href: "../games/sudoku/index.html",
       metric: { label: "Time", better: "lower", format: "time" },
       categories: [{ id: "easy", label: "Easy" }, { id: "medium", label: "Medium" }, { id: "hard", label: "Hard" }] },
+    { id: "tower-of-hanoi", name: "Tower of Hanoi", icon: "🗼", href: "../games/tower-of-hanoi/index.html",
+      metric: { label: "Moves", better: "lower", format: "number" },
+      categories: [3, 4, 5, 6, 7, 8].map(function (n) { return { id: String(n), label: n + " discs" }; }) },
   ];
 
   const el = {

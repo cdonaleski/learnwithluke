@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tower of Hanoi — move the whole tower without ever putting a big disc on a small one, on Learn With Luke">
+  <title>Tower of Hanoi · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/hanoi.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🗼 Tower of Hanoi</h1>
+      <p class="game-instructions" role="note">
+        <strong>Move the whole tower to the right-hand peg.</strong>
+        One disc at a time, and never put a bigger disc on top of a smaller one.
+        Sounds easy — then you try it with six.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="hanoi-title">
+      <h2 id="hanoi-title" class="visually-hidden">Tower of Hanoi puzzle</h2>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Moves</span><span class="stat-value" id="hanoi-moves">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best possible</span><span class="stat-value" id="hanoi-optimal">7</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Your best</span><span class="stat-value" id="hanoi-best">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Time</span><span class="stat-value" id="hanoi-time">0:00</span></div>
+      </div>
+
+      <div class="hanoi-board" id="hanoi-board" aria-label="Three pegs"></div>
+
+      <p class="game-status" id="hanoi-status" role="status" aria-live="polite">Move the whole tower to the right-hand peg.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ Start Again</button>
+        <button type="button" class="btn btn-secondary" id="btn-undo">↩️ Undo</button>
+        <button type="button" class="btn btn-secondary" id="btn-demo">👀 Show Me</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-options">
+        <div class="option-group" role="group" aria-labelledby="disc-label">
+          <span class="option-label" id="disc-label">How many discs?</span>
+          <div class="option-buttons" id="disc-buttons"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="hanoi-help-title">
+      <h2 id="hanoi-help-title">How to Play</h2>
+      <dl>
+        <dt>Moving a disc</dt>
+        <dd>Tap a peg to lift its top disc, then tap another peg to put it down. Tap the same peg again to change your mind. On a keyboard, <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> pick pegs and <kbd>U</kbd> undoes.</dd>
+        <dt>The one rule</dt>
+        <dd>A disc can only go on an empty peg, or on top of a <em>bigger</em> disc. Never on a smaller one.</dd>
+        <dt>Best possible</dt>
+        <dd>There's a shortest answer, and the game knows it: <strong>2 × 2 × … − 1</strong>. Three discs take 7 moves, four take 15, five take 31 — each extra disc <em>doubles</em> the work and adds one. Eight discs need 255 moves!</dd>
+        <dt>Show Me</dt>
+        <dd>👀 Show Me plays the perfect solution so you can watch the pattern. Try it with three discs first — the same shape repeats inside itself, which is the whole secret.</dd>
+        <dt>The trick</dt>
+        <dd>To move 4 discs you first move the top 3 out of the way, move the big one, then move those 3 back on top. To move 3 you do the same with 2. Every big problem is just a smaller one done twice.</dd>
+        <dt>The legend</dt>
+        <dd>A story says monks are moving 64 golden discs, and the world ends when they finish. At one move a second that would take about 585 billion years — so there's no rush.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/hanoi.js"></script>
+</body>
+</html>
