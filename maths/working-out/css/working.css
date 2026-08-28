@@ -1,0 +1,126 @@
+/* Show Your Working — page-specific styles */
+
+.entry-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.num {
+  width: 6.5rem;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.num:focus-visible { outline: none; border-color: var(--color-orange); }
+
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem; }
+
+.chip {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chip:hover, .chip:focus-visible { border-color: var(--color-orange); outline: none; }
+.chip.is-on { background: var(--color-orange); border-color: var(--color-orange); color: #fff; }
+
+/* The sum itself, in a squared-paper grid so the columns line up exactly. */
+.sum {
+  margin: 1.1rem auto 0.6rem;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.6rem 0.4rem;
+  border-radius: var(--radius-md);
+  background: #fffdf7;
+  box-shadow: inset 0 0 0 2px #efe6d3;
+}
+
+.sum-row {
+  display: grid;
+  grid-template-columns: 1.6rem repeat(var(--cols), minmax(1.5rem, 1.9rem));
+  align-items: center;
+}
+
+.sum-sign {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  padding-right: 0.3rem;
+  white-space: nowrap;
+}
+
+.sum-cell {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
+  text-align: center;
+  line-height: 1.5;
+  color: var(--color-text);
+  border-radius: 4px;
+}
+
+/* The column being worked on right now. */
+.sum-cell.is-here { background: #fff2d6; box-shadow: inset 0 0 0 2px var(--color-sun); }
+
+/* Little numbers: carries above, and what has been carried in a division. */
+.sum-row--carry .sum-cell, .sum-cell.is-carried, .sum-cell.is-carry {
+  font-size: 0.8rem;
+  color: var(--color-coral);
+  line-height: 1.2;
+}
+
+.sum-row--carry { margin-bottom: -0.15rem; }
+
+/* A digit that has been crossed out and changed while borrowing. */
+.sum-cell.is-changed { color: var(--color-coral); }
+
+.sum-row--result .sum-cell { color: var(--color-orange); }
+.sum-row--partial .sum-cell { color: var(--color-text-muted); }
+
+.sum-rule {
+  grid-column: 2 / -1;
+  height: 3px;
+  background: var(--color-text);
+  border-radius: 2px;
+  margin: 0.15rem 0;
+}
+
+/* Division is written the other way up: answer on top, under a bus stop. */
+.sum--bus .sum-row--busline .sum-rule { margin-bottom: 0.05rem; }
+.sum--bus .sum-row--quotient .sum-cell { color: var(--color-orange); }
+.sum--bus .sum-row--dividend .sum-cell { letter-spacing: -0.02em; }
+
+.note {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 4vw, 1.15rem);
+  color: var(--color-text);
+  min-height: 3em;
+  max-width: 42ch;
+  margin: 0 auto;
+}
+
+@media (max-width: 420px) {
+  .sum-row { grid-template-columns: 1.3rem repeat(var(--cols), minmax(1.2rem, 1.5rem)); }
+}

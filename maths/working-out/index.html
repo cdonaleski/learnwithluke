@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Show Your Working — long multiplication, borrowing and the bus stop, laid out a step at a time. On Learn With Luke">
+  <title>Show Your Working · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/working.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Maths</a>
+
+    <header class="game-header">
+      <h1>📝 Show Your Working</h1>
+      <p class="game-instructions" role="note">
+        <strong>Not a calculator.</strong>
+        A calculator gives you the answer, which is the least interesting part.
+        This shows you how to get there — the carrying, the borrowing and the
+        remainders, written out the way you would write them.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="sum-title">
+      <h2 id="sum-title" class="visually-hidden">The sum</h2>
+
+      <div class="entry-row">
+        <label class="visually-hidden" for="num-a">First number</label>
+        <input type="text" inputmode="numeric" id="num-a" class="num" value="3476">
+        <label class="visually-hidden" for="num-b">Second number</label>
+        <input type="text" inputmode="numeric" id="num-b" class="num" value="2985">
+        <button type="button" class="btn btn-primary" id="btn-go">Work it out</button>
+      </div>
+
+      <div class="chips" id="ops" role="group" aria-label="What to do with them"></div>
+
+      <div class="sum" id="sum" role="img" aria-label="The sum being worked out"></div>
+
+      <p class="note" id="note"></p>
+      <p class="game-status" id="status" role="status" aria-live="polite"></p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-back">◀ Back</button>
+        <button type="button" class="btn btn-secondary" id="btn-next">Next ▶</button>
+        <button type="button" class="btn btn-secondary" id="btn-play">▶ Play it through</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Step</span><span class="stat-value" id="where">—</span></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="try-title">
+      <h2 id="try-title">Ones worth watching</h2>
+      <div class="chips" id="examples" role="group" aria-label="Examples to try"></div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>Going through it</dt>
+        <dd><strong>Next</strong> and <strong>Back</strong> take you one step at a
+        time, or <strong>Play</strong> runs the whole thing. The arrow keys work
+        too. The column being worked on is picked out, and the sentence
+        underneath says exactly what is happening there.</dd>
+
+        <dt>Carrying</dt>
+        <dd>When a column adds up to more than nine you can only write one digit,
+        so the tens go to the top of the next column along. Only ever a one —
+        two digits and a carry cannot reach twenty.</dd>
+
+        <dt>Borrowing</dt>
+        <dd>When you cannot take the bottom digit from the top one, you take ten
+        from next door: the 6 becomes 16 and the neighbour drops by one. Nothing
+        is created or destroyed — the top line is still worth exactly what it was
+        before, which is the whole reason the trick is allowed.</dd>
+
+        <dt>Long multiplication</dt>
+        <dd>Multiply by each digit of the second number in turn and write each
+        answer on its own line. The line for the tens digit gets a nought on the
+        end, because that digit is worth ten times what it looks like. Then add
+        the lines up.</dd>
+
+        <dt>The bus stop</dt>
+        <dd>Dividing is the one you work from the <em>left</em>. Ask how many
+        times it goes into each digit, write that on top, and carry whatever is
+        left over in front of the next digit. If it will not go at all, carry the
+        lot and take the next digit as well.</dd>
+
+        <dt>Why no leading noughts</dt>
+        <dd>207 − 140 works out column by column as 067, but nobody writes 067 —
+        so it writes 67. Unless the answer really is nought, and then the nought
+        is written, because otherwise there would be no answer on the page.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/working.js"></script>
+  <script src="js/page.js"></script>
+</body>
+</html>
