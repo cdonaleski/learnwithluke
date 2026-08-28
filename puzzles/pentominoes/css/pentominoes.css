@@ -122,10 +122,8 @@
 .chip.is-done { border-color: #bfe6d6; color: #2f9e78; }
 .chip.is-done.is-on { color: #fff; }
 
-/* A twenty-row board needs smaller squares to stay on a phone screen. */
-@media (max-width: 480px) {
-  .pent-board { --sq: clamp(1.35rem, 6.5vw, 2rem); }
-}
+/* The square size is worked out from the width of the box and set on the
+   board itself, so the long puzzles fit across rather than running off. */
 
 @media (prefers-reduced-motion: reduce) {
   .piece { transition: none; }

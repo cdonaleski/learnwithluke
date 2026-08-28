@@ -59,20 +59,35 @@
     state.grid = new Array(puzzle.w * puzzle.h).fill("");
     state.placed = {};
     state.picked = puzzle.set[0];
-    state.way = 0;
+    state.way = 0;   // set properly once the board exists, by usableWay below
     state.started = 0;
     state.done = false;
     state.hints = 0;
     el.title.textContent = puzzle.title + " · " + puzzle.w + " by " + puzzle.h;
     el.note.textContent = puzzle.note;
     buildBoard();
+    state.way = usableWay(state.picked);
     drawAll();
     say("Pick a piece, then tap a square. It will slide itself into the first spot it fits.");
+  }
+
+  /**
+   * Squares sized to the box in front of you. The long puzzles are twenty
+   * squares across, so a fixed size would either run off the side of a phone or
+   * waste half a laptop screen. Never below fifteen pixels, which is about as
+   * small as a finger can find.
+   */
+  function sizeBoard() {
+    const holder = el.board.parentNode;
+    const room = (holder && holder.clientWidth ? holder.clientWidth : 560) - 24;
+    const square = Math.max(15, Math.min(42, Math.floor(room / state.puzzle.w)));
+    el.board.style.setProperty("--sq", square + "px");
   }
 
   function buildBoard() {
     el.board.innerHTML = "";
     el.board.style.setProperty("--cols", state.puzzle.w);
+    sizeBoard();
     for (let y = 0; y < state.puzzle.h; y++) {
       for (let x = 0; x < state.puzzle.w; x++) {
         const cell = document.createElement("button");
@@ -95,6 +110,23 @@
    * own five squares is tried as the one under your finger, and the first that
    * fits wins -- which is why you can aim roughly and still get what you meant.
    */
+  /**
+   * The first way up of a piece that could go anywhere at all on this board.
+   * In a box three squares deep the L stood on end fits nowhere, and handing a
+   * six-year-old a piece that cannot be put down is no way to start a puzzle.
+   */
+  function usableWay(letter) {
+    const ways = P.PIECES[letter].ways;
+    for (let i = 0; i < ways.length; i++) {
+      for (let y = 0; y < state.puzzle.h; y++) {
+        for (let x = 0; x < state.puzzle.w; x++) {
+          if (landingAt(letter, i, x, y)) return i;
+        }
+      }
+    }
+    return 0;
+  }
+
   function landingAt(letter, way, x, y) {
     const shape = P.PIECES[letter].ways[way];
     for (let a = 0; a < shape.length; a++) {
@@ -130,23 +162,33 @@
     if (here) {
       lift(here);
       state.picked = here;
-      state.way = 0;
+      state.way = usableWay(here);
       drawAll();
       say(here + " taken back. Tap a square to put it somewhere else.");
       return;
     }
     if (!state.picked) { say("Pick a piece from the tray first."); return; }
     if (state.placed[state.picked]) { say("That one is already on the board."); return; }
-    const cells = landingAt(state.picked, state.way, x, y);
+    const ways = P.PIECES[state.picked].ways;
+    let way = state.way, cells = landingAt(state.picked, way, x, y);
+    // The way they chose comes first. Only if that cannot go there at all is it
+    // turned, and then they are told, so nothing happens behind their back.
+    for (let i = 1; i < ways.length && !cells; i++) {
+      way = (state.way + i) % ways.length;
+      cells = landingAt(state.picked, way, x, y);
+    }
     if (!cells) {
-      say("The " + state.picked + " will not fit there. Try turning it, or another square.");
+      say("The " + state.picked + " will not fit there, whichever way up. Try another square.");
       return;
     }
+    const turnedIt = way !== state.way;
     const letter = state.picked;
-    put(letter, state.way, cells);
+    put(letter, way, cells);
     nextPiece();
     drawAll();
-    if (!state.done) say(letter + " placed. " + leftCount() + " to go.");
+    if (!state.done) {
+      say(letter + " placed" + (turnedIt ? ", turned to fit" : "") + ". " + leftCount() + " to go.");
+    }
   }
 
   function leftCount() {
@@ -156,7 +198,7 @@
   function nextPiece() {
     const spare = state.puzzle.set.split("").filter(function (l) { return !state.placed[l]; });
     state.picked = spare.length ? spare[0] : null;
-    state.way = 0;
+    state.way = state.picked ? usableWay(state.picked) : 0;
   }
 
   /* ---------------- Turning ---------------- */
@@ -292,7 +334,7 @@
       button.addEventListener("click", function () {
         if (used) { lift(letter); }
         state.picked = letter;
-        state.way = 0;
+        state.way = usableWay(letter);
         drawAll();
         say("The " + letter + " picked up. Tap a square to put it down.");
       });
@@ -365,6 +407,7 @@
     }
   }
   window.setInterval(tick, 500);
+  window.addEventListener("resize", sizeBoard);
 
   /* ---------------- Leaderboard ---------------- */
 
@@ -402,7 +445,7 @@
   drawPicker();
 
   window.PentApp = {
-    state: state, load: load, tap: tap, hint: hint, turnPiece: turnPiece,
-    flipPiece: flipPiece, landingAt: landingAt, PUZZLES: PUZZLES, leftCount: leftCount,
+    state: state, load: load, tap: tap, hint: hint, turnPiece: turnPiece, sizeBoard: sizeBoard,
+    flipPiece: flipPiece, landingAt: landingAt, usableWay: usableWay, PUZZLES: PUZZLES, leftCount: leftCount,
   };
 })();

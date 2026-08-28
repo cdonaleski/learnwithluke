@@ -76,8 +76,25 @@
     return true;
   }
 
-  function firstEmpty(board) {
-    for (let i = 0; i < board.grid.length; i++) if (board.grid[i] === "") return i;
+  /**
+   * The order squares are worked through, which matters more than it looks.
+   * Filling along the short side of the box keeps the frontier narrow, so
+   * there are far fewer ways to carry on and the search stays small. Going the
+   * long way instead, a 20 by 3 box takes millions of tries where a 3 by 20
+   * takes a few thousand -- the same puzzle, turned on its side.
+   */
+  function scanOrder(board) {
+    const order = [];
+    if (board.w > board.h) {
+      for (let x = 0; x < board.w; x++) for (let y = 0; y < board.h; y++) order.push(y * board.w + x);
+    } else {
+      for (let i = 0; i < board.w * board.h; i++) order.push(i);
+    }
+    return order;
+  }
+
+  function firstEmpty(board, order) {
+    for (let i = 0; i < order.length; i++) if (board.grid[order[i]] === "") return order[i];
     return -1;
   }
 
@@ -90,10 +107,11 @@
     const budget = { left: limit || 4000000 };
     const left = letters.slice();
     const laid = [];
+    const order = scanOrder(board);
 
     function step() {
       if (budget.left-- <= 0) return null;
-      const at = firstEmpty(board);
+      const at = firstEmpty(board, order);
       if (at === -1) return left.length === 0 ? laid.slice() : null;
       if (!left.length) return null;
       if (!pocketsFit(board)) return null;
@@ -124,10 +142,11 @@
   function countSolutions(board, letters, limit) {
     let found = 0;
     const left = letters.slice();
+    const order = scanOrder(board);
 
     function step() {
       if (found >= limit) return;
-      const at = firstEmpty(board);
+      const at = firstEmpty(board, order);
       if (at === -1) { if (!left.length) found++; return; }
       if (!left.length || !pocketsFit(board)) return;
       const tx = at % board.w, ty = Math.floor(at / board.w);

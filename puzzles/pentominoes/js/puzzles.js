@@ -19,15 +19,15 @@
 
   window.PentPuzzles = [
     {
-      id: "three", title: "Three to start", w: 3, h: 5, set: "LPV",
-      answer: ["LPP", "LPP", "LPV", "LLV", "VVV"],
+      id: "three", title: "Three to start", w: 5, h: 3, set: "LPV",
+      answer: ["LLLLV", "PPPLV", "PPVVV"],
       note: "Three pieces, fifteen squares. Every square has to be covered and " +
             "no piece may overlap another.",
     },
     {
-      id: "four", title: "Four in a box", w: 4, h: 5, set: "ILPV",
-      answer: ["ILPP", "ILPP", "ILPV", "ILLV", "IVVV"],
-      note: "The I only fits one way up in a box five tall. Start with the piece " +
+      id: "four", title: "Four in a box", w: 5, h: 4, set: "ILPV",
+      answer: ["IIIII", "LLLLV", "PPPLV", "PPVVV"],
+      note: "The I only fits one way up in a box four tall. Start with the piece " +
             "that has the fewest choices — that is the whole trick to these.",
     },
     {
@@ -37,59 +37,55 @@
             "any of these: only some shapes can sit in one.",
     },
     {
-      id: "six", title: "Six of them", w: 5, h: 6, set: "ILPTUV",
-      answer: ["IVVVP", "IVLPP", "IVLPP", "ITLUU", "ITLLU", "TTTUU"],
+      id: "six", title: "Six of them", w: 6, h: 5, set: "ILPTUV",
+      answer: ["IIIIIT", "VVVTTT", "VLLLLT", "VPPULU", "PPPUUU"],
       note: "The U is awkward: it leaves a notch that only certain pieces can fill.",
     },
     {
-      id: "seven", title: "Seven", w: 5, h: 7, set: "ILPTUVY",
-      answer: ["ILUUY", "ILUYY", "ILUUY", "ILLTY", "ITTTV", "PPPTV", "PPVVV"],
+      id: "seven", title: "Seven", w: 7, h: 5, set: "ILPTUVY",
+      answer: ["IIIIIPP", "LLLLTPP", "UUULTPV", "UYUTTTV", "YYYYVVV"],
       note: "If you leave a gap of one, two, three or four squares anywhere, you " +
             "have already lost — nothing can ever fill it.",
     },
     {
-      id: "eight", title: "Eight", w: 5, h: 8, set: "ILNPTUVY",
-      answer: ["ILLLL", "IVVVL", "IVUUU", "IVUNU", "IPPNN", "TPPPN", "TTTYN", "TYYYY"],
+      id: "eight", title: "Eight", w: 8, h: 5, set: "ILNPTUVY",
+      answer: ["IIIIITTT", "LVVVPPTY", "LVUUPPTY", "LVUNNPYY", "LLUUNNNY"],
       note: "The N and the Y look almost the same and behave nothing alike. " +
             "Getting caught out by that is part of the fun.",
     },
     {
-      id: "nine", title: "Nine", w: 5, h: 9, set: "ILNPTUVYZ",
-      answer: ["ILPPY", "ILPPY", "ILPYY", "ILLTY", "ITTTN", "VVVTN", "VZZNN", "VZUNU", "ZZUUU"],
+      id: "nine", title: "Nine", w: 9, h: 5, set: "ILNPTUVYZ",
+      answer: ["IIIIIVVVZ", "LLLLTVZZZ", "PPPLTVZUU", "PPYTTTNNU", "YYYYNNNUU"],
       note: "Work along one edge rather than jumping about. A tidy edge leaves " +
             "you far fewer ways to go wrong.",
     },
     {
-      id: "classic", title: "All twelve", w: 6, h: 10, set: "FILNPTUVWXYZ",
-      answer: ["FIIIII", "FFFNNN", "TFNNLL", "TTTZZL", "TWWZVL", "WWZZVL",
-               "WXVVVY", "XXXPYY", "UXUPPY", "UUUPPY"],
+      id: "classic", title: "All twelve", w: 10, h: 6, set: "FILNPTUVWXYZ",
+      answer: ["FFTTTWWXUU", "IFFTWWXXXU", "IFNTWZVXUU", "INNZZZVPPP", "INLZVVVYPP",
+               "INLLLLYYYY"],
       ways: 2339,
       note: "All twelve pieces in one rectangle. There are 2,339 genuinely " +
             "different ways to do it, so you have plenty of room to be right.",
     },
     {
-      id: "tall", title: "Taller and thinner", w: 5, h: 12, set: "FILNPTUVWXYZ",
-      answer: ["FLLLL", "FFFNL", "YFXNN", "YXXXN", "YYXZN", "YZZZT",
-               "WZTTT", "WWUUT", "PWWUV", "PPUUV", "PPVVV", "IIIII"],
+      id: "tall", title: "Longer and thinner", w: 12, h: 5, set: "FILNPTUVWXYZ",
+      answer: ["FFYYYYWWPPPI", "LFFXYZZWWPPI", "LFXXXZTUWUVI", "LNNXZZTUUUVI", "LLNNNTTTVVVI"],
       ways: 1010,
-      note: "The same twelve pieces, a narrower box. 1,010 ways — less than half " +
+      note: "The same twelve pieces, a shallower box. 1,010 ways — less than half " +
             "as many as the last one, and it feels it.",
     },
     {
-      id: "long", title: "Longer still", w: 4, h: 15, set: "FILNPTUVWXYZ",
-      answer: ["FVVV", "FFFV", "NFXV", "NXXX", "NNXI", "UNUI", "UUUI", "YZZI",
-               "YYZI", "YTZZ", "YTTT", "LTPP", "LWPP", "LWWP", "LLWW"],
+      id: "long", title: "Longer still", w: 15, h: 4, set: "FILNPTUVWXYZ",
+      answer: ["FFNNNUUYYYYLLLL", "VFFXNNUZYTTTWWL", "VFXXXUUZZZTPPWW", "VVVXIIIIIZTPPPW"],
       ways: 368,
-      note: "Only four wide. The X barely fits at all, and where it goes decides " +
+      note: "Only four squares tall. The X barely fits at all, and where it goes decides " +
             "most of the rest. 368 ways.",
     },
     {
-      id: "hardest", title: "The hard one", w: 3, h: 20, set: "FILNPTUVWXYZ",
-      answer: ["UUU", "UXU", "XXX", "IXP", "IPP", "IPP", "ILL", "INL", "NNL",
-               "NFL", "NFF", "FFT", "TTT", "WWT", "YWW", "YYW", "YZZ", "YZV",
-               "ZZV", "VVV"],
+      id: "hardest", title: "The hard one", w: 20, h: 3, set: "FILNPTUVWXYZ",
+      answer: ["UUXIIIIINNNFTWYYYYZV", "UXXXPPLNNFFFTWWYZZZV", "UUXPPPLLLLFTTTWWZVVV"],
       ways: 2,
-      note: "Three squares wide. In the whole of mathematics there are exactly " +
+      note: "Three squares tall. In the whole of mathematics there are exactly " +
             "two ways to do this, and this is one of them. Do not feel bad about " +
             "asking for a hint.",
     },
