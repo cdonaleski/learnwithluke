@@ -1,0 +1,133 @@
+/* Pentominoes — page-specific styles */
+
+.lesson { text-align: center; margin-bottom: 0.9rem; }
+
+.lesson-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 4.5vw, 1.5rem);
+  color: var(--color-coral);
+  margin-bottom: 0.25rem;
+}
+
+.lesson-hint { color: var(--color-text-muted); max-width: 48ch; margin: 0 auto; }
+
+.board-wrap { display: flex; justify-content: center; overflow-x: auto; padding: 0.35rem; }
+
+.pent-board {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--sq, clamp(1.6rem, 7.5vw, 2.5rem)));
+  gap: 0;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: #ece3d3;
+  box-shadow: inset 0 2px 10px rgba(120, 100, 70, 0.16);
+  transition: box-shadow 0.3s;
+}
+
+.cell {
+  width: var(--sq, clamp(1.6rem, 7.5vw, 2.5rem));
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: #f7f1e4;
+  box-shadow: inset 0 0 0 1px #e0d6c2;
+  cursor: pointer;
+}
+
+.cell:focus-visible { outline: 3px solid #7a5cd6; outline-offset: -3px; z-index: 2; }
+
+/* A placed piece is outlined only where it meets something else, so five
+   squares read as one shape rather than as five tiles. */
+.cell.is-filled { box-shadow: none; }
+.cell.is-filled.edge-t { box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.28); }
+.cell.is-filled.edge-b { box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.28); }
+.cell.is-filled.edge-l { box-shadow: inset 3px 0 0 rgba(0, 0, 0, 0.28); }
+.cell.is-filled.edge-r { box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.28); }
+.cell.is-filled.edge-t.edge-l { box-shadow: inset 0 3px 0 rgba(0,0,0,.28), inset 3px 0 0 rgba(0,0,0,.28); }
+.cell.is-filled.edge-t.edge-r { box-shadow: inset 0 3px 0 rgba(0,0,0,.28), inset -3px 0 0 rgba(0,0,0,.28); }
+.cell.is-filled.edge-b.edge-l { box-shadow: inset 0 -3px 0 rgba(0,0,0,.28), inset 3px 0 0 rgba(0,0,0,.28); }
+.cell.is-filled.edge-b.edge-r { box-shadow: inset 0 -3px 0 rgba(0,0,0,.28), inset -3px 0 0 rgba(0,0,0,.28); }
+
+.cell.is-ghost { opacity: 0.45; }
+
+.pent-board.is-done { box-shadow: 0 0 0 4px #7ad0a8, inset 0 2px 10px rgba(120, 100, 70, 0.16); }
+.pent-board.is-stuck { animation: pent-shake 0.4s; }
+
+@keyframes pent-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* The tray */
+.tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0.3rem;
+}
+
+.piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 3.2rem;
+  padding: 0.4rem 0.45rem 0.3rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s;
+}
+
+.piece:hover, .piece:focus-visible { transform: translateY(-2px); border-color: var(--color-coral); outline: none; }
+.piece.is-picked { border-color: var(--color-coral); background: #fff; box-shadow: 0 3px 0 rgba(255, 107, 90, 0.35); }
+.piece.is-used { opacity: 0.35; }
+
+.piece-art {
+  display: grid;
+  grid-template-columns: repeat(var(--pw), 9px);
+  grid-template-rows: repeat(var(--ph), 9px);
+  gap: 1px;
+}
+
+.dot { width: 9px; height: 9px; border-radius: 2px; }
+.dot.is-on { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.22); }
+
+.piece-letter {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.chip {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chip:hover, .chip:focus-visible { border-color: var(--color-coral); outline: none; }
+.chip.is-on { background: var(--color-coral); border-color: var(--color-coral); color: #fff; }
+.chip.is-done { border-color: #bfe6d6; color: #2f9e78; }
+.chip.is-done.is-on { color: #fff; }
+
+/* A twenty-row board needs smaller squares to stay on a phone screen. */
+@media (max-width: 480px) {
+  .pent-board { --sq: clamp(1.35rem, 6.5vw, 2rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece { transition: none; }
+  .pent-board.is-stuck { animation: none; }
+}

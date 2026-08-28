@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pentominoes — fit the twelve five-square shapes into a rectangle, from three pieces up to all twelve, on Learn With Luke">
+  <title>Pentominoes · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/pentominoes.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Puzzles</a>
+
+    <header class="game-header">
+      <h1>🧩 Pentominoes</h1>
+      <p class="game-instructions" role="note">
+        <strong>Twelve shapes, five squares each. Fill the box.</strong>
+        Pick a piece and tap a square — it slides itself into the first place it fits.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="puzzle-heading">
+      <h2 id="puzzle-heading" class="visually-hidden">The puzzle</h2>
+
+      <div class="lesson">
+        <h3 class="lesson-name" id="puzzle-title">Loading…</h3>
+        <p class="lesson-hint" id="puzzle-note"></p>
+      </div>
+
+      <div class="board-wrap">
+        <div class="pent-board" id="board" role="group" aria-label="The box to fill"></div>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Pieces left</span><span class="stat-value" id="left-count">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Time</span><span class="stat-value" id="clock">0:00</span></div>
+      </div>
+
+      <div class="tray" id="tray" role="group" aria-label="The pieces"></div>
+
+      <p class="game-status" id="status" role="status" aria-live="polite">Pick a piece to begin.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-turn">🔄 Turn</button>
+        <button type="button" class="btn btn-secondary" id="btn-flip">🪞 Flip</button>
+        <button type="button" class="btn btn-secondary" id="btn-hint">💡 Hint</button>
+        <button type="button" class="btn btn-secondary" id="btn-clear">↩️ Start again</button>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="picker-title">
+      <h2 id="picker-title">The puzzles</h2>
+      <div class="chips" id="picker"></div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel"></section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Play</h2>
+      <dl>
+        <dt>The idea</dt>
+        <dd>A <strong>pentomino</strong> is five squares joined edge to edge.
+        There are exactly twelve ways to do that — no more have ever been found
+        because no more exist — and each is named after the letter it looks
+        like. Fit them all into the box with no gaps and no overlaps.</dd>
+
+        <dt>Placing a piece</dt>
+        <dd>Tap a piece in the tray, then tap a square. You do not have to aim
+        carefully: the piece slides into the first place it fits. Tap a piece
+        already on the board to take it back.</dd>
+
+        <dt>Turning and flipping</dt>
+        <dd><strong>Turn</strong> rotates a quarter turn, <strong>Flip</strong>
+        holds it up to a mirror. Both count as the same piece — an L flipped over
+        is still an L. The X looks the same however you turn it, which is why it
+        is the easiest piece to place and the hardest to place <em>well</em>.</dd>
+
+        <dt>Where people go wrong</dt>
+        <dd>Leaving a gap of one, two, three or four squares. Nothing can ever
+        fill it, so the moment you make one you have already lost — you just do
+        not know it yet. Watch the edges and corners.</dd>
+
+        <dt>A good tactic</dt>
+        <dd>Start with the piece that has the fewest choices, not the one you
+        like best. In a narrow box the <strong>I</strong> and the
+        <strong>X</strong> barely fit anywhere, so put them first and the rest
+        follows more easily.</dd>
+
+        <dt>Hints</dt>
+        <dd>A hint works out the rest of <em>your</em> board and places one piece
+        that genuinely belongs there — it is never reading from an answer sheet.
+        If your board cannot be finished at all it will tell you that instead,
+        which is worth knowing. A puzzle solved with hints does not go on the
+        best-times board.</dd>
+
+        <dt>How many answers there are</dt>
+        <dd>All twelve pieces fit a 6 by 10 box in <strong>2,339</strong> genuinely
+        different ways. A 5 by 12 box has 1,010, a 4 by 15 has 368 — and a 3 by 20
+        has exactly <strong>two</strong>. That last one is one of the hardest
+        puzzles on this whole site.</dd>
+
+        <dt>Keyboard</dt>
+        <dd><kbd>R</kbd> to turn, <kbd>F</kbd> to flip, <kbd>H</kbd> for a hint.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/shapes.js"></script>
+  <script src="js/solver.js"></script>
+  <script src="js/puzzles.js"></script>
+  <script src="js/pentominoes.js"></script>
+</body>
+</html>
