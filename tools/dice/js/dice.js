@@ -20,11 +20,11 @@
 
   const DICE_TYPES = [
     { id: "d6", label: "🎲 D6", sides: 6, shape: "cube" },
-    { id: "d4", label: "▲ D4", sides: 4, shape: "d4" },
-    { id: "d8", label: "🔷 D8", sides: 8, shape: "d8" },
-    { id: "d10", label: "🔟 D10", sides: 10, shape: "d10" },
-    { id: "d12", label: "🎯 D12", sides: 12, shape: "d12" },
-    { id: "d20", label: "⭐ D20", sides: 20, shape: "d20" },
+    { id: "d4", label: "▲ D4", sides: 4, shape: "solid" },
+    { id: "d8", label: "🔷 D8", sides: 8, shape: "solid" },
+    { id: "d10", label: "🔟 D10", sides: 10, shape: "solid" },
+    { id: "d12", label: "🎯 D12", sides: 12, shape: "solid" },
+    { id: "d20", label: "⭐ D20", sides: 20, shape: "solid" },
   ];
 
   const PIPS = {
@@ -69,7 +69,6 @@
   let diceEls = [];
   let soundOn = true;
   let audioCtx = null;
-  let rollTimer = null;
   let settleTimer = null;
 
   const el = {
@@ -92,117 +91,66 @@
     return DICE_TYPES.find((d) => d.id === state.typeId) || DICE_TYPES[0];
   }
 
-  /* ---------- Shapes ----------
-     Everything is drawn in a 100x100 box. A die viewed straight on shows a
-     regular outline — a hexagon for the d8 and d20, a decagon for the d12 —
-     with the front face in the middle and its neighbours fanned around it. */
+  /* ---------- The other dice, as solids ----------
+     polyhedra.js works out the corners, the faces and how each one sits in
+     space. All that is left here is to turn each face into an element, and
+     light them. */
 
-  function round(n) { return Math.round(n * 10) / 10; }
-
-  /** A point on a circle, measuring clockwise from straight up. */
-  function pt(cx, cy, r, deg) {
-    const rad = (deg * Math.PI) / 180;
-    return round(cx + r * Math.sin(rad)) + "," + round(cy - r * Math.cos(rad));
-  }
-
-  /** Evenly spaced points around a circle, first one straight up. */
-  function ring(cx, cy, r, count) {
-    const out = [];
-    for (let i = 0; i < count; i++) out.push(pt(cx, cy, r, (360 / count) * i));
-    return out;
-  }
-
-  function shapeD4() {
-    // A tetrahedron seen corner-on: one triangle, creased into the three faces
-    // that meet at the far point. That crease sits a little above the middle so
-    // the bottom face is roomy enough to hold the number without it landing on
-    // the edge.
-    const v = ring(50, 52, 47, 3);
-    const middle = "50,45";
-    return {
-      outline: v.join(" "),
-      facets: [[v[1], v[2], middle], [v[2], v[0], middle], [v[0], v[1], middle]],
-      num: [50, 61], font: 21,
-    };
-  }
-
-  function shapeD8() {
-    // An octahedron shows four of its eight faces at once. The silhouette is a
-    // hexagon and the front face uses every other corner of it.
-    const v = ring(50, 50, 46, 6);
-    return {
-      outline: v.join(" "),
-      facets: [
-        [v[0], v[2], v[4]],
-        [v[0], v[1], v[2]], [v[2], v[3], v[4]], [v[4], v[5], v[0]],
-      ],
-      num: [50, 52], font: 26,
-    };
-  }
-
-  function shapeD10() {
-    // A ten-sided die is two rings of kites, so the front face is a kite and the
-    // edge around the middle zigzags rather than running straight.
-    const T = "50,3", L = "6,38", R = "94,38";
-    const ML = "26,52", MR = "74,52", B = "50,80";
-    const BL = "18,80", BR = "82,80", BOT = "50,96";
-    return {
-      outline: [T, R, BR, BOT, BL, L].join(" "),
-      facets: [
-        [T, MR, B, ML],
-        [T, ML, L], [T, R, MR],
-        [ML, B, BOT, BL, L], [MR, R, BR, BOT, B],
-      ],
-      num: [50, 41], font: 24,
-    };
-  }
-
-  function shapeD12() {
-    // Six of the twelve pentagons are visible: one facing you, five fanned
-    // around it, inside a ten-sided outline.
-    const outer = ring(50, 50, 46, 10);
-    const inner = ring(50, 50, 25, 5);
-    const facets = [inner];
-    for (let j = 0; j < 5; j++) {
-      facets.push([inner[j], outer[2 * j], outer[2 * j + 1], outer[(2 * j + 2) % 10], inner[(j + 1) % 5]]);
-    }
-    return { outline: outer.join(" "), facets: facets, num: [50, 52], font: 28 };
-  }
-
-  function shapeD20() {
-    // Ten of the twenty triangles are visible from one side: the front face, and
-    // three each side of it fanning out to the hexagonal silhouette.
-    const outer = ring(50, 50, 46, 6);
-    const inner = ring(50, 50, 25, 3);
-    const facets = [inner];
-    for (let j = 0; j < 3; j++) {
-      const a = inner[j], b = inner[(j + 1) % 3];
-      const v0 = outer[2 * j], v1 = outer[2 * j + 1], v2 = outer[(2 * j + 2) % 6];
-      facets.push([a, v0, v1], [a, v1, b], [b, v1, v2]);
-    }
-    return { outline: outer.join(" "), facets: facets, num: [50, 52], font: 24 };
-  }
-
-  const SHAPES = {
-    d4: shapeD4(), d8: shapeD8(), d10: shapeD10(), d12: shapeD12(), d20: shapeD20(),
-  };
+  /** Matches the tilt the CSS holds every die at, so the light agrees with it. */
+  const TILT = window.Polyhedra
+    ? window.Polyhedra.times(window.Polyhedra.rotX(-16), window.Polyhedra.rotY(-20))
+    : null;
 
   /**
-   * The die as SVG. The front face is the lightest, the ones angling away are
-   * shaded darker, which is what makes a flat drawing read as a solid.
+   * Fixed where you are sitting, not fixed to the die, and set just off your
+   * line of sight -- allowing for the tilt above. Off to one side it gives the
+   * faces their shape; too far off and a face angled towards the lamp outshines
+   * the one you are trying to read, which on a real die is honest and here is
+   * merely annoying.
    */
-  function svgMarkup(shape, value) {
-    const s = SHAPES[shape];
-    if (!s) return "";
-    let out = '<svg class="die-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">';
-    s.facets.forEach(function (points, i) {
-      const tone = i === 0 ? "a" : (i % 2 ? "b" : "c");
-      out += '<polygon class="fct fct--' + tone + '" points="' + points.join(" ") + '"/>';
+  const LIGHT = TILT ? window.Polyhedra.apply(TILT, [-0.2, -0.26, 0.94]) : [0, 0, 1];
+  const LIT = [255, 253, 246];
+  const SHADE = [146, 130, 102];
+
+  function toneAt(brightness) {
+    const t = Math.max(0, Math.min(1, brightness));
+    return "rgb(" + LIT.map(function (c, i) {
+      return Math.round(SHADE[i] + (c - SHADE[i]) * t);
+    }).join(",") + ")";
+  }
+
+  function buildSolid(typeId) {
+    const spec = window.Polyhedra.build(typeId);
+    const solid = document.createElement("span");
+    solid.className = "die-solid";
+    const faces = spec.faces.map(function (face) {
+      const el = document.createElement("span");
+      el.className = "face";
+      el.style.transform = face.transform;
+      el.innerHTML = '<svg class="face-svg" viewBox="-50 -50 100 100" aria-hidden="true" ' +
+        'focusable="false"><polygon points="' + face.points + '"/>' +
+        '<text x="0" y="0" font-size="' + spec.font + '">' + face.number + "</text></svg>";
+      solid.appendChild(el);
+      return el;
     });
-    out += '<polygon class="die-outline" points="' + s.outline + '"/>';
-    out += '<text class="die-num" x="' + s.num[0] + '" y="' + s.num[1] +
-           '" font-size="' + s.font + '">' + value + "</text>";
-    return out + "</svg>";
+    return { el: solid, spec: spec, faces: faces };
+  }
+
+  /**
+   * Turns the solid so `value` faces you, and relights every face for where it
+   * has ended up. A face angled away from the light goes darker, which is the
+   * only reason a white die reads as a solid rather than a white blob.
+   */
+  function showSolid(die, value) {
+    const P = window.Polyhedra;
+    const spec = die.solid.spec;
+    const landed = spec.faces.find(function (f) { return f.number === value; }) || spec.faces[0];
+    die.solid.el.style.transform = landed.landing;
+    const view = P.times(TILT, landed.rotation);
+    spec.faces.forEach(function (face, i) {
+      const facing = P.apply(view, face.normal);
+      die.solid.faces[i].style.setProperty("--tone", toneAt(P.dot(facing, LIGHT)));
+    });
   }
 
   /* ---------- Sound ---------- */
@@ -285,23 +233,12 @@
       die.root.classList.add("is-rolling");
     });
 
-    if (!still && type.shape !== "cube") {
-      // Flat shapes cannot spin to a face, so the number flickers while it tumbles.
-      rollTimer = window.setInterval(function () {
-        diceEls.forEach(function (die) {
-          die.root.innerHTML = svgMarkup(die.shape, rollDie(type.sides));
-        });
-      }, 80);
-    } else {
-      showValues();
-    }
-
+    showValues();
     settleTimer = window.setTimeout(settle, still ? 0 : ROLL_MS);
   }
 
   function settle() {
     settleTimer = null;
-    if (rollTimer) { window.clearInterval(rollTimer); rollTimer = null; }
     diceEls.forEach(function (die) { die.root.classList.remove("is-rolling"); });
     state.rolling = false;
     el.roll.disabled = false;
@@ -352,15 +289,24 @@
     const shape = diceType().shape;
     for (let i = 0; i < state.count; i++) {
       const root = document.createElement("span");
-      root.className = "die die--" + shape;
-      const die = { root: root, cube: null, shape: shape, spinX: 0, spinY: 0 };
+      // The spin class varies so six dice do not tumble in lockstep.
+      root.className = "die die--" + shape + " die--" + state.typeId + " spin-" + (i % 3);
+      const die = { root: root, cube: null, solid: null, shape: shape, spinX: 0, spinY: 0 };
+      const stage = document.createElement("span");
+      stage.className = "die-stage";
       if (shape === "cube") {
-        const stage = document.createElement("span");
-        stage.className = "die-stage";
         die.cube = buildCube();
         stage.appendChild(die.cube);
-        root.appendChild(stage);
+      } else {
+        // The tumble goes on a wrapper, so the solid itself holds nothing but
+        // the orientation of the face that was rolled.
+        const spin = document.createElement("span");
+        spin.className = "die-spin";
+        die.solid = buildSolid(state.typeId);
+        spin.appendChild(die.solid.el);
+        stage.appendChild(spin);
       }
+      root.appendChild(stage);
       el.tray.appendChild(root);
       diceEls.push(die);
     }
@@ -372,7 +318,7 @@
     diceEls.forEach(function (die, i) {
       const value = state.rolls[i];
       if (die.cube) die.cube.style.transform = cubeTransform(value || 1, die);
-      else die.root.innerHTML = svgMarkup(die.shape, value || 1);
+      else showSolid(die, value || 1);
       die.root.setAttribute("aria-label", value ? String(value) : "not rolled yet");
     });
     el.total.textContent = state.rolls.length ? String(total(state.rolls)) : "—";
@@ -519,7 +465,8 @@
 
   window.DiceApp = {
     state, rollDie, rollAll, total, record, averageTotal, resetTally, roll, settle,
-    buildTray, showValues, cubeTransform, svgMarkup, SHAPES, CUBE_FACES, CUBE_ANGLES,
+    buildTray, showValues, cubeTransform, buildSolid, showSolid, toneAt,
+    CUBE_FACES, CUBE_ANGLES,
     DICE_TYPES, MAX_DICE, ROLL_MS,
     dice: function () { return diceEls; },
   };

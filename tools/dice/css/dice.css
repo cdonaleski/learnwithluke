@@ -32,9 +32,16 @@
    two others, the way a die actually sits on a table. */
 /* A cube held at an angle projects wider and taller than the box it sits in,
    so without this the corner of one cube runs into the next one along. */
-.die--cube {
+.die--cube,
+.die--solid {
   margin: calc(var(--size) * 0.09) calc(var(--size) * 0.15);
 }
+
+/* The more faces a die has, the smaller each one is, and the smaller the
+   number written on it. These are drawn bigger so the numbers stay readable. */
+.die--d10 { --size: clamp(4rem, 17vw, 5.75rem); }
+.die--d12,
+.die--d20 { --size: clamp(4.25rem, 19vw, 6.5rem); }
 
 .die-stage {
   position: absolute;
@@ -89,31 +96,39 @@
   box-shadow: inset 0 -1px 2px rgba(255, 255, 255, 0.25);
 }
 
-/* ---------- D4, D8, D10, D12, D20 ---------- */
+/* ---------- D4, D8, D10, D12, D20: real solids ---------- */
 
-.die-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  filter: drop-shadow(0 4px 3px rgba(120, 100, 70, 0.28));
+/* The wrapper that tumbles, so the solid underneath can be left holding
+   nothing but the orientation of the face that was rolled. */
+.die-spin,
+.die-solid {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
 }
 
-/* The front face is lightest and the faces angling away are darker. That
-   shading is what makes a flat drawing read as a solid you could pick up. */
-.fct { stroke: #c3b192; stroke-width: 0.7; stroke-linejoin: round; }
-.fct--a { fill: #fffefb; }
-.fct--b { fill: #e7dcc4; }
-.fct--c { fill: #cdbc9b; }
+/* Each face is the full width of the die, stood up in space and then clipped
+   to its own outline by the drawing inside it. A face turned away from you is
+   hidden rather than drawn back-to-front, which is what stops you seeing the
+   inside of the die. */
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
 
-.die-outline {
-  fill: none;
-  stroke: #a8956f;
-  stroke-width: 2.4;
+.face-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* --tone is set per face in JavaScript, from how that face is angled towards
+   the light once the die has landed. */
+.face-svg polygon {
+  fill: var(--tone, #f6efe0);
+  stroke: #9d8a66;
+  stroke-width: 1.6;
   stroke-linejoin: round;
 }
 
-.die-num {
+.face-svg text {
   fill: var(--color-coral);
   font-family: var(--font-display);
   font-weight: 700;
@@ -134,17 +149,27 @@
   100% { transform: translateY(0) scale(1); }
 }
 
-/* A flat shape cannot spin to a face, so it tumbles instead. The turns stay
-   under 60 degrees: at 90 the shape would be edge-on and vanish. */
-.die:not(.die--cube).is-rolling { animation: die-tumble 0.85s cubic-bezier(0.3, 0.7, 0.4, 1); }
+/* A solid hops like the cube does. */
+.die--solid.is-rolling { animation: die-hop 0.85s cubic-bezier(0.3, 0.7, 0.4, 1); }
 
-@keyframes die-tumble {
-  0%   { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  22%  { transform: translateY(-36%) rotateX(-54deg) rotateY(40deg) rotateZ(105deg); }
-  46%  { transform: translateY(-8%) rotateX(46deg) rotateY(-50deg) rotateZ(215deg); }
-  70%  { transform: translateY(-20%) rotateX(-32deg) rotateY(28deg) rotateZ(300deg); }
-  88%  { transform: translateY(0) rotateX(12deg) rotateY(-10deg) rotateZ(368deg); }
-  100% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(360deg); }
+/* And tumbles on its wrapper: three whole turns about a slanted axis, ending
+   at rest, by which time the solid inside is already showing its rolled face.
+   Three axes, so six dice on the table do not move as one. */
+.die--solid.is-rolling .die-spin { animation: die-roll-a 0.85s cubic-bezier(0.25, 0.6, 0.35, 1); }
+.die--solid.spin-1.is-rolling .die-spin { animation-name: die-roll-b; }
+.die--solid.spin-2.is-rolling .die-spin { animation-name: die-roll-c; }
+
+@keyframes die-roll-a {
+  from { transform: rotate3d(1, 0.55, 0.3, 1080deg); }
+  to   { transform: rotate3d(1, 0.55, 0.3, 0deg); }
+}
+@keyframes die-roll-b {
+  from { transform: rotate3d(0.4, 1, -0.5, -1080deg); }
+  to   { transform: rotate3d(0.4, 1, -0.5, 0deg); }
+}
+@keyframes die-roll-c {
+  from { transform: rotate3d(-0.7, 0.5, 1, 1440deg); }
+  to   { transform: rotate3d(-0.7, 0.5, 1, 0deg); }
 }
 
 .dice-total {
@@ -222,7 +247,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .die.is-rolling { animation: none; }
+  .die.is-rolling,
+  .die.is-rolling .die-spin { animation: none; }
   .die-cube { transition: none; }
   .chart-bar { transition: none; }
 }
