@@ -106,7 +106,7 @@
         cell.dataset.x = x;
         cell.dataset.y = y;
         cell.addEventListener("click", function () {
-          if (swallowClick) { swallowClick = false; return; }
+          if (Date.now() - droppedAt < 250) return;   // the tail end of a drag
           tap(x, y);
         });
         cell.addEventListener("pointerdown", function (event) {
@@ -224,12 +224,16 @@
     if (state.done) return;
     const here = state.grid[at(x, y)];
     if (here) {
-      // Tapping a piece already down picks it out rather than snatching it up,
-      // so it can be turned, flipped or dragged from where it is.
+      // The first tap chooses a piece; tapping the one already chosen turns it.
+      // So touching a piece twice turns it, without going near a button.
+      if (state.onBoard && state.picked === here) {
+        turnPiece();
+        return;
+      }
       select(here, true);
       drawAll();
-      say("The " + here + " is chosen. Turn it, flip it, drag it, or tap an " +
-        "empty square to move it there.");
+      say("The " + here + " is chosen. Tap it again to turn it, drag it to move " +
+        "it, or tap an empty square to send it there.");
       return;
     }
     if (!state.picked) { say("Pick a piece from the tray first."); return; }
@@ -277,44 +281,76 @@
 
   /* ---------------- Turning ---------------- */
 
-  function reorient(nextWay, verb, sameAgain) {
-    if (!state.picked) return;
-    if (state.onBoard && state.placed[state.picked]) {
-      if (!turnInPlace(nextWay)) {
-        drawAll();
-        say("No room to " + verb + " the " + state.picked + " where it is. Move it first.");
-        return;
+  /**
+   * Turns or flips a piece already on the board.
+   *
+   * A quarter turn often will not go: an L lying along the top of a box three
+   * squares deep stands four squares tall the moment you turn it. Rather than
+   * refusing and leaving the button looking broken, it keeps turning until it
+   * finds a way up that does fit -- for that L, a half turn. Only if no way up
+   * fits where it stands is the piece handed back, already turned, ready to be
+   * put down somewhere with room.
+   */
+  function reorientPlaced(kind) {
+    const piece = P.PIECES[state.picked];
+    const was = state.placed[state.picked];
+    const old = was.cells.slice();
+    const startedAt = state.way;
+    lift(state.picked);
+
+    let way = startedAt;
+    const steps = kind === "turned" ? 3 : 1;
+    for (let step = 1; step <= steps; step++) {
+      way = piece[kind][way];
+      if (way === startedAt) break;
+      for (let i = 0; i < old.length; i++) {
+        const cells = landingAt(state.picked, way, old[i][0], old[i][1]);
+        if (cells) {
+          put(state.picked, way, cells);
+          state.way = way;
+          return step === 1 ? "turned" : "turned-far";
+        }
       }
+    }
+
+    // No way up of it fits where it is. Put it back exactly as it was and say
+    // so, rather than moving it somewhere it was not asked to go.
+    put(state.picked, was.way, old);
+    return "stuck";
+  }
+
+  function reorient(kind, verb) {
+    if (!state.picked) return;
+    const piece = P.PIECES[state.picked];
+    if (piece[kind][state.way] === state.way) {
+      say("The " + state.picked + " looks the same " +
+        (kind === "turned" ? "whichever way you turn it." : "held up to a mirror."));
+      return;
+    }
+
+    if (state.onBoard && state.placed[state.picked]) {
+      const what = reorientPlaced(kind);
       drawAll();
-      say(state.picked + " " + verb + "ed where it stands.");
+      if (what === "turned") say(state.picked + " " + verb + "ed where it stands.");
+      else if (what === "turned-far") {
+        say(state.picked + " turned round — a quarter turn would not fit in a box this shallow.");
+      } else if (what === "handed") {
+        say("No way up of the " + state.picked + " fits where it was, so it is off the " +
+          "board and " + verb + "ed. Tap a square to put it down.");
+      } else {
+        say("There is no room to " + verb + " the " + state.picked + " where it is. " +
+          "Drag it somewhere with more space, or take it off in the tray below.");
+      }
       return;
     }
-    state.way = nextWay;
+
+    state.way = piece[kind][state.way];
     drawTray();
-    say(nextWay === state.way && sameAgain ? sameAgain : state.picked + " " + verb + "ed.");
+    say(state.picked + " " + verb + "ed.");
   }
 
-  function turnPiece() {
-    if (!state.picked) return;
-    const piece = P.PIECES[state.picked];
-    const next = piece.turned[state.way];
-    if (next === state.way) {
-      say("The " + state.picked + " looks the same whichever way you turn it.");
-      return;
-    }
-    reorient(next, "turn");
-  }
-
-  function flipPiece() {
-    if (!state.picked) return;
-    const piece = P.PIECES[state.picked];
-    const next = piece.flipped[state.way];
-    if (next === state.way) {
-      say("The " + state.picked + " looks the same held up to a mirror.");
-      return;
-    }
-    reorient(next, "flip");
-  }
+  function turnPiece() { reorient("turned", "turn"); }
+  function flipPiece() { reorient("flipped", "flip"); }
 
   /* ---------------- Hints ---------------- */
 
@@ -345,7 +381,15 @@
      is left alone to become an ordinary tap. */
 
   let drag = null;
-  let swallowClick = false;
+  /**
+   * When a drag ends the browser usually sends a click straight afterwards,
+   * which would be read as a tap on wherever the piece landed. It is ignored by
+   * the clock rather than by a flag: a flag set at the end of a drag stays set
+   * if no click ever follows -- which happens whenever the finger comes up over
+   * something else -- and then silently eats the next real tap instead. That
+   * bug made a placed piece impossible to choose, and so impossible to turn.
+   */
+  let droppedAt = 0;
 
   function squareUnder(clientX, clientY) {
     let node = null;
@@ -392,7 +436,7 @@
     drag = null;
     clearGhost();
     if (!held.moved) return;                 // never left home: treat it as a tap
-    swallowClick = true;
+    droppedAt = Date.now();
 
     const target = held.over;
     const cells = target ? landingAt(held.letter, state.way, target.x, target.y) : null;
@@ -411,6 +455,16 @@
     }
     drawAll();
     say("The " + held.letter + " will not go there, so it is back where it was.");
+  }
+
+  /** Runs a whole drag with the pointer geometry left out, for the tests. */
+  function dragTo(letter, fromBoard, x, y) {
+    beginDrag(letter, fromBoard, null);
+    if (!drag) return;
+    drag.moved = true;
+    drag.over = { x: x, y: y };
+    if (fromBoard && state.placed[letter]) { lift(letter); drag.lifted = true; }
+    dragEnd();
   }
 
   window.addEventListener("pointermove", dragMove);
@@ -672,6 +726,6 @@
     state: state, load: load, tap: tap, hint: hint, turnPiece: turnPiece, sizeBoard: sizeBoard,
     flipPiece: flipPiece, landingAt: landingAt, usableWay: usableWay,
     goNext: goNext, upNext: upNext, PAUSE: PAUSE,
-    select: select, moveTo: moveTo, turnInPlace: turnInPlace, PUZZLES: PUZZLES, leftCount: leftCount,
+    select: select, moveTo: moveTo, turnInPlace: turnInPlace, dragTo: dragTo, PUZZLES: PUZZLES, leftCount: leftCount,
   };
 })();
