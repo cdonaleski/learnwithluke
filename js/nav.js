@@ -16,6 +16,19 @@
     { id: "science", label: "Science" },
     { id: "ai", label: "AI" },
   ];
+
+  /**
+   * Every folder that sits directly under the site root — the menu sections
+   * plus any page that is not in the menu, such as Support.
+   *
+   * This is what the "how far back up is the root" sum counts from, and it is
+   * SEPARATE from SECTIONS on purpose. Leaving a folder out of here does not
+   * merely hide it from the menu: the page is mistaken for the home page, no
+   * `../` is added, and every link on it breaks. Add new top-level folders
+   * here whether or not they belong in the menu.
+   */
+  const TOP_LEVEL = SECTIONS.map(function (section) { return section.id; })
+    .concat(["support"]);
   const path = window.location.pathname;
   const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
 
@@ -28,17 +41,19 @@
    */
   let sectionIndex = -1;
   for (let i = segments.length - 1; i >= 0; i--) {
-    if (SECTIONS.some((section) => section.id === segments[i])) {
+    if (TOP_LEVEL.indexOf(segments[i]) !== -1) {
       sectionIndex = i;
       break;
     }
   }
 
-  const isHome = sectionIndex === -1;
-  const activeSection = isHome ? null : segments[sectionIndex];
+  const atRoot = sectionIndex === -1;
+  const activeSection = atRoot ? null : segments[sectionIndex];
+  // Only the real home page highlights "Home"; Support highlights nothing.
+  const isHome = atRoot;
 
   /** Path back to the site root (e.g. games/pong → "../../"). */
-  const root = isHome ? "" : "../".repeat(segments.length - sectionIndex);
+  const root = atRoot ? "" : "../".repeat(segments.length - sectionIndex);
 
   const navHTML = `
     <header class="site-header">
