@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Circuits — build real working circuits, from a single loop to a light worked from three places, on Learn With Luke">
+  <title>Circuits · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/circuits.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Science</a>
+
+    <header class="game-header">
+      <h1>🔌 Circuits</h1>
+      <p class="game-instructions" role="note">
+        <strong>Pick a piece, click a square, build a loop.</strong>
+        Everything you build really is worked out — the bulbs are as bright as
+        the sums say they should be.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="bench-title">
+      <h2 id="bench-title" class="visually-hidden">Circuit bench</h2>
+
+      <div class="lesson">
+        <h3 class="lesson-name" id="level-name">Loading…</h3>
+        <p class="lesson-hint" id="level-hint"></p>
+      </div>
+
+      <div class="tools" id="tools" role="group" aria-label="Pieces and tools"></div>
+
+      <div class="board-wrap">
+        <canvas id="board" width="480" height="288" tabindex="0"
+                aria-label="Circuit board. Use the arrow keys to move, Enter to place or flip, R to turn."></canvas>
+      </div>
+
+      <p class="meter" id="meter">—</p>
+      <p class="game-status" id="status" role="status" aria-live="polite">Pick a piece and start building.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-rotate">🔄 Turn piece</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset">↩️ Start again</button>
+        <button type="button" class="btn btn-primary" id="btn-next" hidden>Next →</button>
+      </div>
+
+      <div class="teach" id="teach" hidden>
+        <h3>⚡ That works</h3>
+        <p id="teach-text"></p>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="levels-title">
+      <h2 id="levels-title">The lessons</h2>
+      <div class="chips" id="level-list"></div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>Building</dt>
+        <dd>Click a piece in the tray, then click a square to put it there. It
+        turns itself to meet whatever it is next to, so most of the time it just
+        fits. Click the same piece again to turn it round yourself. Pick <strong>Throw away</strong> to
+        take something off. The shaded squares are part of the puzzle and cannot
+        be moved.</dd>
+
+        <dt>Flipping switches</dt>
+        <dd>Pick <strong>Flip</strong> — the pointing hand — and click a switch.
+        Watch what happens to the bulb.</dd>
+
+        <dt>Open and closed</dt>
+        <dd>Electricity only goes round a loop with no gaps. A gap anywhere and
+        nothing happens at all: that is an <strong>open</strong> circuit. Close
+        every gap and it is a <strong>closed</strong> circuit, and it lights.</dd>
+
+        <dt>Why a bulb goes dim</dt>
+        <dd>Two bulbs in a row share the push, so each gets half the voltage —
+        and a quarter of the power, which is why they look properly dim rather
+        than half dim. Two bulbs side by side each get the whole push and both
+        stay bright, but the battery has to work twice as hard.</dd>
+
+        <dt>Working a light from two places</dt>
+        <dd>The switch at the top of your stairs and the one at the bottom both
+        work the same light. Neither of them makes a gap — each one sends the
+        electricity down one of two roads, and the light is on when both happen
+        to have picked the same road. An electrician calls that a
+        <strong>three-way switch</strong> in America and a
+        <strong>two-way switch</strong> in Britain: the same switch, named after
+        its three terminals or after the two places it works from.</dd>
+
+        <dt>And from three places</dt>
+        <dd>For a third switch you cannot just add another one — you have to put
+        a <strong>middle switch</strong> into both roads at once, which either
+        lets them run straight past or swaps them over. Add as many of those as
+        you like, and the light works from as many places as you like.</dd>
+
+        <dt>Short circuits</dt>
+        <dd>Electricity takes every road it can find, and takes the easy ones
+        hardest. Lay a bare wire round a bulb and nearly all of it goes that way
+        instead, leaving the bulb dark. Lay one straight across the battery and
+        there is nothing to slow it down at all — the board turns red and tells
+        you. That is what fuses are for.</dd>
+
+        <dt>Keyboard</dt>
+        <dd>Click the board, then use the <kbd>arrow keys</kbd> to move,
+        <kbd>Enter</kbd> to place or flip, and <kbd>R</kbd> to turn a piece.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/parts.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/circuits.js"></script>
+</body>
+</html>
