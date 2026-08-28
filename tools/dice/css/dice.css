@@ -30,6 +30,12 @@
 
 /* Holds the cube at a slight angle so you see the rolled face plus a sliver of
    two others, the way a die actually sits on a table. */
+/* A cube held at an angle projects wider and taller than the box it sits in,
+   so without this the corner of one cube runs into the next one along. */
+.die--cube {
+  margin: calc(var(--size) * 0.09) calc(var(--size) * 0.15);
+}
+
 .die-stage {
   position: absolute;
   inset: 0;
