@@ -1,0 +1,165 @@
+/* Periodic Table — page-specific styles */
+
+.pt-page { max-width: 1200px; }
+
+.pt-table-wrap { overflow-x: auto; padding-bottom: 0.5rem; }
+
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(2.6rem, 1fr));
+  grid-template-rows: repeat(7, auto) 0.55rem repeat(2, auto);
+  gap: 3px;
+  min-width: 52rem;
+}
+
+.pt-el {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 5px;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.05;
+  cursor: pointer;
+  color: #23303d;
+  overflow: hidden;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+.pt-el:hover:not(.is-hidden) { transform: scale(1.12); z-index: 2; box-shadow: 0 3px 10px rgba(0,0,0,0.28); }
+.pt-el:focus-visible { outline: 3px solid var(--color-coral); outline-offset: 1px; z-index: 3; }
+
+.pt-z { font-family: var(--font-body); font-size: 0.5rem; opacity: 0.72; }
+.pt-sym { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+.pt-name { font-family: var(--font-body); font-size: 0.42rem; opacity: 0.78; text-align: center;
+           overflow: hidden; text-overflow: ellipsis; max-width: 100%; white-space: nowrap; }
+
+.pt-el.is-selected { box-shadow: 0 0 0 3px var(--color-text); z-index: 2; }
+.pt-el.is-answer { box-shadow: 0 0 0 3px var(--color-green); z-index: 2; }
+.pt-el.is-out { opacity: 0.32; }
+.pt-el.is-hidden { background: #e6ddcf !important; color: transparent; cursor: pointer; }
+
+.pt-el--marker {
+  background: #efe7db;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: default;
+}
+
+/* Legend */
+.pt-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  justify-content: center;
+  margin: 0.9rem 0;
+}
+
+.pt-key { display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--color-text-muted); }
+.pt-swatch { width: 0.85rem; height: 0.85rem; border-radius: 3px; display: block; }
+
+/* Detail card */
+.pt-detail {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  background: var(--color-bg);
+  border: 2px dashed #e8e2d8;
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  min-height: 5.5rem;
+}
+
+.pt-detail-hint { color: var(--color-text-muted); }
+
+.pt-badge {
+  flex: 0 0 auto;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #23303d;
+}
+
+.pt-badge .pt-z { font-size: 0.7rem; }
+.pt-badge-sym { font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; line-height: 1; }
+
+.pt-detail h3 { font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 0.15rem; }
+.pt-where { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.4rem; }
+.pt-note { color: var(--color-text); }
+
+/* Quiz */
+.pt-quiz {
+  background: #f2fbf3;
+  border: 3px dashed var(--color-green);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pt-prompt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.pt-choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+
+.pt-choice {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.7rem 1.4rem;
+  border: 2px solid #cfe8d4;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s;
+}
+
+.pt-choice:hover, .pt-choice:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-green);
+  outline: none;
+}
+
+.pt-entry { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+
+#pt-input {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid #cfe8d4;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--color-text);
+  min-width: 9rem;
+  max-width: 14rem;
+}
+
+#pt-input:focus-visible { outline: none; border-color: var(--color-green); }
+
+.pt-modes .option-buttons { max-width: 34rem; }
+
+@media (max-width: 640px) {
+  .pt-detail { flex-direction: column; align-items: center; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-el, .pt-choice { transition: none; }
+}

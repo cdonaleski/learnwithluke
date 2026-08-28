@@ -72,6 +72,9 @@
     { id: "mini-golf", name: "Mini Golf", icon: "⛳", href: "../games/mini-golf/index.html",
       metric: { label: "Shots", better: "lower", format: "number" },
       categories: [{ id: "all", label: "All" }] },
+    { id: "periodic-table", name: "Periodic Table", icon: "⚛️", href: "../science/periodic-table/index.html",
+      metric: { label: "Score", better: "higher", format: "number" },
+      categories: [{ id: "easy-common", label: "easy · Common 20" }, { id: "easy-first", label: "easy · First 36" }, { id: "easy-all", label: "easy · All 118" }, { id: "medium-common", label: "medium · Common 20" }, { id: "medium-first", label: "medium · First 36" }, { id: "medium-all", label: "medium · All 118" }, { id: "hard-common", label: "hard · Common 20" }, { id: "hard-first", label: "hard · First 36" }, { id: "hard-all", label: "hard · All 118" }] },
   ];
 
   const el = {

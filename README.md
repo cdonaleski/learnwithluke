@@ -172,6 +172,23 @@ Error line numbers are translated from the assembled document back to a line of
 the child's own `script.js`, because the line number in the generated page would
 mean nothing to them.
 
+## Adding to the Periodic Table
+
+Element data lives in `science/periodic-table/js/elements.js`, one row per
+element: `[atomic number, symbol, name, group, period, category]`. Lanthanides
+and actinides use group `0` because they sit in the two rows underneath rather
+than in the main grid; their screen position is worked out from the atomic
+number.
+
+The offline tests treat this data as facts to be checked rather than trusted:
+every atomic number from 1 to 118 exactly once, no repeated symbols or names,
+every element inside the grid, no two sharing a square, noble gases in column
+18, alkali metals in column 1, and spot-checks against well-known elements. A
+wrong fact here would teach a child something false.
+
+`NOTES` holds an optional one-line "what it's for" per symbol. Only the
+elements a child is likely to meet have one, and they are deliberately plain.
+
 ## Leaderboards
 
 Thirteen games keep a top-ten board. When a run is good enough the game asks

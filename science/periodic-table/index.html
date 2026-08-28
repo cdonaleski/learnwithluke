@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Periodic Table — see all 118 elements, then test yourself on symbols, names and where they sit. On Learn With Luke">
+  <title>Periodic Table · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/periodic.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page pt-page">
+    <a href="../index.html" class="game-back">← Back to Science</a>
+
+    <header class="game-header">
+      <h1>⚛️ Periodic Table</h1>
+      <p class="game-instructions" role="note">
+        <strong>All 118 elements — everything the universe is made of.</strong>
+        Look around it first, then test yourself: match symbols to names, type them
+        from memory, or find where each one belongs.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="pt-title">
+      <h2 id="pt-title" class="visually-hidden">Periodic table</h2>
+
+      <div class="game-options pt-modes">
+        <div class="option-group" role="group" aria-labelledby="mode-label">
+          <span class="option-label" id="mode-label">What are we doing?</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-mode="explore" aria-pressed="true">🔍 Explore</button>
+            <button type="button" class="option-btn" data-mode="easy" aria-pressed="false">🐣 Easy — pick from 3</button>
+            <button type="button" class="option-btn" data-mode="medium" aria-pressed="false">🐤 Medium — type it</button>
+            <button type="button" class="option-btn" data-mode="hard" aria-pressed="false">🦅 Hard — type &amp; place</button>
+          </div>
+        </div>
+
+        <div class="option-group" id="scope-group" role="group" aria-labelledby="scope-label" hidden>
+          <span class="option-label" id="scope-label">Which elements?</span>
+          <div class="option-buttons">
+            <button type="button" class="option-btn is-active" data-scope="common" aria-pressed="true">⭐ Common 20</button>
+            <button type="button" class="option-btn" data-scope="first" aria-pressed="false">🔢 First 36</button>
+            <button type="button" class="option-btn" data-scope="all" aria-pressed="false">🌍 All 118</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-quiz" id="pt-quiz" hidden>
+        <p class="pt-prompt" id="pt-prompt"></p>
+        <div class="pt-choices" id="pt-choices"></div>
+        <div class="pt-entry" id="pt-entry" hidden>
+          <label class="visually-hidden" for="pt-input">Your answer</label>
+          <input type="text" id="pt-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <button type="button" class="btn btn-primary" id="pt-submit">Check</button>
+        </div>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Question</span><span class="stat-value" id="pt-asked">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Right</span><span class="stat-value" id="pt-right">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Streak</span><span class="stat-value" id="pt-streak">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="pt-best">—</span></div>
+      </div>
+
+      <p class="game-status" id="pt-status" role="status" aria-live="polite">Tap any element to find out about it.</p>
+
+      <div class="pt-table-wrap">
+        <div class="pt-table" id="pt-table" aria-label="Periodic table of the elements"></div>
+      </div>
+
+      <ul class="pt-legend" id="pt-legend" aria-label="What the colours mean"></ul>
+
+      <div class="pt-detail" id="pt-detail" aria-live="polite"></div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Round</button>
+        <button type="button" class="btn btn-secondary" id="btn-skip" hidden>🤷 Skip</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>
+
+    <section class="game-panel game-help" aria-labelledby="pt-help-title">
+      <h2 id="pt-help-title">How to Use It</h2>
+      <dl>
+        <dt>Explore</dt>
+        <dd>Tap any element to see its number, what kind it is, where it sits, and what it's used for. Nothing is being marked — have a wander.</dd>
+        <dt>Easy</dt>
+        <dd>Three choices. Sometimes you see <strong>He</strong> and pick <em>Helium</em>; sometimes you see <em>Helium</em> and pick <strong>He</strong>. The wrong answers are always real elements from nearby, so it's a proper choice rather than a giveaway.</dd>
+        <dt>Medium</dt>
+        <dd>No choices — type the answer yourself. Capital letters and spaces don't matter, so "helium" is fine.</dd>
+        <dt>Hard</dt>
+        <dd>Type the symbol <em>and</em> tap the square it belongs in. The table is blanked out until you've typed, so you're finding the place from memory rather than reading it off.</dd>
+        <dt>Which elements?</dt>
+        <dd>Start with the <strong>Common 20</strong> — hydrogen through calcium, the ones that actually turn up in life. Then the <strong>first 36</strong>, then <strong>all 118</strong> when you're feeling brave.</dd>
+        <dt>Reading the table</dt>
+        <dd>Elements are in order of how many protons they have, left to right and top to bottom. Columns matter: everything in a column behaves in a similar way. That's why the far right are all gases that do nothing, and the far left all react like mad.</dd>
+        <dt>The two rows underneath</dt>
+        <dd>Those aren't separate — they belong in the gaps marked 57–71 and 89–103. They're pulled out so the table fits on a page instead of being enormously wide.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/elements.js"></script>
+  <script src="js/periodic.js"></script>
+</body>
+</html>
