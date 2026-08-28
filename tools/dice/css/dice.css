@@ -37,8 +37,13 @@
   margin: calc(var(--size) * 0.09) calc(var(--size) * 0.15);
 }
 
-/* The more faces a die has, the smaller each one is, and the smaller the
-   number written on it. These are drawn bigger so the numbers stay readable. */
+/* Every die is scaled by how far its furthest corner reaches, which keeps any
+   of them from being clipped -- but a shape whose corners stick out further
+   than its faces do, like the tetrahedron and the octahedron, ends up looking
+   smaller than the rest. These sizes even that out, and give the many-sided
+   dice room for the numbers on their smaller faces. */
+.die--d4,
+.die--d8,
 .die--d10 { --size: clamp(4rem, 17vw, 5.75rem); }
 .die--d12,
 .die--d20 { --size: clamp(4.25rem, 19vw, 6.5rem); }
