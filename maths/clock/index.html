@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Telling the Time — drag the hands on a real clock and learn why 3:45 is quarter to four. On Learn With Luke">
+  <title>Telling the Time · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/clock.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Maths</a>
+
+    <header class="game-header">
+      <h1>🕰️ Telling the Time</h1>
+      <p class="game-instructions" role="note">
+        <strong>Take hold of the hands and move them.</strong>
+        Watch the hour hand creep along as you swing the big one round — that is
+        what is really going on inside a clock.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="clock-title">
+      <h2 id="clock-title" class="visually-hidden">The clock</h2>
+
+      <p class="task" id="task"></p>
+
+      <div class="face-wrap">
+        <svg id="face" viewBox="0 0 200 200" role="img" aria-label="A clock"></svg>
+      </div>
+
+      <p class="digital" id="digital">10:10</p>
+      <p class="words" id="words">ten past ten</p>
+
+      <div class="choices" id="choices" role="group" aria-label="Choose the time"></div>
+
+      <p class="game-status" id="status" role="status" aria-live="polite">
+        Drag the hands and watch what the time is called.
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-check" hidden>Check it</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Question</span><span class="stat-value" id="count">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Right</span><span class="stat-value" id="score">0</span></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="choose-title">
+      <h2 id="choose-title">What to do</h2>
+      <p class="choose-label">Which way round</p>
+      <div class="chips" id="modes" role="group" aria-label="What kind of practice"></div>
+      <p class="choose-label">How hard</p>
+      <div class="chips" id="steps" role="group" aria-label="How precise the times are"></div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel"></section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>Moving the hands</dt>
+        <dd>Press anywhere on the clock and drag. It takes hold of whichever hand
+        you were nearest. Swing the long hand all the way round and watch the
+        short one move on by one hour — the two are joined, and that is why.</dd>
+
+        <dt>Why the hour hand is never quite on the number</dt>
+        <dd>At half past three it sits <em>halfway between the 3 and the 4</em>,
+        because half the hour has gone. Most drawings of clocks get this wrong
+        and leave it sitting on the 3, which is why so many children read half
+        past three as half past four.</dd>
+
+        <dt>Why 3:45 is "quarter to four"</dt>
+        <dd>Once you are past the half hour you stop counting from the hour you
+        are in and start counting to the <strong>next</strong> one. The clock
+        still shows 3, but there are fifteen minutes to go until 4, so it is
+        quarter to four. This is the single most confusing thing about clocks and
+        it is worth saying out loud a few times.</dd>
+
+        <dt>The three things you can do</dt>
+        <dd><strong>Have a play</strong> — move the hands and read what it is
+        called. <strong>Read the clock</strong> — it shows a time, you pick the
+        words. <strong>Set the clock</strong> — it gives you the words, you move
+        the hands.</dd>
+
+        <dt>How hard</dt>
+        <dd>Start at o'clock and half past. Then quarters, then every five
+        minutes, then any minute at all. There is no hurry — quarters alone will
+        get you through most of a school year.</dd>
+
+        <dt>The best-times board</dt>
+        <dd>Only a round with all ten right goes on it.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/timewords.js"></script>
+  <script src="js/clock.js"></script>
+</body>
+</html>
