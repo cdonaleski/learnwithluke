@@ -60,7 +60,7 @@
       { id: "qdBfSBEmBZk", title: "Peter's Dilemma" },
       { id: "GUwIsSaw_Fk", title: "Joseph's Dreams" }
     ],
-    href: "",            // ← put your YouTube channel URL here to show a Subscribe button
+    href: "https://www.youtube.com/@ShoutingRocksStudio",
     cta: "Subscribe on YouTube"
   };
 
