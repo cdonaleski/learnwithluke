@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Fraction Wall — shade the bars and see for yourself why three quarters beats two thirds. On Learn With Luke">
+  <title>Fraction Wall · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/fractions.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Maths</a>
+
+    <header class="game-header">
+      <h1>🍰 Fraction Wall</h1>
+      <p class="game-instructions" role="note">
+        <strong>Shade the bars and look at where they end.</strong>
+        Two fractions that line up exactly are the same number, however
+        different they look written down.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="wall-title">
+      <h2 id="wall-title" class="visually-hidden">The wall</h2>
+      <div class="wall" id="wall"></div>
+      <p class="readout" id="readout">Click any bar to shade it.</p>
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-clear">🧹 Clear the wall</button>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Questions</h2>
+      <p class="question" id="question"></p>
+      <div class="choices" id="choices" role="group" aria-label="Answers"></div>
+      <p class="game-status" id="status" role="status" aria-live="polite">
+        Shade a couple of bars and see which goes further.
+      </p>
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">Start</button>
+      </div>
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Question</span><span class="stat-value" id="count">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Right</span><span class="stat-value" id="score">0</span></div>
+      </div>
+      <p class="choose-label">What kind</p>
+      <div class="chips" id="kinds" role="group" aria-label="Kind of question"></div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel"></section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>The wall</dt>
+        <dd>Every bar is the same length — one whole. The top one is undivided,
+        the next is cut into halves, then thirds, and so on. Click a part to
+        shade up to it: click the third part of the quarters bar and you have
+        shaded three quarters. Click the same part again to clear that row.</dd>
+
+        <dt>Why it works</dt>
+        <dd>Shade 1/2 and 3/6 and they end at exactly the same place, because
+        they are exactly the same amount. The bars go gold when they match. That
+        is what "equivalent fractions" means, and it is far more convincing seen
+        than explained.</dd>
+
+        <dt>Which is bigger</dt>
+        <dd>Shade two rows and it tells you which goes further. 3/4 beats 2/3 —
+        not by much, which is exactly why looking at it helps.</dd>
+
+        <dt>Careful with the bottom number</dt>
+        <dd>A bigger number underneath means <em>smaller</em> pieces, not a
+        bigger fraction. A twelfth is tiny; a half is huge. This catches out
+        nearly everybody at first, and the wall makes it obvious in a second.</dd>
+
+        <dt>How the comparing is done</dt>
+        <dd>In whole numbers, never in decimals. To compare 3/4 and 5/7 it works
+        out 3 × 7 = 21 against 5 × 4 = 20. Turning them into decimals first would
+        make 1/3 into 0.3333333… and sooner or later two fractions that are equal
+        would be called different — which on a page whose job is to show you
+        which is bigger would not be a rounding error, it would be wrong.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/fractions.js"></script>
+  <script src="js/wall.js"></script>
+</body>
+</html>
