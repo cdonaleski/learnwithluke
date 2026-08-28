@@ -189,6 +189,31 @@ wrong fact here would teach a child something false.
 `NOTES` holds an optional one-line "what it's for" per symbol. Only the
 elements a child is likely to meet have one, and they are deliberately plain.
 
+## The Support page
+
+`support/` promotes what we make and asks for optional help. It is reached from
+a quiet link in the footer rather than the main navigation, because it is aimed
+at grown-ups and should not sit alongside Games in a child's menu.
+
+Edit two lists in `support/js/offerings.js`: `SupportThings` (what you make)
+and `SupportWays` (how people can chip in). An entry with an empty `href` is
+hidden rather than rendered as a dead button, so a half-finished entry never
+reaches the page. **The donate link is currently empty** — put a Ko-fi, Buy Me a
+Coffee, PayPal or Stripe link in it and the card appears.
+
+**The music player is click-to-load, and that is not decoration.** Dropping
+Spotify's iframe straight into the page would let Spotify set cookies and track
+every visitor the moment it opened, children included. The site otherwise loads
+nothing third-party and sets no cookies at all, which is what keeps it clear of
+COPPA and the UK Children's Code. So the page renders its own placeholder card
+and only builds the iframe when someone presses play. The tracking parameters
+Spotify puts in its copied snippet (`utm_source`, `si`) are stripped, only
+`https://open.spotify.com/embed/` URLs are ever allowed into a frame, and
+outbound links carry `rel="noopener noreferrer"`.
+
+If you ever add adverts or analytics, that promise breaks and the page text
+becomes untrue — the tests check the page still says what it does.
+
 ## Leaderboards
 
 Thirteen games keep a top-ten board. When a run is good enough the game asks

@@ -423,6 +423,22 @@ main {
   font-family: var(--font-display);
 }
 
+.site-footer .footer-small {
+  font-size: 0.82rem;
+  margin-top: 0.35rem;
+  opacity: 0.85;
+}
+
+.site-footer .footer-support {
+  color: var(--color-text-muted);
+  text-decoration: underline;
+}
+
+.site-footer .footer-support:hover,
+.site-footer .footer-support:focus-visible {
+  color: var(--color-coral);
+}
+
 /* Screen-reader-only text */
 .visually-hidden {
   position: absolute;

@@ -62,6 +62,7 @@
   const footerHTML = `
     <footer class="site-footer">
       <p>Made with ❤️ for curious kids · <strong>Learn With Luke</strong></p>
+      <p class="footer-small">Free, no adverts, nothing tracked · <a class="footer-support" href="${root}support/index.html">Support this site</a></p>
     </footer>
   `;
 
