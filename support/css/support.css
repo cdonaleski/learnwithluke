@@ -64,3 +64,56 @@
 .sp-frame { border-radius: 12px; display: block; width: 100%; border: 0; }
 
 @media (prefers-reduced-motion: reduce) { .sp-play { transition: none; } }
+
+/* Videos — titles only until one is pressed */
+.sp-videos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sp-video {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+}
+
+.sp-video:hover,
+.sp-video:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-coral);
+  background: #fff;
+  outline: none;
+}
+
+.sp-video-icon {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-coral);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.sp-video-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.sp-frame--video { aspect-ratio: 16 / 9; height: auto; border-radius: 10px; }
+
+@media (prefers-reduced-motion: reduce) { .sp-video { transition: none; } }

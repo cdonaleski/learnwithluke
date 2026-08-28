@@ -45,6 +45,27 @@
     }
   ];
 
+  window.SupportVideos = {
+    id: "videos",
+    kind: "videos",
+    icon: "🎬",
+    title: "Our videos",
+    blurb: "Music videos for the tracks above. Subscribing on YouTube is free and " +
+           "helps more than you would think.",
+    // Nothing is requested from YouTube until one of these is pressed, and the
+    // player uses youtube-nocookie.com so no tracking cookie is set even then.
+    videos: [
+      { id: "qXrtAcA8qwM", title: "Now I Believe" },
+      { id: "4fGDreegdOA", title: "Fallen Ones" },
+      { id: "qdBfSBEmBZk", title: "Peter's Dilemma" },
+      { id: "GUwIsSaw_Fk", title: "Joseph's Dreams" }
+    ],
+    href: "",            // ← put your YouTube channel URL here to show a Subscribe button
+    cta: "Subscribe on YouTube"
+  };
+
+  window.SupportThings.push(window.SupportVideos);
+
   window.SupportWays = [
     {
       id: "donate",
