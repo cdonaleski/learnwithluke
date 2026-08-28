@@ -1,0 +1,340 @@
+/* Formula Lab — page-specific styles */
+
+/*
+ * The canvas animations in js/viz.js read their colours from these, so they
+ * always match the page instead of carrying their own hard-coded palette.
+ */
+:root {
+  --ink: var(--color-text);
+  --ink-soft: var(--color-text-muted);
+  --surface: var(--color-bg-alt);
+  --surface-2: var(--color-bg);
+  --line: #e8e2d8;
+  --line-strong: #d8cfc2;
+  --hot: #e8553a;
+  --cool: #0f8f86;
+  --good: #16a34a;
+  --a: #7c3aed;
+
+  --s-physics: #0f8f86;
+  --s-chemistry: #7c3aed;
+  --s-math: #16a34a;
+  --s-engineering: #d1660b;
+  --s-space: #4054b2;
+}
+
+.fx-page { max-width: 1200px; }
+
+/* ---------- search bar ---------- */
+.fx-search { margin-bottom: 1rem; }
+
+.fx-searchrow { display: flex; gap: 0.6rem; }
+
+#q {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+#q::placeholder { color: var(--color-text-muted); }
+#q:focus { outline: none; border-color: var(--color-sky); background: var(--color-bg-alt); }
+
+.fx-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.85rem; }
+
+.fx-chip {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.95rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.fx-chip:hover, .fx-chip:focus-visible { border-color: var(--color-sky); color: var(--color-text); outline: none; }
+.fx-chip[aria-pressed="true"] { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+
+.fx-count {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.75rem;
+}
+
+/* ---------- layout ---------- */
+.fx-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.fx-detail-col { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+
+/* ---------- the list ---------- */
+.fx-list {
+  padding: 0;
+  overflow: hidden;
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+}
+.fx-list-scroll { overflow-y: auto; }
+
+.fx-group {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.5rem 1rem;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.fx-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+.fx-item:hover { background: var(--color-bg); }
+.fx-item[aria-current="true"] { background: var(--color-bg); box-shadow: inset 4px 0 0 var(--color-purple); }
+.fx-item b { display: block; font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; }
+.fx-item span {
+  display: block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fx-noresults { padding: 1.2rem 1rem; color: var(--color-text-muted); }
+
+/* ---------- the card ---------- */
+.fx-detail { --sub-color: var(--color-sky-dark); }
+
+.fx-tagrow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.fx-tag {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--sub-color);
+}
+.fx-age {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  padding: 0.05rem 0.6rem;
+}
+
+.fx-detail h1 {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
+}
+.fx-lede { font-size: 1.05rem; color: var(--color-text-muted); margin-bottom: 1.1rem; max-width: 60ch; }
+
+.fx-formula {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: clamp(1.15rem, 3.2vw, 1.7rem);
+  font-weight: 700;
+  background: var(--color-bg);
+  border: 2px solid var(--line);
+  border-left: 6px solid var(--sub-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.2rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.fx-sec { margin-top: 1.3rem; }
+.fx-sec h2 {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.fx-viz {
+  display: block;
+  width: 100%;
+  height: 215px;
+  background: var(--color-bg);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+/* what each part means */
+.fx-parts {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.fx-part {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+.fx-part:last-child { border-bottom: 0; }
+.fx-part code { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 1rem; color: var(--sub-color); }
+.fx-unit { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--color-text-muted); }
+
+/* calculator */
+.fx-calc { border: 2px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.fx-calc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--line);
+}
+.fx-calc-head label { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); }
+.fx-calc select {
+  font-family: var(--font-display);
+  font-weight: 600;
+  max-width: 100%;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  padding: 0.35rem 0.6rem;
+}
+
+.fx-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.85rem;
+  padding: 0.9rem;
+}
+.fx-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.fx-field label { font-size: 0.82rem; font-weight: 700; color: var(--color-text-muted); }
+.fx-field label em { font-style: normal; font-family: "JetBrains Mono", monospace; color: var(--color-text); }
+.fx-field input {
+  width: 100%;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1rem;
+  padding: 0.5rem 0.6rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+}
+.fx-field input:focus { outline: none; border-color: var(--color-sky); }
+
+.fx-result {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.9rem;
+  border-top: 2px solid var(--line);
+  background: var(--color-bg);
+}
+.fx-val {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #16a34a;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+.fx-lab { font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); }
+
+.fx-note {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  background: var(--color-bg);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+}
+.fx-why {
+  background: var(--color-bg);
+  border: 2px solid var(--line);
+  border-left: 6px solid var(--color-sun);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1rem;
+  max-width: 66ch;
+}
+
+/* constants drawer */
+.fx-constants { padding: 0; }
+.fx-constants summary {
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  padding: 0.9rem 1.2rem;
+}
+.fx-ctable {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.6rem;
+  padding: 0 1.2rem 1.2rem;
+}
+.fx-ctable div { font-size: 0.9rem; }
+.fx-ctable code { font-family: "JetBrains Mono", monospace; font-weight: 700; color: var(--color-sky-dark); }
+
+.fx-back { display: none; align-self: flex-start; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 900px) {
+  .fx-layout { grid-template-columns: minmax(0, 1fr); }
+  .fx-list { position: static; max-height: none; }
+  body.viewing .fx-list { display: none; }
+  body:not(.viewing) .fx-detail-col { display: none; }
+  .fx-back { display: inline-block; }
+  .fx-viz { height: 190px; }
+  .fx-part { grid-template-columns: 3.6rem minmax(0, 1fr); }
+  .fx-unit { grid-column: 2; }
+  .fx-detail h1 { font-size: 1.5rem; }
+}
+
+@media print {
+  .fx-search, .fx-list, .fx-back, .fx-calc-head, .fx-constants, .game-back { display: none !important; }
+  .fx-layout { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-chip, .fx-item, #q { transition: none !important; }
+}

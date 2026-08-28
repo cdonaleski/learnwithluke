@@ -291,6 +291,8 @@ main {
 .card--code::before { background: var(--color-sky); }
 .card--tools::before { background: var(--color-coral); }
 .card--scores::before { background: var(--color-sun); }
+.card--science::before { background: var(--color-sun); }
+.card--ai::before { background: var(--color-purple); }
 .card--soon::before { background: var(--color-orange); }
 
 .card--puzzles:hover { border-color: var(--color-purple); }
@@ -298,6 +300,8 @@ main {
 .card--code:hover { border-color: var(--color-sky); }
 .card--tools:hover { border-color: var(--color-coral); }
 .card--scores:hover { border-color: var(--color-sun); }
+.card--science:hover { border-color: var(--color-sun); }
+.card--ai:hover { border-color: var(--color-purple); }
 .card--soon { cursor: default; opacity: 0.85; }
 .card--soon:hover { transform: none; box-shadow: var(--shadow-soft); border-color: transparent; }
 
@@ -334,6 +338,8 @@ main {
 .card--code .card-tag { background: #ccfbf1; color: #0d9488; }
 .card--tools .card-tag { background: #ffe3e3; color: #d64545; }
 .card--scores .card-tag { background: #fff4c9; color: #a37a00; }
+.card--science .card-tag { background: #fff4c9; color: #a37a00; }
+.card--ai .card-tag { background: #ede9fe; color: #7c3aed; }
 .card--soon .card-tag { background: #ffedd5; color: #ea580c; }
 
 /* Coming soon page */

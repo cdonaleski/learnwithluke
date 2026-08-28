@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Formula Lab — physics, chemistry, maths, engineering and space formulas, each one animated and worked out with real numbers, on Learn With Luke">
+  <title>Formula Lab · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/formulas.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page fx-page">
+    <a href="../index.html" class="game-back">← Back to Science</a>
+
+    <header class="game-header">
+      <h1>🧪 Formula Lab</h1>
+      <p class="game-instructions" role="note">
+        <strong>Every formula here does something when you change it.</strong>
+        Type your own numbers into the boxes and watch the picture move — the
+        gears really do spin slower, the beam really does sag further.
+      </p>
+    </header>
+
+    <section class="game-panel fx-search" aria-labelledby="search-title">
+      <h2 id="search-title" class="visually-hidden">Find a formula</h2>
+      <div class="fx-searchrow">
+        <input id="q" type="search" placeholder="Search: gravity, moles, gear ratio, pizza…" aria-label="Search formulas" autocomplete="off">
+        <button type="button" class="option-btn" id="random">🎲 Surprise me</button>
+      </div>
+      <div class="fx-chips" id="chips"></div>
+      <p class="fx-count" id="count"></p>
+    </section>
+
+    <div class="fx-layout">
+      <nav class="game-panel fx-list" aria-label="Formula list">
+        <div class="fx-list-scroll" id="list"></div>
+      </nav>
+
+      <div class="fx-detail-col">
+        <button type="button" class="option-btn fx-back" id="back">← All formulas</button>
+        <article class="game-panel fx-detail" id="detail"></article>
+
+        <details class="game-panel fx-constants">
+          <summary>Handy constants</summary>
+          <div class="fx-ctable">
+            <div><code>g</code> = 9.8 m/s² — gravity at Earth's surface</div>
+            <div><code>c</code> = 3.00 × 10⁸ m/s — speed of light</div>
+            <div><code>G</code> = 6.674 × 10⁻¹¹ — gravitational constant</div>
+            <div><code>N<sub>A</sub></code> = 6.022 × 10²³ /mol — Avogadro's number</div>
+            <div><code>R</code> = 8.314 L·kPa/(mol·K) — gas constant</div>
+            <div><code>π</code> = 3.14159…</div>
+            <div><code>c<sub>water</sub></code> = 4186 J/kg°C — specific heat of water</div>
+            <div><code>ρ<sub>water</sub></code> = 1000 kg/m³ — density of water</div>
+            <div><code>0 °C</code> = 273.15 K — freezing point</div>
+            <div><code>1 AU</code> = 1.496 × 10¹¹ m — Earth to the Sun</div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/formulas.js"></script>
+  <script src="js/viz.js"></script>
+  <script src="js/lab.js"></script>
+</body>
+</html>

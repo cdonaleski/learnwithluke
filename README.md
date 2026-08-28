@@ -39,6 +39,14 @@ A kid-friendly learning website with puzzles, games, coding adventures, and more
 - **Code** (`code/`) — coding hub, two paths in
 - **Robot Blocks** (`code/blocks/`) — tap-to-build block puzzles for younger coders; levels in `js/levels.js`
 - **Code Playground** (`code/playground/`) — live HTML/CSS/JS editor with a sandboxed preview, friendly error hints, and share-by-link; projects live in `js/projects.js`
+- **Science** (`science/`) — science hub
+- **Formula Lab** (`science/formulas/`) — 87 searchable formula cards across physics,
+  chemistry, maths, engineering and space, each with a live calculator and an
+  animation; cards live in `js/formulas.js`, drawings in `js/viz.js`
+- **AI** (`ai/`) — AI hub, five demos
+- **AI Lab** (`ai/lab/`) — train a classifier, watch next-word prediction, see
+  tokens, tune one neuron, and catch a biased model; everything runs in the
+  browser with no API key and no network calls
 - **Shared styles** (`css/styles.css`) — consistent look across all pages
 - **Shared game chrome** (`css/game.css`) — panels, stat strips, option pickers and
   help blocks used by the newer game pages
@@ -252,6 +260,96 @@ The rules:
 
 A level that breaks either rule is skipped with a console warning rather than
 being dealt.
+
+## Adding a formula card
+
+Open `science/formulas/js/formulas.js` and copy a block. Each card needs an
+`id`, a `sub` (physics, chemistry, math, engineering or space), the formula
+itself written with real symbols, a plain-words `m` line, the `vars` that
+appear in it, and a `why` line saying where a child would actually meet it.
+
+The calculator is built from `solve`. Each entry says which value it works out,
+which values it needs, and the function that does it:
+
+```js
+solve: [
+  { for: "v", needs: ["d", "t"], fn: function (x) { return x.d / x.t } },
+  { for: "d", needs: ["v", "t"], fn: function (x) { return x.v * x.t } },
+],
+```
+
+Give a card as many entries as make sense — rearranging a formula is the thing
+most children find hardest, and the picker makes it visible rather than
+something they have to do on paper first.
+
+`ex` is the worked example, and it is not decoration: the calculator opens
+pre-filled with those numbers, so every card lands on a real answer instead of
+an empty box. Its `for` must match one of the `solve` entries and its `vals`
+must cover that entry's `needs`.
+
+A card with no `solve` — a chemical reaction, say — shows its `note` instead of
+a calculator.
+
+## Adding a formula animation
+
+Animations live in `science/formulas/js/viz.js`. They are not one drawing per
+card: there are eighteen renderers (`motion`, `gas`, `beam`, `orbit`, `shape`
+and so on), and `VIZ_MAP` at the top of the file says which card uses which. To
+give a new card a picture, add its id to that map — usually no new drawing code
+is needed.
+
+Renderers read the child's own numbers through `g("v", 10)` (the value of `v`,
+or 10 if the box is empty), so changing an input changes the picture. Use
+`norm(value, typical)` to turn a real-world number into a sensible size on
+screen, or a card entered in millimetres would draw its beam a mile long.
+
+Every renderer is wrapped in a try/catch when it runs. A drawing bug should
+never take the page down with it.
+
+## How the AI Lab demos work
+
+All five are honest — none of them fake their answers.
+
+- **Teach the Machine** stores the child's labelled examples and classifies by
+  nearest centroid. The map behind the dots is the real decision boundary.
+- **The Next-Word Machine** builds a bigram model from one of three short
+  texts, and the bars show the actual counts.
+- **How a Machine Reads** splits words by stripping known prefixes and
+  suffixes. It is deliberately simpler than a real tokenizer, and the page says
+  so on screen.
+- **See One Neuron** runs the perceptron learning rule. The points are
+  generated with a clear margin so it always converges.
+- **Bias Detective** hands the whole training set to the child. They tap
+  examples into "this is a match" or "this is not", the machine averages
+  whatever it was given, and six held-out items get judged against it. The
+  famous wrong answers — a tomato called an apple, a wolf called a dog — are
+  never written in; they happen because of what the child chose to show it.
+  Its data lives in `ai/lab/js/bias.js`.
+
+## Adding a Bias Detective job
+
+Copy a block in `JOBS` in `ai/lab/js/bias.js`. A job needs four things the
+machine is allowed to measure (`feats`), ten examples the child can teach it
+(`pool`), six held-out items it gets tested on (`tests`), and a list of
+`missions`.
+
+One rule makes the whole thing work: **at least one pair of items must have
+identical measurements while sitting on opposite sides of the answer** — a pear
+and a green apple, a wolf and a husky. That pair is what teaches the lesson no
+amount of extra examples can fix: a machine can only be as clever as the things
+it is allowed to measure.
+
+Two things the code deliberately refuses to fudge:
+
+- A dead heat is not a right answer. When an item lands exactly between the two
+  groups, the card says it flipped a coin and the score does not count it, even
+  when the label that falls out happens to match.
+- Missions check what actually happened, including what the machine *said*
+  rather than merely whether it was wrong — "trick it into calling the tomato an
+  apple" only ticks if it really said APPLE.
+
+Before changing the data, run the numbers: every mission must be reachable from
+some training set, and it is easy to write one that is quietly impossible.
 
 ## Adding new pages
 

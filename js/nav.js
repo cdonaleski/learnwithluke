@@ -13,6 +13,8 @@
     { id: "tools", label: "Tools" },
     { id: "scores", label: "Scores" },
     { id: "code", label: "Code" },
+    { id: "science", label: "Science" },
+    { id: "ai", label: "AI" },
   ];
   const path = window.location.pathname;
   const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
