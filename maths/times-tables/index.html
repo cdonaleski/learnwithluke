@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Times Tables — practice that works out which ones you find hard and gives you those, on Learn With Luke">
+  <title>Times Tables · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/times-tables.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Maths</a>
+
+    <header class="game-header">
+      <h1>✖️ Times Tables</h1>
+      <p class="game-instructions" role="note">
+        <strong>It watches which ones you get wrong and asks those more often.</strong>
+        The squares in the grid fill in as you learn them.
+      </p>
+    </header>
+
+    <section class="game-panel" id="round-panel" aria-labelledby="round-title">
+      <h2 id="round-title" class="visually-hidden">Practice</h2>
+
+      <p class="question" id="question" role="status" aria-live="polite">—</p>
+      <p class="entry" id="entry">?</p>
+
+      <div class="keypad" id="keypad" role="group" aria-label="Number keys"></div>
+
+      <p class="game-status" id="status" role="status" aria-live="polite">
+        Choose your tables, then press Start.
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">Start</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Question</span><span class="stat-value" id="count">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">In a row</span><span class="stat-value" id="streak">0</span></div>
+        <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="clock">0:00</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Facts solid</span><span class="stat-value" id="solid">—</span></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="choose-title">
+      <h2 id="choose-title">What to practise</h2>
+      <p class="choose-label">Which tables</p>
+      <div class="chips" id="tables" role="group" aria-label="Which tables to practise"></div>
+      <p class="choose-label">What kind of question</p>
+      <div class="chips" id="modes" role="group" aria-label="Kind of question"></div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="grid-title">
+      <h2 id="grid-title">Your grid</h2>
+      <p class="lb-note">
+        Pale means you have not met it yet. It fills in as you get it right —
+        and both squares light up together, because 3 × 7 and 7 × 3 are the
+        same fact.
+      </p>
+      <div class="tt-grid" id="grid" role="img" aria-label="Your times table grid, shaded by how well you know each fact"></div>
+      <h3 class="tricky-title">Ones to watch</h3>
+      <div class="tricky" id="tricky"></div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel"></section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>How it picks</dt>
+        <dd>Not at random. Every fact has a strength from nothing to five, and
+        the shaky ones are about <strong>thirty-six times</strong> likelier to
+        come up than the solid ones. So the practice aims itself at what you
+        actually find hard, instead of making you do 2 × 2 over and over.</dd>
+
+        <dt>Getting one wrong</dt>
+        <dd>You are told the answer straight away — being told is how you learn
+        it, and being asked again in a minute is how you keep it. A wrong answer
+        costs two steps of strength where a right one earns one, because a slip
+        after a lucky run says more than the run did.</dd>
+
+        <dt>Why the grid lights up in pairs</dt>
+        <dd>3 × 7 and 7 × 3 are the same fact. Learn one and you have both, so
+        both squares fill in together. It means there are <strong>78</strong>
+        facts to learn in the whole grid, not 144 — which is a much less
+        frightening number.</dd>
+
+        <dt>Kinds of question</dt>
+        <dd><strong>Times</strong> is 7 × 8. <strong>Dividing</strong> is 56 ÷ 7.
+        <strong>Missing number</strong> is 7 × ? = 56 — the same thing as
+        dividing, but it does not look like it, which is exactly why it is worth
+        doing.</dd>
+
+        <dt>The best-times board</dt>
+        <dd>Only a round with every single one right goes on it, so a fast time
+        there means something.</dd>
+
+        <dt>Keyboard</dt>
+        <dd>Type the digits, <kbd>Backspace</kbd> to rub out, <kbd>Enter</kbd> to
+        check. Or use the keys on screen.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/facts.js"></script>
+  <script src="js/times-tables.js"></script>
+</body>
+</html>
