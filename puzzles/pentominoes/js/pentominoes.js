@@ -30,6 +30,7 @@
     picker: document.getElementById("picker"),
     clock: document.getElementById("clock"),
     leftCount: document.getElementById("left-count"),
+    next: document.getElementById("btn-next"),
     turn: document.getElementById("btn-turn"),
     flip: document.getElementById("btn-flip"),
     hint: document.getElementById("btn-hint"),
@@ -41,11 +42,16 @@
     grid: [],
     placed: {},        // letter -> { way, cells }
     picked: null,
+    onBoard: false,    // is the piece in hand already down on the board?
     way: 0,
     started: 0,
     done: false,
     hints: 0,
+    advance: null,     // the pause between finishing one puzzle and the next
   };
+
+  // Long enough to look at what you just did, short enough not to have to wait.
+  const PAUSE = 2400;
 
   const DONE_KEY = "pent-done";
 
@@ -55,16 +61,20 @@
   /* ---------------- Loading ---------------- */
 
   function load(puzzle) {
+    if (state.advance) { window.clearTimeout(state.advance); state.advance = null; }
     state.puzzle = puzzle;
     state.grid = new Array(puzzle.w * puzzle.h).fill("");
     state.placed = {};
     state.picked = puzzle.set[0];
+    state.onBoard = false;
     state.way = 0;   // set properly once the board exists, by usableWay below
     state.started = 0;
     state.done = false;
     state.hints = 0;
     el.title.textContent = puzzle.title + " · " + puzzle.w + " by " + puzzle.h;
     el.note.textContent = puzzle.note;
+    el.board.classList.remove("is-done");
+    if (el.next) el.next.hidden = true;
     buildBoard();
     state.way = usableWay(state.picked);
     drawAll();
@@ -95,7 +105,17 @@
         cell.className = "cell";
         cell.dataset.x = x;
         cell.dataset.y = y;
-        cell.addEventListener("click", function () { tap(x, y); });
+        cell.addEventListener("click", function () {
+          if (swallowClick) { swallowClick = false; return; }
+          tap(x, y);
+        });
+        cell.addEventListener("pointerdown", function (event) {
+          const here = state.grid[at(x, y)];
+          if (!here) return;                 // dragging starts from a piece
+          select(here, true);
+          drawTray();
+          beginDrag(here, true, event);
+        });
         cell.addEventListener("mouseenter", function () { ghost(x, y); });
         cell.addEventListener("mouseleave", clearGhost);
         el.board.appendChild(cell);
@@ -156,18 +176,71 @@
     delete state.placed[letter];
   }
 
+  /** Takes hold of a piece, whether it is in the tray or already on the board. */
+  function select(letter, fromBoard) {
+    state.picked = letter;
+    state.onBoard = Boolean(fromBoard);
+    state.way = fromBoard && state.placed[letter] ? state.placed[letter].way : usableWay(letter);
+  }
+
+  /**
+   * Moves a piece already on the board to a new square, putting it back where
+   * it was if it will not go there. Nothing is ever lost by trying.
+   */
+  function moveTo(x, y) {
+    const was = state.placed[state.picked];
+    if (!was) return false;
+    lift(state.picked);
+    const cells = landingAt(state.picked, state.way, x, y);
+    if (!cells) { put(state.picked, was.way, was.cells); return false; }
+    put(state.picked, state.way, cells);
+    return true;
+  }
+
+  /**
+   * Turns or flips a piece where it stands rather than making you pick it up,
+   * carry it away and put it down again. It tries to stay on the squares it
+   * was already using, and if the new way up will not go there at all it goes
+   * back exactly as it was.
+   */
+  function turnInPlace(nextWay) {
+    const was = state.placed[state.picked];
+    if (!was) return false;
+    const old = was.cells.slice();
+    lift(state.picked);
+    for (let i = 0; i < old.length; i++) {
+      const cells = landingAt(state.picked, nextWay, old[i][0], old[i][1]);
+      if (cells) {
+        put(state.picked, nextWay, cells);
+        state.way = nextWay;
+        return true;
+      }
+    }
+    put(state.picked, was.way, old);
+    return false;
+  }
+
   function tap(x, y) {
     if (state.done) return;
     const here = state.grid[at(x, y)];
     if (here) {
-      lift(here);
-      state.picked = here;
-      state.way = usableWay(here);
+      // Tapping a piece already down picks it out rather than snatching it up,
+      // so it can be turned, flipped or dragged from where it is.
+      select(here, true);
       drawAll();
-      say(here + " taken back. Tap a square to put it somewhere else.");
+      say("The " + here + " is chosen. Turn it, flip it, drag it, or tap an " +
+        "empty square to move it there.");
       return;
     }
     if (!state.picked) { say("Pick a piece from the tray first."); return; }
+
+    if (state.onBoard && state.placed[state.picked]) {
+      const letter = state.picked;
+      if (!moveTo(x, y)) { say("The " + letter + " will not go there. It has stayed put."); return; }
+      drawAll();
+      if (!state.done) say(letter + " moved.");
+      return;
+    }
     if (state.placed[state.picked]) { say("That one is already on the board."); return; }
     const ways = P.PIECES[state.picked].ways;
     let way = state.way, cells = landingAt(state.picked, way, x, y);
@@ -197,30 +270,50 @@
 
   function nextPiece() {
     const spare = state.puzzle.set.split("").filter(function (l) { return !state.placed[l]; });
+    state.onBoard = false;
     state.picked = spare.length ? spare[0] : null;
     state.way = state.picked ? usableWay(state.picked) : 0;
   }
 
   /* ---------------- Turning ---------------- */
 
+  function reorient(nextWay, verb, sameAgain) {
+    if (!state.picked) return;
+    if (state.onBoard && state.placed[state.picked]) {
+      if (!turnInPlace(nextWay)) {
+        drawAll();
+        say("No room to " + verb + " the " + state.picked + " where it is. Move it first.");
+        return;
+      }
+      drawAll();
+      say(state.picked + " " + verb + "ed where it stands.");
+      return;
+    }
+    state.way = nextWay;
+    drawTray();
+    say(nextWay === state.way && sameAgain ? sameAgain : state.picked + " " + verb + "ed.");
+  }
+
   function turnPiece() {
     if (!state.picked) return;
     const piece = P.PIECES[state.picked];
-    state.way = piece.turned[state.way];
-    drawTray();
-    say(state.picked + " turned a quarter turn." +
-      (piece.ways.length === 1 ? " Though the X looks the same whichever way you turn it." : ""));
+    const next = piece.turned[state.way];
+    if (next === state.way) {
+      say("The " + state.picked + " looks the same whichever way you turn it.");
+      return;
+    }
+    reorient(next, "turn");
   }
 
   function flipPiece() {
     if (!state.picked) return;
     const piece = P.PIECES[state.picked];
-    const was = state.way;
-    state.way = piece.flipped[state.way];
-    drawTray();
-    say(state.way === was
-      ? state.picked + " looks the same held up to a mirror."
-      : state.picked + " flipped over.");
+    const next = piece.flipped[state.way];
+    if (next === state.way) {
+      say("The " + state.picked + " looks the same held up to a mirror.");
+      return;
+    }
+    reorient(next, "flip");
   }
 
   /* ---------------- Hints ---------------- */
@@ -246,6 +339,84 @@
     if (!state.done) say("The " + step.letter + " goes there. " + leftCount() + " to go.");
   }
 
+  /* ---------------- Dragging ----------------
+     Pointer events rather than mouse ones, so a finger, a mouse and a stylus
+     all take the same path. A drag that never leaves the square it started on
+     is left alone to become an ordinary tap. */
+
+  let drag = null;
+  let swallowClick = false;
+
+  function squareUnder(clientX, clientY) {
+    let node = null;
+    try { node = document.elementFromPoint(clientX, clientY); } catch (err) { return null; }
+    if (!node || !node.dataset || node.dataset.x === undefined) return null;
+    return { x: Number(node.dataset.x), y: Number(node.dataset.y) };
+  }
+
+  function beginDrag(letter, fromBoard, event) {
+    if (state.done) return;
+    drag = {
+      letter: letter,
+      fromBoard: fromBoard,
+      was: fromBoard ? state.placed[letter] : null,
+      lifted: false,
+      moved: false,
+      over: null,
+    };
+    if (event && event.pointerId !== undefined && el.board.setPointerCapture) {
+      try { el.board.setPointerCapture(event.pointerId); } catch (err) { /* not vital */ }
+    }
+  }
+
+  function dragMove(event) {
+    if (!drag) return;
+    const square = squareUnder(event.clientX, event.clientY);
+    if (!square) return;
+    if (drag.over && drag.over.x === square.x && drag.over.y === square.y) return;
+    drag.over = square;
+    drag.moved = true;
+    // Out of its own way, so it can be previewed over the squares it is using.
+    if (drag.fromBoard && !drag.lifted && state.placed[drag.letter]) {
+      lift(drag.letter);
+      drag.lifted = true;
+      drawBoard();
+    }
+    clearGhost();
+    ghost(square.x, square.y);
+  }
+
+  function dragEnd() {
+    if (!drag) return;
+    const held = drag;
+    drag = null;
+    clearGhost();
+    if (!held.moved) return;                 // never left home: treat it as a tap
+    swallowClick = true;
+
+    const target = held.over;
+    const cells = target ? landingAt(held.letter, state.way, target.x, target.y) : null;
+    if (cells) {
+      put(held.letter, state.way, cells);
+      state.onBoard = true;
+      state.picked = held.letter;
+      drawAll();
+      if (!state.done) say(held.letter + (held.fromBoard ? " moved." : " placed. " + leftCount() + " to go."));
+      return;
+    }
+    // Nowhere to drop it: put it back exactly where it came from.
+    if (held.lifted && held.was) {
+      put(held.letter, held.was.way, held.was.cells);
+      state.way = held.was.way;
+    }
+    drawAll();
+    say("The " + held.letter + " will not go there, so it is back where it was.");
+  }
+
+  window.addEventListener("pointermove", dragMove);
+  window.addEventListener("pointerup", dragEnd);
+  window.addEventListener("pointercancel", dragEnd);
+
   /* ---------------- Drawing ---------------- */
 
   function drawBoard() {
@@ -253,7 +424,8 @@
     for (let i = 0; i < cells.length; i++) {
       const letter = state.grid[i];
       const cell = cells[i];
-      cell.className = "cell" + (letter ? " is-filled" : "");
+      const chosen = letter && state.onBoard && letter === state.picked;
+      cell.className = "cell" + (letter ? " is-filled" : "") + (chosen ? " is-chosen" : "");
       cell.style.background = letter ? P.PIECES[letter].colour : "";
       const x = i % state.puzzle.w, y = Math.floor(i / state.puzzle.w);
       cell.setAttribute("aria-label", "Row " + (y + 1) + ", column " + (x + 1) + ": " +
@@ -332,11 +504,21 @@
       button.appendChild(art);
       button.appendChild(tag);
       button.addEventListener("click", function () {
-        if (used) { lift(letter); }
-        state.picked = letter;
-        state.way = usableWay(letter);
+        if (used) {
+          lift(letter);
+          select(letter, false);
+          drawAll();
+          say("The " + letter + " taken off the board. Tap a square to put it back.");
+          return;
+        }
+        select(letter, false);
         drawAll();
         say("The " + letter + " picked up. Tap a square to put it down.");
+      });
+      button.addEventListener("pointerdown", function (event) {
+        if (used) lift(letter);
+        select(letter, false);
+        beginDrag(letter, false, event);
       });
       el.tray.appendChild(button);
     });
@@ -377,13 +559,51 @@
     try { window.localStorage.setItem(DONE_KEY, JSON.stringify(done)); } catch (err) { /* fine */ }
     el.board.classList.add("is-done");
     drawPicker();
+
     const clean = state.hints === 0;
-    say("🎉 Solved" + (clean ? " with no hints" : " with " + state.hints +
+    let words = "🎉 Solved" + (clean ? " with no hints" : " with " + state.hints +
       (state.hints === 1 ? " hint" : " hints")) + "! " +
       (state.puzzle.ways ? "There are " + state.puzzle.ways.toLocaleString() +
-        " different ways to do that one — you found one of them." : ""));
+        " different ways to do that one — you found one of them. " : "");
+
     // Only a solve done without hints belongs on a board of best times.
-    if (board && clean && took > 0) board.offer(took, state.puzzle.id);
+    const asked = Boolean(board && clean && took > 0 && board.offer(took, state.puzzle.id));
+    if (el.next) el.next.hidden = !upNext();
+    // If a name is being typed in, the puzzle must not be whipped away
+    // underneath it. In that case the next one waits until the name is in.
+    say(words + (asked ? "Put your name on the board, and the next one will follow."
+                       : nextWords()));
+    if (!asked) queueNext();
+  }
+
+  function upNext() {
+    const at = PUZZLES.findIndex(function (p) { return p.id === state.puzzle.id; });
+    return PUZZLES[at + 1] || null;
+  }
+
+  function nextWords() {
+    const next = upNext();
+    return next ? "Next: " + next.title + "…" : "That was the last one — all eleven done.";
+  }
+
+  /** Moves on by itself, so finishing one puzzle just leads into the next. */
+  function queueNext() {
+    const next = upNext();
+    if (!next) return;
+    if (state.advance) window.clearTimeout(state.advance);
+    state.advance = window.setTimeout(function () {
+      state.advance = null;
+      load(next);
+      drawPicker();
+    }, PAUSE);
+  }
+
+  function goNext() {
+    const next = upNext();
+    if (!next) return;
+    if (state.advance) { window.clearTimeout(state.advance); state.advance = null; }
+    load(next);
+    drawPicker();
   }
 
   function remembered() {
@@ -416,11 +636,14 @@
     gameName: "Pentominoes",
     metric: { label: "Time", better: "lower", format: "time" },
     categories: PUZZLES.map(function (p) { return { id: p.id, label: p.title }; }),
+    // Once the name is safely on the board, carry on to the next puzzle.
+    onSaved: function () { say(nextWords()); queueNext(); },
   }) : null;
   if (board) board.mount(document.getElementById("leaderboard-panel"));
 
   /* ---------------- Buttons and keys ---------------- */
 
+  if (el.next) el.next.addEventListener("click", goNext);
   if (el.turn) el.turn.addEventListener("click", turnPiece);
   if (el.flip) el.flip.addEventListener("click", flipPiece);
   if (el.hint) el.hint.addEventListener("click", hint);
@@ -445,7 +668,10 @@
   drawPicker();
 
   window.PentApp = {
+    scores: board,
     state: state, load: load, tap: tap, hint: hint, turnPiece: turnPiece, sizeBoard: sizeBoard,
-    flipPiece: flipPiece, landingAt: landingAt, usableWay: usableWay, PUZZLES: PUZZLES, leftCount: leftCount,
+    flipPiece: flipPiece, landingAt: landingAt, usableWay: usableWay,
+    goNext: goNext, upNext: upNext, PAUSE: PAUSE,
+    select: select, moveTo: moveTo, turnInPlace: turnInPlace, PUZZLES: PUZZLES, leftCount: leftCount,
   };
 })();
