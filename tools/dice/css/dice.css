@@ -5,7 +5,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.6rem, 3vw, 1.1rem);
+  gap: clamp(0.75rem, 3.5vw, 1.4rem);
   min-height: 7rem;
   padding: 1.4rem 1rem;
   cursor: pointer;
@@ -19,7 +19,7 @@
 }
 
 .die {
-  --size: clamp(3.25rem, 14vw, 4.5rem);
+  --size: clamp(3.5rem, 15vw, 5rem);
   width: var(--size);
   height: var(--size);
   position: relative;
@@ -95,10 +95,10 @@
 
 /* The front face is lightest and the faces angling away are darker. That
    shading is what makes a flat drawing read as a solid you could pick up. */
-.fct { stroke: #cbbb9d; stroke-width: 0.7; stroke-linejoin: round; }
-.fct--a { fill: #fffdf7; }
-.fct--b { fill: #ece2ce; }
-.fct--c { fill: #d9cbb0; }
+.fct { stroke: #c3b192; stroke-width: 0.7; stroke-linejoin: round; }
+.fct--a { fill: #fffefb; }
+.fct--b { fill: #e7dcc4; }
+.fct--c { fill: #cdbc9b; }
 
 .die-outline {
   fill: none;

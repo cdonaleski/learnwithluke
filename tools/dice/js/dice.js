@@ -114,13 +114,15 @@
 
   function shapeD4() {
     // A tetrahedron seen corner-on: one triangle, creased into the three faces
-    // that meet at the top point.
-    const v = ring(50, 54, 46, 3);
-    const middle = "50,54";
+    // that meet at the far point. That crease sits a little above the middle so
+    // the bottom face is roomy enough to hold the number without it landing on
+    // the edge.
+    const v = ring(50, 52, 47, 3);
+    const middle = "50,45";
     return {
       outline: v.join(" "),
       facets: [[v[1], v[2], middle], [v[2], v[0], middle], [v[0], v[1], middle]],
-      num: [50, 63], font: 22,
+      num: [50, 61], font: 21,
     };
   }
 
@@ -141,9 +143,9 @@
   function shapeD10() {
     // A ten-sided die is two rings of kites, so the front face is a kite and the
     // edge around the middle zigzags rather than running straight.
-    const T = "50,4", L = "7,36", R = "93,36";
-    const ML = "29,55", MR = "71,55", B = "50,72";
-    const BL = "21,90", BR = "79,90", BOT = "50,97";
+    const T = "50,3", L = "6,38", R = "94,38";
+    const ML = "26,52", MR = "74,52", B = "50,80";
+    const BL = "18,80", BR = "82,80", BOT = "50,96";
     return {
       outline: [T, R, BR, BOT, BL, L].join(" "),
       facets: [
@@ -151,7 +153,7 @@
         [T, ML, L], [T, R, MR],
         [ML, B, BOT, BL, L], [MR, R, BR, BOT, B],
       ],
-      num: [50, 40], font: 24,
+      num: [50, 41], font: 24,
     };
   }
 
