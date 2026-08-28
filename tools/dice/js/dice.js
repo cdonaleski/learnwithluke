@@ -110,7 +110,18 @@
    */
   const LIGHT = TILT ? window.Polyhedra.apply(TILT, [-0.2, -0.26, 0.94]) : [0, 0, 1];
   const LIT = [255, 253, 246];
-  const SHADE = [146, 130, 102];
+  const SHADE = [178, 162, 133];
+
+  /**
+   * An extra turn for a die that would otherwise look flat.
+   *
+   * Every other solid shows several faces at once, but a tetrahedron's faces
+   * are 109 degrees apart, so one held square to you hides the other three
+   * completely and you are looking at a plain triangle. Turning it far enough
+   * to bring a second face round the edge is the only way to see that it has
+   * any depth at all.
+   */
+  const REST = { d4: [-10, -20] };
 
   function toneAt(brightness) {
     const t = Math.max(0, Math.min(1, brightness));
@@ -145,8 +156,13 @@
     const P = window.Polyhedra;
     const spec = die.solid.spec;
     const landed = spec.faces.find(function (f) { return f.number === value; }) || spec.faces[0];
-    die.solid.el.style.transform = landed.landing;
-    const view = P.times(TILT, landed.rotation);
+    const rest = REST[spec.id];
+    const extra = rest ? "rotateX(" + rest[0] + "deg) rotateY(" + rest[1] + "deg) " : "";
+    die.solid.el.style.transform = extra + landed.landing;
+    const turned = rest
+      ? P.times(P.times(P.rotX(rest[0]), P.rotY(rest[1])), landed.rotation)
+      : landed.rotation;
+    const view = P.times(TILT, turned);
     spec.faces.forEach(function (face, i) {
       const facing = P.apply(view, face.normal);
       die.solid.faces[i].style.setProperty("--tone", toneAt(P.dot(facing, LIGHT)));
@@ -466,7 +482,7 @@
   window.DiceApp = {
     state, rollDie, rollAll, total, record, averageTotal, resetTally, roll, settle,
     buildTray, showValues, cubeTransform, buildSolid, showSolid, toneAt,
-    CUBE_FACES, CUBE_ANGLES,
+    CUBE_FACES, CUBE_ANGLES, REST, LIGHT,
     DICE_TYPES, MAX_DICE, ROLL_MS,
     dice: function () { return diceEls; },
   };

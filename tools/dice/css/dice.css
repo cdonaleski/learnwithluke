@@ -123,8 +123,8 @@
    the light once the die has landed. */
 .face-svg polygon {
   fill: var(--tone, #f6efe0);
-  stroke: #9d8a66;
-  stroke-width: 1.6;
+  stroke: #8a7550;
+  stroke-width: 1.9;
   stroke-linejoin: round;
 }
 
