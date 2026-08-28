@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Spinner — put names in, give it a spin, let the wheel decide. On Learn With Luke">
+  <title>Spinner · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/spinner.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Tools</a>
+
+    <header class="game-header">
+      <h1>🎡 Spinner</h1>
+      <p class="game-instructions" role="note">
+        <strong>Put anything on the wheel and let it decide.</strong>
+        Whose turn it is, who washes up, what to have for tea.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="wheel-title">
+      <h2 id="wheel-title" class="visually-hidden">The wheel</h2>
+
+      <div class="wheel-wrap">
+        <canvas id="wheel" width="360" height="360" aria-label="The wheel"></canvas>
+      </div>
+
+      <p class="result" id="result">—</p>
+      <p class="game-status" id="status" role="status" aria-live="polite">Give it a spin.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-spin">🎡 Spin</button>
+        <button type="button" class="btn btn-secondary" id="btn-reset">↩️ Put everybody back</button>
+        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">On the wheel</span><span class="stat-value" id="left">—</span></div>
+      </div>
+
+      <label class="take-out">
+        <input type="checkbox" id="take-out">
+        <span>Take the winner off the wheel — for going round the whole family without repeats</span>
+      </label>
+    </section>
+
+    <section class="game-panel" aria-labelledby="list-title">
+      <h2 id="list-title">What is on it</h2>
+      <p class="lb-note">One on each line. Up to 24 of them.</p>
+      <textarea id="entries" class="entries" rows="8" aria-label="What goes on the wheel, one per line"></textarea>
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-apply">Put these on the wheel</button>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>Spinning</dt>
+        <dd>Press <strong>Spin</strong>, tap the wheel, or hit <kbd>Space</kbd>.</dd>
+
+        <dt>Is it fair?</dt>
+        <dd>Yes. Every slice has exactly the same chance, however big it looks —
+        and the slices are all the same size anyway. The winner is picked first
+        and the wheel is aimed at that slice, so where the pointer stops and
+        what it says can never disagree.</dd>
+
+        <dt>Going round everybody</dt>
+        <dd>Tick <strong>take the winner off</strong> and each name comes off as
+        it is picked, so nobody gets two turns before everybody has had one.
+        <strong>Put everybody back</strong> starts again.</dd>
+
+        <dt>Ideas for it</dt>
+        <dd>Names for whose turn it is. Jobs, so nobody argues about who got the
+        bins. Dinners, when nobody can decide. Or numbers, letters, or
+        <em>yes / no / ask again later</em>.</dd>
+
+        <dt>It remembers</dt>
+        <dd>Your list stays on this device — not sent anywhere, and not shared
+        with anyone else's.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/wheel.js"></script>
+  <script src="js/spinner.js"></script>
+</body>
+</html>
