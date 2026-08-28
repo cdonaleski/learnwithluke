@@ -222,18 +222,20 @@
       if (!found) { say("Nothing there to flip. Pick a piece from the tray to build with."); return; }
       const part = P.list[found.cell.part];
       if (!part || !part.joins) { say("That one has nothing to flip."); return; }
+      const wasSolved = state.solved;
       found.cell.state = ((found.cell.state || 0) + 1) % part.joins.length;
       refresh();
-      say(part.name + " flipped.");
+      if (state.solved === wasSolved) say(part.name + " flipped.");
       return;
     }
 
     if (state.tool === "erase") {
       if (!found) return;
       if (state.locked[found.key]) { say("That piece is part of the puzzle — it has to stay."); return; }
+      const wasSolved = state.solved;
       remove(x, y);
       refresh();
-      say("Taken away.");
+      if (state.solved === wasSolved) say("Taken away.");
       return;
     }
 
@@ -261,10 +263,13 @@
 
     if (found) remove(found.x, found.y);
     const rot = bestRotation(x, y, state.tool);
+    const wasSolved = state.solved;
     place(state.board, x, y, state.tool, rot, 0);
     refresh();
-    say(P.list[state.tool].name + " placed" + (rot === state.rot ? "" : ", turned to fit") +
-      ". Click it again to turn it.");
+    if (state.solved === wasSolved) {
+      say(P.list[state.tool].name + " placed" + (rot === state.rot ? "" : ", turned to fit") +
+        ". Click it again to turn it.");
+    }
   }
 
   /* ---------------- The tray ---------------- */
@@ -321,7 +326,7 @@
   function fit() {
     const holder = canvas.parentNode;
     const wide = (holder && holder.clientWidth ? holder.clientWidth : 520) - 8;
-    state.cell = Math.max(30, Math.min(58, Math.floor(wide / state.level.w)));
+    state.cell = Math.max(30, Math.min(74, Math.floor(wide / state.level.w)));
     const w = state.cell * state.level.w, h = state.cell * state.level.h;
     const dpr = window.devicePixelRatio || 1;
     canvas.width = w * dpr;
@@ -440,8 +445,11 @@
     ctx.font = "600 " + Math.round(c * 0.22) + "px system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    // Along the lead towards the plus end, then pushed sideways off the wire so
+    // it reads as a plus sign rather than as part of the wiring.
     const mark = edgePoint(x, y, plus.dir);
-    ctx.fillText("+", centre[0] + (mark[0] - centre[0]) * 0.62, centre[1] + (mark[1] - centre[1]) * 0.62);
+    const along = [(mark[0] - centre[0]) * 0.5, (mark[1] - centre[1]) * 0.5];
+    ctx.fillText("+", centre[0] + along[0] - along[1] * 0.62, centre[1] + along[1] + along[0] * 0.62);
   }
 
   function drawBulb(x, y, cell, at, now) {
