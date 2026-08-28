@@ -20,7 +20,7 @@
   const SANDBOX = {
     id: "sandbox", title: "Free build",
     hint: "Everything is unlocked. Build whatever you like.",
-    teach: "", w: 11, h: 7, fixed: [], start: [], sandbox: true,
+    teach: "", w: 9, h: 7, fixed: [], start: [], sandbox: true,
     tray: { wire: 999, battery: 2, bulb: 6, motor: 3, switch: 6, switch3: 6, switch4: 3 },
     goal: null,
   };
@@ -326,7 +326,9 @@
   function fit() {
     const holder = canvas.parentNode;
     const wide = (holder && holder.clientWidth ? holder.clientWidth : 520) - 8;
-    state.cell = Math.max(30, Math.min(74, Math.floor(wide / state.level.w)));
+    // Never smaller than a finger. On a narrow phone a wide board scrolls
+    // sideways inside its holder rather than shrinking to something untappable.
+    state.cell = Math.max(38, Math.min(74, Math.floor(wide / state.level.w)));
     const w = state.cell * state.level.w, h = state.cell * state.level.h;
     const dpr = window.devicePixelRatio || 1;
     canvas.width = w * dpr;
