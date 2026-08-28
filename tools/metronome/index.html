@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Metronome — a steady beat to practise to, with tap tempo and a louder first beat. On Learn With Luke">
+  <title>Metronome · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/metronome.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Tools</a>
+
+    <header class="game-header">
+      <h1>🎵 Metronome</h1>
+      <p class="game-instructions" role="note">
+        <strong>A steady beat to practise to.</strong>
+        Tap along with a song to find its speed, then play at that speed
+        yourself.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="beat-title">
+      <h2 id="beat-title" class="visually-hidden">The beat</h2>
+
+      <p class="bpm" id="bpm">100</p>
+      <p class="speed-name" id="speed-name">Steady</p>
+
+      <div class="dots" id="dots" role="img" aria-label="The beats in a bar"></div>
+
+      <label class="visually-hidden" for="slider">Beats per minute</label>
+      <input type="range" id="slider" class="slider" min="30" max="240" value="100">
+
+      <p class="game-status" id="status" role="status" aria-live="polite">
+        Press Start, or tap the Tap button in time with something.
+      </p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-down" aria-label="One beat slower">−</button>
+        <button type="button" class="btn btn-primary" id="btn-start" aria-pressed="false">▶ Start</button>
+        <button type="button" class="btn btn-secondary" id="btn-up" aria-label="One beat faster">+</button>
+        <button type="button" class="btn btn-secondary" id="btn-tap">👆 Tap</button>
+      </div>
+
+      <label class="accent-row">
+        <input type="checkbox" id="accent" checked>
+        <span>Make the first beat of each bar louder</span>
+      </label>
+    </section>
+
+    <section class="game-panel" aria-labelledby="choose-title">
+      <h2 id="choose-title">How it counts</h2>
+      <p class="choose-label">Beats in a bar</p>
+      <div class="chips" id="bars" role="group" aria-label="Beats in a bar"></div>
+      <p class="choose-label">Ready-made speeds</p>
+      <div class="chips" id="speeds" role="group" aria-label="Ready-made speeds"></div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>Finding a song's speed</dt>
+        <dd>Play the song and press <strong>Tap</strong> along with the beat, four
+        or five times. It works out how fast you are tapping. Fumble one and it
+        throws that tap away rather than letting it drag the answer about.</dd>
+
+        <dt>Beats in a bar</dt>
+        <dd>Most music counts in fours. Waltzes count in threes — <em>ONE</em>
+        two three, <em>ONE</em> two three. The first beat is played a little
+        louder, which is what makes a bar feel like a bar.</dd>
+
+        <dt>Starting slow</dt>
+        <dd>The oldest advice in music and still the best: if you cannot play it
+        slowly, you cannot play it. Set it slower than feels comfortable, get it
+        right every time, then nudge it up a couple of beats.</dd>
+
+        <dt>Why it does not drift</dt>
+        <dd>A repeating timer in a browser is not exact, and the errors add up
+        rather than cancel out — after a minute you would be noticeably out. So
+        every beat is worked out as an exact time from the moment you pressed
+        Start, and each click is handed to the sound card slightly early with an
+        instruction for precisely when to play it.</dd>
+
+        <dt>Keyboard</dt>
+        <dd><kbd>Space</kbd> starts and stops, <kbd>T</kbd> taps, and the
+        <kbd>up</kbd> and <kbd>down</kbd> arrows change the speed one beat at a
+        time.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/tempo.js"></script>
+  <script src="js/metronome.js"></script>
+</body>
+</html>

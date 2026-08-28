@@ -1,0 +1,100 @@
+/* Metronome — page-specific styles */
+
+.bpm {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 16vw, 5rem);
+  line-height: 1;
+  color: var(--color-coral);
+}
+
+.speed-name {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 4vw, 1.15rem);
+  color: var(--color-text-muted);
+  margin-top: -0.2rem;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 1.1rem 0 0.9rem;
+}
+
+.dot {
+  width: clamp(2.4rem, 11vw, 3.4rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #e0d6c2;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #c3b69c;
+  transition: transform 0.06s, background 0.06s, color 0.06s;
+}
+
+.dot--strong { border-color: #c9b894; }
+
+.dot.is-lit {
+  background: var(--color-coral);
+  border-color: var(--color-coral);
+  color: #fff;
+  transform: scale(1.14);
+}
+
+.dot--strong.is-lit { background: var(--color-orange); border-color: var(--color-orange); }
+
+.slider {
+  display: block;
+  width: min(24rem, 100%);
+  margin: 0 auto;
+  accent-color: var(--color-coral);
+}
+
+.accent-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  justify-content: center;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.accent-row input { width: 1.1rem; height: 1.1rem; }
+
+.choose-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0.7rem 0 0.35rem;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.chip {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chip:hover, .chip:focus-visible { border-color: var(--color-coral); outline: none; }
+.chip.is-on { background: var(--color-coral); border-color: var(--color-coral); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) { .dot { transition: none; } }
