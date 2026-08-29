@@ -112,6 +112,10 @@
     if (!state.running) return;
     const now = audio ? audio.currentTime : 0;
     const until = now + LOOK_AHEAD;
+    // Beats waiting to be shown pile up whenever frames are not running -- in a
+    // tab you are not looking at, they never do. Booking keeps going, so the
+    // clearing out has to happen here rather than in the frame loop.
+    state.booked = T.keepRecent(state.booked, now);
     const due = T.beatsIn(state.lookedTo, until, state.startAt, state.bpm);
     due.forEach(function (beat) {
       const strong = state.accent && T.accentOf(beat.index, state.beats) === "strong";

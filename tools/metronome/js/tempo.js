@@ -119,7 +119,24 @@
     return times.slice(-6);
   }
 
+  /**
+   * Throws away beats that have already been and gone.
+   *
+   * The dots are lit by the frame loop, and browsers stop running frames
+   * altogether in a tab you are not looking at -- while the booking carries on,
+   * because that runs on a timer. Leave a metronome playing in a background tab
+   * and the list of beats waiting to be shown would grow for as long as it
+   * played. One beat in the past is kept, so the right dot lights the moment you
+   * come back to the page.
+   */
+  function keepRecent(booked, now) {
+    let drop = 0;
+    while (drop + 1 < booked.length && booked[drop + 1].time <= now) drop++;
+    return drop ? booked.slice(drop) : booked;
+  }
+
   window.Tempo = {
+    keepRecent: keepRecent,
     MIN_BPM: MIN_BPM, MAX_BPM: MAX_BPM, SPEEDS: SPEEDS, BARS: BARS,
     clampBpm: clampBpm, beatLength: beatLength, timeOfBeat: timeOfBeat,
     beatsIn: beatsIn, accentOf: accentOf, beatInBar: beatInBar,
