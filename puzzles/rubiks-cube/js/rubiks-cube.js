@@ -53,6 +53,8 @@
     net: document.getElementById("cube-net"),
     cube3d: document.getElementById("cube-3d"),
     viewHint: document.getElementById("cube-view-hint"),
+    btnView3d: document.getElementById("btn-view-3d"),
+    btnView2d: document.getElementById("btn-view-2d"),
     message: document.getElementById("rubiks-message"),
     solverStatus: document.getElementById("solver-status"),
     solverStatusText: document.getElementById("solver-status-text"),
@@ -311,8 +313,9 @@
     if (cube3d) {
       cube3d.updateColors(showing);
     }
-    // Both views live side by side now, so the net is always kept current.
-    renderNet();
+    if (viewMode === "2d") {
+      renderNet();
+    }
   }
 
   /** The painted cube advanced by the first `k` solution moves, as face arrays. */
@@ -334,12 +337,36 @@
     updateCubeViews();
   }
 
-  /**
-   * The two views used to be a toggle; they now live side by side, the
-   * spinning cube for looking and the flat map for checking, both painted.
-   * Kept as a stub because the face-front button politely asked for 3D.
-   */
-  function setViewMode() { /* both views are always showing */ }
+  function setViewMode(mode) {
+    viewMode = mode === "2d" ? "2d" : "3d";
+    const is3d = viewMode === "3d";
+
+    els.btnView3d.classList.toggle("is-active", is3d);
+    els.btnView3d.setAttribute("aria-selected", String(is3d));
+    els.btnView2d.classList.toggle("is-active", !is3d);
+    els.btnView2d.setAttribute("aria-selected", String(!is3d));
+
+    els.cube3d.hidden = !is3d;
+    els.net.hidden = is3d;
+
+    if (cube3d) {
+      cube3d.setVisible(is3d);
+    }
+
+    if (!is3d) {
+      renderNet();
+    }
+
+    els.viewHint.innerHTML = is3d
+      ? "<strong>Spin View:</strong> drag to rotate the cube, then click a sticker to paint it with your chosen color."
+      : "<strong>Flat View:</strong> tap any square on the unfolded cube to paint it. Centers stay fixed!";
+
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, viewMode);
+    } catch (err) {
+      /* ignore */
+    }
+  }
 
   function initViewMode() {
     try {
@@ -919,6 +946,8 @@
   }
   els.btnScramble.addEventListener("click", scrambleCube);
   els.btnSolve.addEventListener("click", solveCube);
+  els.btnView3d.addEventListener("click", () => setViewMode("3d"));
+  els.btnView2d.addEventListener("click", () => setViewMode("2d"));
   els.btnPrev.addEventListener("click", () => {
     // Standing at the first step with a move already played means stepping the
     // cube back rather than the reading.
@@ -969,14 +998,6 @@
     viewMode = "2d";
     showMessage("3D view couldn't load. You can still use Flat View!", "info");
   }
-  updateCubeViews();
-  // The canvas was sized before the side-by-side layout settled, so it must be
-  // measured again once it has -- and again whenever its column changes width.
-  window.setTimeout(function () { if (cube3d && cube3d._resize) cube3d._resize(); }, 50);
-  if (window.ResizeObserver && els.cube3d) {
-    new ResizeObserver(function () {
-      if (cube3d && cube3d._resize) cube3d._resize();
-    }).observe(els.cube3d);
-  }
+  setViewMode(viewMode);
   initSolver();
 })();

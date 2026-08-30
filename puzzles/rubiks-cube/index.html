@@ -41,20 +41,27 @@
           <!-- Populated by JS -->
         </div>
 
-        <div class="cube-viewport cube-viewport--both">
-          <div class="cube-3d-holder">
-            <div id="cube-3d" class="cube-3d-container" aria-label="Interactive 3D Rubik's cube — drag to rotate, click stickers to paint"></div>
+        <div class="cube-view-toggle" role="tablist" aria-label="Cube display mode">
+          <button type="button" class="view-toggle-btn is-active" role="tab" aria-selected="true" data-view="3d" id="btn-view-3d">
+            🌀 Spin
+          </button>
+          <button type="button" class="view-toggle-btn" role="tab" aria-selected="false" data-view="2d" id="btn-view-2d">
+            📋 Flat
+          </button>
+        </div>
+
+        <div class="cube-viewport">
+          <div id="cube-3d" class="cube-3d-container" aria-label="Interactive 3D Rubik's cube — drag to rotate, click stickers to paint">
             <button type="button" class="face-front" id="btn-face-front"
                     title="Put the front face front again">🎯 front</button>
           </div>
-          <div class="cube-net" id="cube-net" aria-label="Rubik's cube unfolded net — click stickers to change colors">
+          <div class="cube-net" id="cube-net" aria-label="Rubik's cube unfolded net — click stickers to change colors" hidden>
             <!-- Populated by JS -->
           </div>
         </div>
 
         <p class="cube-view-hint" id="cube-view-hint">
-          Drag the cube to spin it round. Click any sticker — on the cube or on
-          the flat map beside it — to paint it with your chosen color.
+          <strong>Spin View:</strong> drag to rotate the cube, then click a sticker to paint it with your chosen color.
         </p>
 
         <div class="rubiks-actions">

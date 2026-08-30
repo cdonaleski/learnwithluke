@@ -643,38 +643,51 @@
   color: var(--color-text-muted);
 }
 
-/* Both views side by side: the spinning cube to look at, the flat map to check. */
-.cube-viewport--both {
-  display: grid;
-  /* The cube keeps most of the room -- it is the thing being looked at; the
-     flat map is the checker beside it. Halving them evenly shrank the cube
-     to a letterbox, which was rightly complained about. */
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-  gap: 0.9rem;
-  align-items: center;
+/* The two views are one small segmented toggle, not two big buttons: it is a
+   view switch, not an action, so it should not shout as loudly as Solve. */
+.cube-view-toggle {
+  display: inline-flex;
+  gap: 0;
+  padding: 3px;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: var(--color-bg);
 }
 
-.cube-viewport--both .cube-3d-container { min-height: 320px; }
-
-@media (max-width: 700px) {
-  .cube-viewport--both { grid-template-columns: 1fr; }
-  .cube-viewport--both .cube-net { max-width: 22rem; margin: 0 auto; }
+.view-toggle-btn {
+  padding: 0.3rem 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
 }
 
-.cube-3d-holder { position: relative; }
+.view-toggle-btn.is-active {
+  background: var(--color-teal, #4ec3b0);
+  color: #fff;
+}
 
-/* A small corner control, not a toolbar button — it is a nudge, not an action. */
+.view-toggle-btn:focus-visible { outline: 2px solid var(--color-purple); outline-offset: 2px; }
+
+/* Face-the-front sits in the corner of the cube it acts on. */
+.cube-3d-container { position: relative; }
+
 .face-front {
   position: absolute;
   right: 0.5rem;
   bottom: 0.5rem;
-  padding: 0.25rem 0.6rem;
+  z-index: 2;
+  padding: 0.22rem 0.6rem;
   border: 2px solid #e8e2d8;
   border-radius: 999px;
   background: rgba(255, 253, 247, 0.92);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   cursor: pointer;
 }
