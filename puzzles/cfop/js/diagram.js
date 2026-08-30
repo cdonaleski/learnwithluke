@@ -58,6 +58,35 @@
   }
 
   /**
+   * The whole cube unfolded flat: the classic cross, with the top above the
+   * front, the bottom below it, and left, front, right and back in a row. All
+   * fifty-four stickers, nothing hidden -- which matters most for the first
+   * two layers, where the work happens at the bottom.
+   *
+   * The conventions in cube.js make this fold cleanly: U is read with the back
+   * of the cube at the top of the page, so its bottom row meets the front's
+   * top row; D is read with the front at the top, so its top row meets the
+   * front's bottom row; and the four sides in a row each meet their
+   * neighbours edge to edge. The tests check every seam rather than trust it.
+   */
+  function layoutNet() {
+    const grid = [];
+    for (let r = 0; r < 9; r++) grid.push(new Array(12).fill(null));
+    const place = function (face, atRow, atCol) {
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) grid[atRow + r][atCol + c] = { face: face, at: on(face, r, c) };
+      }
+    };
+    place("U", 0, 3);
+    place("L", 3, 0);
+    place("F", 3, 3);
+    place("R", 3, 6);
+    place("B", 3, 9);
+    place("D", 6, 3);
+    return { grid: grid, width: 12, height: 9, deep: 0, net: true };
+  }
+
+  /**
    * An SVG of one cube state.
    *
    *   mode "orient"  yellow where the up colour is showing, dull where it is
@@ -66,7 +95,7 @@
    */
   function draw(state, opts) {
     const settings = opts || {};
-    const plan = layout(settings.rows);
+    const plan = settings.net ? layoutNet() : layout(settings.rows);
     const size = settings.size || 22;
     const gap = 2;
     const w = plan.width * (size + gap) + gap;
@@ -118,5 +147,5 @@
     return null;
   }
 
-  window.CubeDiagram = { COLOURS: COLOURS, DULL: DULL, layout: layout, draw: draw, middleOf: middleOf };
+  window.CubeDiagram = { COLOURS: COLOURS, DULL: DULL, layout: layout, layoutNet: layoutNet, draw: draw, middleOf: middleOf };
 })();

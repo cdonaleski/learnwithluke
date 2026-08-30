@@ -177,8 +177,8 @@
 .player-3d:active { cursor: grabbing; }
 .player-3d canvas { border-radius: var(--radius-md); }
 
-/* With the cube doing the showing, the flat sheet is a reference beside it. */
-.player-board .cube-diagram { width: min(11rem, 45vw); }
+/* The whole cube unfolded: wider than tall, so it gets the width it needs. */
+.player-board .cube-diagram { width: min(20rem, 88vw); }
 
 .speed-row {
   display: flex;

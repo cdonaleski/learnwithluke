@@ -300,8 +300,8 @@
   function drawPlayer() {
     const stage = STAGES[state.stage];
     el.board.innerHTML = D.draw(nowState(), {
-      mode: "colour", rows: 2, size: 30,
-      label: "The cube after " + state.at + " of " + state.moves.length + " moves",
+      mode: "colour", net: true, size: 30,
+      label: "The whole cube unfolded, after " + state.at + " of " + state.moves.length + " moves",
     });
     void stage;
     el.where.textContent = state.at + " / " + state.moves.length;
