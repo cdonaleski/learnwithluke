@@ -140,12 +140,23 @@
     return remembered[name];
   }
 
-  /** Which numbers on this board the roll could knock out. */
-  function onBoard(dice, allowed, highest) {
+  /**
+   * Which of the numbers actually on this board the roll could knock out.
+   *
+   * Takes the board as a list rather than a top number, because the guide is
+   * clear that 1 to 36 is only the classic board -- competition boards are
+   * thirty-six chosen numbers, and can run well past a hundred.
+   */
+  function onBoard(dice, allowed, numbers) {
     const all = reachableCached(dice, allowed);
-    const out = [];
-    for (let n = 1; n <= highest; n++) if (all[n]) out.push(n);
-    return out;
+    const list = Array.isArray(numbers)
+      ? numbers
+      : (function () {
+          const range = [];
+          for (let n = 1; n <= numbers; n++) range.push(n);
+          return range;
+        })();
+    return list.filter(function (n) { return all[n]; });
   }
 
   /** Is there anything at all to be found? A roll with nothing in it is a dud. */

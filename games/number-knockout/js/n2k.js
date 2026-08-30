@@ -19,9 +19,14 @@
   const D3 = window.Dice3D;
 
   /**
-   * The official bout is three dice, a 6 by 6 board and TWO minutes from a
-   * single roll. The sixty-second round is the audition video, which is a
-   * different thing -- both are here, along with two gentler starts.
+   * The standard bout is three dice, a 6 by 6 board and SIXTY seconds from a
+   * single roll -- that is what the How to Play guide describes. The two-minute
+   * round in the rule book is the national championship, which is a different
+   * and longer thing. Both are here.
+   *
+   * 1 to 36 is only the classic board. The guide ranks competition boards by
+   * difficulty, the first rung being thirty-six numbers below a hundred, so
+   * there is one of those too.
    */
   const LEVELS = {
     starter: {
@@ -29,20 +34,24 @@
       blurb: "Two dice, numbers up to 12, and plenty of time.",
     },
     middle: {
-      label: "🚶 Getting there", dice: 3, highest: 24, seconds: 120, ops: "+-*/",
+      label: "🚶 Getting there", dice: 3, highest: 24, seconds: 90, ops: "+-*/",
       blurb: "Three dice now, and all three have to be used.",
     },
-    real: {
-      label: "🏆 Official bout", dice: 3, highest: 36, seconds: 120, ops: "+-*/^√",
-      blurb: "The real game: 1 to 36, two minutes, one roll, powers and roots allowed.",
+    bout: {
+      label: "🥊 A bout", dice: 3, highest: 36, seconds: 60, ops: "+-*/^√",
+      blurb: "The standard game: the classic 1 to 36 board, one roll, sixty seconds.",
     },
-    audition: {
-      label: "🎬 Sixty seconds", dice: 3, highest: 36, seconds: 60, ops: "+-*/^√",
-      blurb: "The audition round: the same board, but only a minute of it.",
+    championship: {
+      label: "🏆 Championship round", dice: 3, highest: 36, seconds: 120, ops: "+-*/^√",
+      blurb: "The same board with the two minutes they give you at the national final.",
+    },
+    advanced: {
+      label: "🚀 Up to a hundred", dice: 3, spread: 99, seconds: 120, ops: "+-*/^√",
+      blurb: "Thirty-six numbers scattered up to 99, which is where advanced players go.",
     },
     practice: {
       label: "🧘 No hurry", dice: 3, highest: 36, seconds: 0, ops: "+-*/^√",
-      blurb: "Everything the real game has, with the clock switched off.",
+      blurb: "The classic board with the clock switched off.",
     },
   };
 
@@ -68,6 +77,7 @@
     level: "middle",
     dice: [],
     dieEls: [],
+    numbers: [],
     gone: {},
     possible: [],
     typed: "",
@@ -84,17 +94,41 @@
 
   /* ---------------- The board ---------------- */
 
+  /**
+   * The numbers on the board. The classic one is simply 1 to 36; a harder one
+   * is thirty-six picked out of a much wider range, with the small friendly
+   * ones kept in so it is not all high primes -- the guide is explicit that a
+   * board overloaded with those is frustrating rather than hard.
+   */
+  function makeNumbers() {
+    const spec = level();
+    if (!spec.spread) {
+      const run = [];
+      for (let n = 1; n <= spec.highest; n++) run.push(n);
+      return run;
+    }
+    const pool = [];
+    for (let n = 1; n <= spec.spread; n++) pool.push(n);
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const swap = pool[i]; pool[i] = pool[j]; pool[j] = swap;
+    }
+    // A dozen from the friendly end so there is always a way in.
+    const easy = pool.filter(function (n) { return n <= 36; }).slice(0, 12);
+    const rest = pool.filter(function (n) { return easy.indexOf(n) === -1; }).slice(0, 24);
+    return easy.concat(rest).sort(function (a, b) { return a - b; });
+  }
+
   function buildBoard() {
     el.board.innerHTML = "";
-    const highest = level().highest;
-    el.board.style.setProperty("--cols", highest > 12 ? 6 : 4);
-    for (let n = 1; n <= highest; n++) {
+    el.board.style.setProperty("--cols", state.numbers.length > 12 ? 6 : 4);
+    state.numbers.forEach(function (n) {
       const cell = document.createElement("div");
       cell.className = "square";
       cell.dataset.number = n;
       cell.textContent = n;
       el.board.appendChild(cell);
-    }
+    });
     drawBoard();
   }
 
@@ -104,10 +138,7 @@
       cell.className = "square" + (state.gone[n] ? " is-out" : "");
       cell.setAttribute("aria-label", n + (state.gone[n] ? ", knocked out" : ", still up"));
     });
-    const highest = level().highest;
-    let standing = 0;
-    for (let n = 1; n <= highest; n++) if (!state.gone[n]) standing++;
-    el.left.textContent = standing;
+    el.left.textContent = state.numbers.filter(function (n) { return !state.gone[n]; }).length;
   }
 
   /* ---------------- The dice ---------------- */
@@ -144,7 +175,7 @@
       for (let i = 0; i < level().dice; i++) state.dice.push(D3.rollDie(6));
       const ones = state.dice.filter(function (d) { return d === 1; }).length;
       if (ones > 1 && level().dice > 2) continue;
-      state.possible = F.onBoard(state.dice, level().ops, level().highest)
+      state.possible = F.onBoard(state.dice, level().ops, state.numbers)
         .filter(function (n) { return !state.gone[n]; });
       if (state.possible.length) break;
     }
@@ -187,7 +218,7 @@
     if (!checked.ok) { nudge(checked.why); return; }
 
     const value = checked.value;
-    if (value < 1 || value > level().highest) {
+    if (state.numbers.indexOf(value) === -1) {
       nudge("That comes to " + value + ", which is not on the board.");
       return;
     }
@@ -223,7 +254,7 @@
   }
 
   function flash(value) {
-    const cell = el.board.children[value - 1];
+    const cell = el.board.children[state.numbers.indexOf(value)];
     if (!cell) return;
     cell.classList.add("just-out");
     window.setTimeout(function () { cell.classList.remove("just-out"); }, 700);
@@ -259,6 +290,7 @@
 
   function startRound() {
     state.gone = {};
+    state.numbers = makeNumbers();
     state.score = 0;
     state.knocked = 0;
     state.typed = "";
@@ -346,6 +378,7 @@
         if (state.running) stopRound();
         state.gone = {};
         state.dice = [];
+        state.numbers = makeNumbers();
         buildBoard();
         buildTray();
         drawKeys();
@@ -385,6 +418,7 @@
   });
 
   drawLevels();
+  state.numbers = makeNumbers();
   buildBoard();
   buildTray();
   drawKeys();
@@ -395,6 +429,7 @@
     state: state, LEVELS: LEVELS, E: E, F: F,
     startRound: startRound, finishRound: finishRound, submit: submit,
     put: put, rub: rub, clearTyped: clearTyped, rollDice: rollDice, level: level,
+    makeNumbers: makeNumbers,
     scores: board,
   };
 })();
