@@ -642,3 +642,39 @@
   font-size: 0.88rem;
   color: var(--color-text-muted);
 }
+
+/* Both views side by side: the spinning cube to look at, the flat map to check. */
+.cube-viewport--both {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .cube-viewport--both { grid-template-columns: 1fr; }
+}
+
+.cube-3d-holder { position: relative; }
+
+/* A small corner control, not a toolbar button — it is a nudge, not an action. */
+.face-front {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.92);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.face-front:hover, .face-front:focus-visible {
+  border-color: var(--color-purple);
+  color: var(--color-text);
+  outline: none;
+}
