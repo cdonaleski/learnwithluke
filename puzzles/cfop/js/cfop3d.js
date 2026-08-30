@@ -141,6 +141,12 @@
         caught: caught, axis: plan.axis, angle: plan.angle,
         started: performance.now(), ms: Math.max(1, ms), done: done,
       };
+      // Frames stop in a tab nobody is looking at, and the swing lands on a
+      // frame -- so without this, switching tabs mid-swing would leave the
+      // player waiting for ever for a move that never finishes. Timers keep
+      // running where frames do not, so the landing is guaranteed either way;
+      // finishSwing does nothing if the frame got there first.
+      window.setTimeout(view.finishSwing, ms + 200);
     };
 
     view.finishSwing = function () {
