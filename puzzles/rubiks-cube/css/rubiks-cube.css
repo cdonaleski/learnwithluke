@@ -540,3 +540,4 @@
     padding: 0.45rem 0.85rem;
   }
 }
+.learn-link { text-align: center; color: var(--color-text-muted); margin-top: 0.4rem; }

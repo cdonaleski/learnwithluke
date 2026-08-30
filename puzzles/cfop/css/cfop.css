@@ -1,0 +1,166 @@
+/* Learn CFOP — page-specific styles */
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chips--stages { justify-content: center; }
+
+.chip {
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chip:hover, .chip:focus-visible { border-color: var(--color-purple); outline: none; }
+.chip.is-on { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+
+.stage-blurb {
+  text-align: center;
+  max-width: 52ch;
+  margin: 0.8rem auto 0;
+  color: var(--color-text-muted);
+}
+
+.progress {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-purple);
+  margin-top: 0.5rem;
+}
+
+.search {
+  display: block;
+  width: min(22rem, 100%);
+  margin: 0.7rem auto 0;
+  padding: 0.5rem 0.8rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.search:focus-visible { outline: none; border-color: var(--color-purple); }
+
+/* The wall of cases */
+.cases {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr));
+  gap: 0.55rem;
+}
+
+.case {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.35rem 0.4rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s;
+}
+
+.case:hover, .case:focus-visible { transform: translateY(-2px); border-color: var(--color-purple); outline: none; }
+.case.is-learnt { border-color: #bfe6d6; background: #f4fbf8; }
+
+.cube-diagram { width: 100%; height: auto; display: block; background: #4a453e; border-radius: 5px; }
+
+.case-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.case.is-learnt .case-label { color: #2f9e78; }
+
+/* Stepping through one case */
+.case-name {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 4.5vw, 1.45rem);
+  color: var(--color-purple);
+}
+
+.case-note {
+  text-align: center;
+  color: var(--color-text-muted);
+  max-width: 46ch;
+  margin: 0.2rem auto 0.7rem;
+  min-height: 1.2em;
+}
+
+.player-board { display: flex; justify-content: center; }
+.player-board .cube-diagram { width: min(16rem, 70vw); }
+
+.alg {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.28rem;
+  margin-top: 0.9rem;
+}
+
+.move {
+  padding: 0.2rem 0.45rem;
+  border-radius: 5px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.move.is-done { color: var(--color-text); background: #efe9f8; border-color: #d6c9f0; }
+.move.is-now { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+
+.setup {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.6rem;
+}
+
+.setup span {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+#btn-learnt.is-on { background: #e8f8f0; border-color: #7ad0a8; color: #1c6b4e; }
+
+.pll-arrow { stroke: #ffffff; stroke-width: 2.5; stroke-linecap: round; }
+.pll-head { fill: #ffffff; }
+
+/* Cross advice */
+.tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.7rem; }
+
+.tip {
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+}
+
+.tip h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-purple);
+  margin-bottom: 0.3rem;
+}
+
+.tip p { color: var(--color-text-muted); font-size: 0.92rem; }
+
+@media (prefers-reduced-motion: reduce) { .case { transition: none; } }

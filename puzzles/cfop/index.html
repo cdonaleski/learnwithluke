@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn CFOP — the four steps speedcubers use, with every case drawn and every algorithm you can step through move by move. On Learn With Luke">
+  <title>Learn CFOP · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/cfop.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../rubiks-cube/index.html" class="game-back">← Back to the Cube Helper</a>
+
+    <header class="game-header">
+      <h1>🧊 Learn CFOP</h1>
+      <p class="game-instructions" role="note">
+        <strong>The method speedcubers actually use.</strong>
+        Cross, then the first two layers, then orient the top, then move the top
+        pieces home. Every case is drawn, and you can step through any algorithm
+        one move at a time and watch the cube change.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="visually-hidden">The four steps</h2>
+      <div class="chips chips--stages" id="stages" role="group" aria-label="The four steps"></div>
+      <p class="stage-blurb" id="stage-blurb"></p>
+      <p class="progress" id="progress"></p>
+      <input type="search" id="search" class="search" placeholder="Search by name or moves…"
+             aria-label="Search the cases" hidden>
+    </section>
+
+    <section class="game-panel" id="player" aria-labelledby="player-title" hidden>
+      <h2 id="player-title" class="visually-hidden">Stepping through</h2>
+      <h3 class="case-name" id="case-name"></h3>
+      <p class="case-note" id="case-note"></p>
+
+      <div class="player-board" id="player-board"></div>
+
+      <p class="alg" id="alg-text"></p>
+      <p class="setup">To set it up on a real cube, do: <span id="setup-text"></span></p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-back">◀ Back</button>
+        <button type="button" class="btn btn-secondary" id="btn-next">Next ▶</button>
+        <button type="button" class="btn btn-secondary" id="btn-play">▶ Play</button>
+        <button type="button" class="btn btn-secondary" id="btn-learnt">Mark as learnt</button>
+        <button type="button" class="btn btn-secondary" id="btn-close">✕ Close</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Move</span><span class="stat-value" id="player-where">—</span></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="cases-title">
+      <h2 id="cases-title" class="visually-hidden">The cases</h2>
+      <div class="cases" id="cases"></div>
+      <div class="tips" id="tips"></div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>What CFOP is</dt>
+        <dd><strong>C</strong>ross, <strong>F</strong>irst two layers,
+        <strong>O</strong>rient the last layer, <strong>P</strong>ermute the last
+        layer. The beginner's method does the layers one at a time; CFOP does the
+        first two together and then finishes the top in two goes. It is how
+        nearly every fast solver solves a cube.</dd>
+
+        <dt>Reading the pictures</dt>
+        <dd>You are looking down at the top of the cube with the four sides
+        folded out flat around it. For the orientation cases, yellow means that
+        sticker already shows the top colour and grey means it does not — which
+        is all that matters at that stage.</dd>
+
+        <dt>Stepping through</dt>
+        <dd>Click any case to open it. <strong>Next</strong> and
+        <strong>Back</strong> walk through the algorithm a move at a time,
+        <strong>Play</strong> runs it, and the arrow keys work too. The picture
+        is worked out from the moves, so it can never be out of step with them.</dd>
+
+        <dt>Trying it on a real cube</dt>
+        <dd>Every case shows the moves that <em>set it up</em> from a solved
+        cube. Do those, and your cube is in the case — then try the algorithm.
+        That is the fastest way to learn one.</dd>
+
+        <dt>Where to start</dt>
+        <dd>Do not try to learn all 78. Start with <strong>Sune</strong> and
+        <strong>Anti-sune</strong> in the orientations, and the <strong>T</strong>
+        and <strong>U</strong> permutations. Those four alone will get you
+        through a great many solves, and the rest can wait.</dd>
+
+        <dt>Why the numbers are what they are</dt>
+        <dd>There are exactly 57 orientation cases and 21 permutation cases, and
+        this page does not take that on trust. The top layer's four corners can
+        each be twisted three ways and its four edges flipped two, with the
+        twists having to add up to a whole turn and the flips to an even number.
+        That gives 216 arrangements, which come to 58 once you count the ones
+        that are the same picture turned round — and one of those 58 is a cube
+        that is already done. Hence 57.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/cube.js"></script>
+  <script src="js/diagram.js"></script>
+  <script src="js/f2l.js"></script>
+  <script src="js/oll.js"></script>
+  <script src="js/pll.js"></script>
+  <script src="js/cfop.js"></script>
+</body>
+</html>
