@@ -31,6 +31,8 @@
     <section class="game-panel" aria-labelledby="lot-title">
       <h2 id="lot-title" class="visually-hidden">The car park</h2>
 
+      <div class="chips chips--modes" id="modes" role="group" aria-label="How to play"></div>
+
       <p class="level-name" id="level-name">—</p>
 
       <div class="lot-wrap">
@@ -43,14 +45,28 @@
         <button type="button" class="btn btn-secondary" id="btn-undo">↩️ Take it back</button>
         <button type="button" class="btn btn-secondary" id="btn-restart">🔄 Start again</button>
         <button type="button" class="btn btn-secondary" id="btn-hint">💡 Hint</button>
+        <button type="button" class="btn btn-secondary" id="btn-skip" hidden>⏭ Leave this one</button>
       </div>
 
       <div class="game-stats">
         <div class="stat"><span class="stat-label">Your moves</span><span class="stat-value" id="moves">0</span></div>
         <div class="stat stat--alt"><span class="stat-label">Fewest possible</span><span class="stat-value" id="best">—</span></div>
-        <div class="stat"><span class="stat-label">You got out in</span><span class="stat-value" id="yours">—</span></div>
+        <div class="stat"><span class="stat-label">On this jam</span><span class="stat-value" id="jam-clock">0:00</span></div>
+        <div class="stat stat--alt"><span class="stat-label">You got out in</span><span class="stat-value" id="yours">—</span></div>
       </div>
     </section>
+
+    <section class="game-panel" id="run-panel" aria-labelledby="run-title" hidden>
+      <h2 id="run-title">Your run</h2>
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Jam</span><span class="stat-value" id="run-which">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Points</span><span class="stat-value" id="run-score">0</span></div>
+        <div class="stat"><span class="stat-label">Time so far</span><span class="stat-value" id="run-clock">0:00</span></div>
+      </div>
+      <div class="tally" id="tally"></div>
+    </section>
+
+    <section class="game-panel" id="run-leaderboard-panel"></section>
 
     <section class="game-panel" aria-labelledby="picker-title">
       <h2 id="picker-title">The jams</h2>
@@ -97,6 +113,27 @@
         it tells you that instead, which is worth knowing. A jam solved with
         hints does not go on the fewest-moves board.</dd>
 
+        <dt>Two ways to play</dt>
+        <dd><strong>Pick a jam</strong> lets you play any of them, in any order,
+        as long as you like — that board keeps the fewest moves anyone has
+        managed on each one. <strong>Run the lot</strong> plays all fifteen in
+        order against the clock, and gives you a score.</dd>
+
+        <dt>How a run is scored</dt>
+        <dd>Each jam is worth up to <strong>thirty times its own difficulty</strong>,
+        so clearing a twenty-five move jam is worth far more than a four-move
+        one — you cannot win by rushing the easy ones and giving up on the rest.
+        Two thirds of it is for <strong>moves</strong>: match the fewest possible
+        and you get all of it, take twice as many and you get half. The other
+        third is for <strong>time</strong>: finish inside the par time — five
+        seconds a move, which is generous — and you get all of it. Every hint
+        costs you a quarter of that jam. A perfect run is 5,370 points.</dd>
+
+        <dt>If one beats you</dt>
+        <dd><strong>Leave this one</strong> moves you on. That jam scores
+        nothing, but the run carries on — being stuck on number nine should not
+        end your afternoon.</dd>
+
         <dt>Getting stuck is normal</dt>
         <dd>You can shuffle a car park into a state it cannot get out of. That is
         part of the puzzle, not a fault — take a move back, or start again, and
@@ -111,6 +148,7 @@
   <script src="js/lot.js"></script>
   <script src="js/solver.js"></script>
   <script src="js/levels.js"></script>
+  <script src="js/scoring.js"></script>
   <script src="js/parking.js"></script>
 </body>
 </html>

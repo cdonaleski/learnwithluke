@@ -16,6 +16,7 @@
   const L = window.Lot;
   const S = window.LotSolver;
   const LEVELS = window.ParkingLevels;
+  const SC = window.ParkingScore;
 
   const DONE_KEY = "parking-done";
   const COLOURS = ["#f2a65a", "#7fb069", "#5b9bd5", "#a97bd8", "#4fb8a8",
@@ -31,11 +32,26 @@
     yours: document.getElementById("yours"),
     picker: document.getElementById("picker"),
     undo: document.getElementById("btn-undo"),
+    modes: document.getElementById("modes"),
+    runPanel: document.getElementById("run-panel"),
+    runWhich: document.getElementById("run-which"),
+    runScore: document.getElementById("run-score"),
+    runClock: document.getElementById("run-clock"),
+    jamClock: document.getElementById("jam-clock"),
+    skip: document.getElementById("btn-skip"),
+    tally: document.getElementById("tally"),
     restart: document.getElementById("btn-restart"),
     hint: document.getElementById("btn-hint"),
   };
 
   const state = {
+    mode: "pick",          // pick a jam, or run the whole lot in order
+    runAt: 0,              // which jam of the run we are on
+    runScore: 0,
+    runResults: [],
+    runStarted: 0,
+    jamStarted: 0,
+    ticker: null,
     level: null,
     cars: [],
     history: [],
@@ -59,6 +75,7 @@
     state.hints = 0;
     state.won = false;
     state.picked = null;
+    state.jamStarted = Date.now();
     el.name.textContent = level.name;
     el.best.textContent = level.best;
     buildLot();
@@ -164,21 +181,149 @@
     return { back: back, forward: forward };
   }
 
+  function secondsOnThisJam() {
+    return Math.max(0, Math.round((Date.now() - state.jamStarted) / 1000));
+  }
+
   function checkWin() {
     if (state.won || !L.isOut(state.cars)) return;
     state.won = true;
+    const seconds = secondsOnThisJam();
     const done = remembered();
     if (done.indexOf(state.level.id) === -1) done.push(state.level.id);
     try { window.localStorage.setItem(DONE_KEY, JSON.stringify(done)); } catch (err) { /* fine */ }
     drawPicker();
     drawStats();
+
     const best = state.level.best;
     const clean = state.hints === 0;
-    say(state.moves === best
+    const howLong = state.moves === best
       ? "🎉 Out in " + state.moves + " moves — nobody can do it in fewer."
-      : "🎉 Out in " + state.moves + " moves. The very best possible is " + best + ".");
+      : "🎉 Out in " + state.moves + " moves. The very best possible is " + best + ".";
+
+    if (state.mode === "run") {
+      const points = SC.jamScore(best, state.moves, seconds, state.hints);
+      state.runScore += points;
+      state.runResults.push({
+        level: state.level, moves: state.moves, seconds: seconds,
+        hints: state.hints, points: points,
+        verdict: SC.verdict(best, state.moves, seconds, state.hints),
+      });
+      drawRun();
+      say(howLong + " " + points + " points, in " + seconds + " seconds.");
+      window.setTimeout(nextInRun, 1600);
+      return;
+    }
+
+    say(howLong);
     // Only a solve done without hints belongs on a board of fewest moves.
     if (board && clean) board.offer(state.moves, state.level.id);
+  }
+
+  /* ---------------- Running the lot ---------------- */
+
+  function startRun() {
+    state.mode = "run";
+    state.runAt = 0;
+    state.runScore = 0;
+    state.runResults = [];
+    state.runStarted = Date.now();
+    if (el.runPanel) el.runPanel.hidden = false;
+    if (el.skip) el.skip.hidden = false;
+    drawModes();
+    drawRun();
+    load(LEVELS[0]);
+    drawPicker();
+    say("All fifteen, in order. Fewer moves and less time both score more.");
+  }
+
+  function nextInRun() {
+    state.runAt += 1;
+    if (state.runAt >= LEVELS.length) { finishRun(); return; }
+    load(LEVELS[state.runAt]);
+    drawRun();
+    drawPicker();
+  }
+
+  /** Giving up on one, so a jam nobody can see the answer to cannot end the run. */
+  function skipJam() {
+    if (state.mode !== "run" || state.won) return;
+    state.runResults.push({
+      level: state.level, moves: 0, seconds: secondsOnThisJam(),
+      hints: state.hints, points: 0, verdict: "skipped",
+    });
+    say("Left that one. On to the next.");
+    nextInRun();
+  }
+
+  function finishRun() {
+    const took = Math.round((Date.now() - state.runStarted) / 1000);
+    const perfect = SC.perfectRun(LEVELS);
+    state.mode = "pick";
+    if (el.skip) el.skip.hidden = true;
+    drawModes();
+    drawRun(took);
+    say("That is all fifteen: " + state.runScore + " points out of a possible " +
+      perfect + ", in " + Math.floor(took / 60) + " minutes " + (took % 60) + " seconds.");
+    if (runBoard) runBoard.offer(state.runScore, "run");
+  }
+
+  function drawRun(finalSeconds) {
+    if (!el.runPanel) return;
+    el.runPanel.hidden = state.mode !== "run" && !state.runResults.length;
+    if (el.runWhich) {
+      el.runWhich.textContent = state.mode === "run"
+        ? (state.runAt + 1) + " / " + LEVELS.length : "—";
+    }
+    if (el.runScore) el.runScore.textContent = state.runScore;
+    if (el.runClock && finalSeconds !== undefined) {
+      el.runClock.textContent = Math.floor(finalSeconds / 60) + ":" +
+        String(finalSeconds % 60).padStart(2, "0");
+    }
+    if (!el.tally) return;
+    el.tally.innerHTML = "";
+    state.runResults.forEach(function (row) {
+      const chip = document.createElement("span");
+      chip.className = "tally-chip tally-chip--" + row.verdict.replace(/\s+/g, "-");
+      chip.textContent = row.level.name + ": " + row.points;
+      chip.title = row.verdict + " — " + (row.moves || "no") + " moves in " + row.seconds + "s";
+      el.tally.appendChild(chip);
+    });
+  }
+
+  function drawModes() {
+    if (!el.modes) return;
+    el.modes.innerHTML = "";
+    [{ id: "pick", label: "🅿️ Pick a jam" }, { id: "run", label: "🏁 Run the lot" }]
+      .forEach(function (mode) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chip" + (state.mode === mode.id ? " is-on" : "");
+        button.textContent = mode.label;
+        button.setAttribute("aria-pressed", String(state.mode === mode.id));
+        button.addEventListener("click", function () {
+          if (mode.id === "run") { startRun(); return; }
+          state.mode = "pick";
+          if (el.skip) el.skip.hidden = true;
+          drawModes();
+          drawRun();
+          say("Pick any jam you like from the list below.");
+        });
+        el.modes.appendChild(button);
+      });
+  }
+
+  function tick() {
+    if (el.jamClock && state.level) {
+      const on = state.won ? 0 : secondsOnThisJam();
+      if (!state.won) {
+        el.jamClock.textContent = Math.floor(on / 60) + ":" + String(on % 60).padStart(2, "0");
+      }
+    }
+    if (el.runClock && state.mode === "run" && state.runStarted) {
+      const all = Math.round((Date.now() - state.runStarted) / 1000);
+      el.runClock.textContent = Math.floor(all / 60) + ":" + String(all % 60).padStart(2, "0");
+    }
   }
 
   /* ---------------- Dragging ---------------- */
@@ -312,6 +457,14 @@
 
   /* ---------------- Leaderboard ---------------- */
 
+  const runBoard = window.Leaderboard ? window.Leaderboard.create({
+    gameId: "parking-panic-run",
+    gameName: "Parking Panic — the whole lot",
+    metric: { label: "Points", better: "higher", format: "number" },
+    categories: [{ id: "run", label: "All fifteen jams" }],
+  }) : null;
+  if (runBoard) runBoard.mount(document.getElementById("run-leaderboard-panel"));
+
   const board = window.Leaderboard ? window.Leaderboard.create({
     gameId: "parking-panic",
     gameName: "Parking Panic",
@@ -323,18 +476,24 @@
   /* ---------------- Go ---------------- */
 
   el.undo.addEventListener("click", undo);
+  if (el.skip) el.skip.addEventListener("click", skipJam);
+  window.setInterval(tick, 500);
   el.restart.addEventListener("click", function () { load(state.level); drawPicker(); });
   el.hint.addEventListener("click", hint);
   window.addEventListener("resize", function () { sizeLot(); placeCars(); });
 
   const done = remembered();
   const first = LEVELS.find(function (l) { return done.indexOf(l.id) === -1; }) || LEVELS[0];
+  drawModes();
   load(first);
   drawPicker();
+  drawRun();
 
   window.ParkingApp = {
     state: state, L: L, S: S, LEVELS: LEVELS,
     load: load, moveBy: moveBy, undo: undo, hint: hint, room: room,
-    tapBay: tapBay, checkWin: checkWin, scores: board,
+    startRun: startRun, skipJam: skipJam, nextInRun: nextInRun, finishRun: finishRun,
+    SC: SC, runScores: null,
+    tapBay: tapBay, checkWin: checkWin, scores: board, runScores: runBoard,
   };
 })();

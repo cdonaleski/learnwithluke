@@ -100,6 +100,27 @@
 }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chips--modes { justify-content: center; margin-bottom: 0.7rem; }
+
+/* How each jam of a run went, at a glance. */
+.tally { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; }
+
+.tally-chip {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.tally-chip--perfect { background: #e8f8f0; border-color: #7ad0a8; color: #1c6b4e; }
+.tally-chip--fewest-moves { background: #eaf3ff; border-color: #a8ccf0; color: #1d4e89; }
+.tally-chip--quick { background: #fff4c9; border-color: #f0d98a; color: #a37a00; }
+.tally-chip--with-help { background: #f4efe6; color: #8d7f68; }
+.tally-chip--skipped { background: #ffe9e6; border-color: #ffb0a5; color: #b8352a; }
 
 .chip {
   padding: 0.4rem 0.7rem;
