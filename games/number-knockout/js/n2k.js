@@ -18,22 +18,31 @@
   const F = window.Finder;
   const D3 = window.Dice3D;
 
+  /**
+   * The official bout is three dice, a 6 by 6 board and TWO minutes from a
+   * single roll. The sixty-second round is the audition video, which is a
+   * different thing -- both are here, along with two gentler starts.
+   */
   const LEVELS = {
     starter: {
       label: "🐣 Starter", dice: 2, highest: 12, seconds: 120, ops: "+-*/",
       blurb: "Two dice, numbers up to 12, and plenty of time.",
     },
     middle: {
-      label: "🚶 Getting there", dice: 3, highest: 24, seconds: 90, ops: "+-*/",
-      blurb: "Three dice now, and they all have to be used.",
+      label: "🚶 Getting there", dice: 3, highest: 24, seconds: 120, ops: "+-*/",
+      blurb: "Three dice now, and all three have to be used.",
     },
     real: {
-      label: "🏆 The real thing", dice: 3, highest: 36, seconds: 60, ops: "+-*/^√",
-      blurb: "The proper game: 36 numbers, 60 seconds, and powers and roots allowed.",
+      label: "🏆 Official bout", dice: 3, highest: 36, seconds: 120, ops: "+-*/^√",
+      blurb: "The real game: 1 to 36, two minutes, one roll, powers and roots allowed.",
+    },
+    audition: {
+      label: "🎬 Sixty seconds", dice: 3, highest: 36, seconds: 60, ops: "+-*/^√",
+      blurb: "The audition round: the same board, but only a minute of it.",
     },
     practice: {
       label: "🧘 No hurry", dice: 3, highest: 36, seconds: 0, ops: "+-*/^√",
-      blurb: "Everything the real game has, but the clock is switched off.",
+      blurb: "Everything the real game has, with the clock switched off.",
     },
   };
 
@@ -63,6 +72,7 @@
     possible: [],
     typed: "",
     score: 0,
+    knocked: 0,
     running: false,
     endsAt: 0,
     startedAt: 0,
@@ -120,14 +130,20 @@
   }
 
   /**
-   * Rolls until the dice can actually make something still standing. A roll
-   * with nothing in it is not a hard round, it is a wasted one.
+   * Throws the dice, and throws them again if the roll is no good.
+   *
+   * Two ones is an automatic re-roll -- that is in the rule book, because a
+   * roll like 1, 1, 4 can barely make anything and is not a hard round, just a
+   * wasted one. The same goes for a roll that cannot reach a single number
+   * still standing on the board.
    */
   function rollDice() {
     const still = stillMotionless();
     for (let tries = 0; tries < 40; tries++) {
       state.dice = [];
       for (let i = 0; i < level().dice; i++) state.dice.push(D3.rollDie(6));
+      const ones = state.dice.filter(function (d) { return d === 1; }).length;
+      if (ones > 1 && level().dice > 2) continue;
       state.possible = F.onBoard(state.dice, level().ops, level().highest)
         .filter(function (n) { return !state.gone[n]; });
       if (state.possible.length) break;
@@ -181,14 +197,18 @@
     }
 
     state.gone[value] = true;
-    state.score += 1;
+    // The rule book scores the face value: knock out 12 and you get 12 points.
+    // Which changes the whole game -- the big numbers are where the points are.
+    state.score += value;
+    state.knocked += 1;
     clearTyped();
     drawBoard();
     el.score.textContent = state.score;
     flash(value);
-    say("✔ " + checked.tidy + " = " + value + ". Knocked out!" +
+    say("✔ " + checked.tidy + " = " + value + ". Worth " + value + " points!" +
       (checked.claimed === null ? "  (Try writing = and the answer next time — it counts for more.)" : ""));
 
+    el.score.textContent = state.score;
     const leftToFind = state.possible.filter(function (n) { return !state.gone[n]; });
     if (!leftToFind.length) {
       say("That is every single one this roll could make. Rolling again…");
@@ -240,6 +260,7 @@
   function startRound() {
     state.gone = {};
     state.score = 0;
+    state.knocked = 0;
     state.typed = "";
     state.running = true;
     state.startedAt = Date.now();
@@ -274,11 +295,11 @@
 
     // What was left on the table. The finder is generous, so if a player ever
     // found more than it did, believe the player.
-    const couldHave = Math.max(state.score, state.possible.length);
+    const couldHave = Math.max(state.knocked, state.possible.length);
     const missed = state.possible.filter(function (n) { return !state.gone[n]; });
     el.summary.hidden = false;
-    el.summaryScore.textContent = state.score + " knocked out of the " +
-      couldHave + " that roll could make";
+    el.summaryScore.textContent = state.score + " points — " + state.knocked +
+      " of the " + couldHave + " numbers that roll could make";
     el.missed.innerHTML = "";
     if (missed.length) {
       const note = document.createElement("p");
@@ -297,8 +318,8 @@
       note.textContent = "You found everything that last roll could make.";
       el.missed.appendChild(note);
     }
-    say("Time! " + state.score + " knocked out. " +
-      (state.score >= couldHave ? "Nothing left on the table." : ""));
+    say("Time! " + state.score + " points from " + state.knocked + " numbers. " +
+      (state.knocked >= couldHave ? "Nothing left on the table." : ""));
     if (board) board.offer(state.score, state.level);
   }
 
@@ -341,7 +362,7 @@
   const board = window.Leaderboard ? window.Leaderboard.create({
     gameId: "number-knockout",
     gameName: "Number Knockout",
-    metric: { label: "Knocked out", better: "higher", format: "number" },
+    metric: { label: "Points", better: "higher", format: "number" },
     categories: Object.keys(LEVELS).map(function (id) { return { id: id, label: LEVELS[id].label }; }),
   }) : null;
   if (board) board.mount(document.getElementById("leaderboard-panel"));

@@ -163,13 +163,34 @@
     return { value: value };
   }
 
-  /** Every number written in the sum, so they can be counted against the dice. */
+  /**
+   * Every number in the sum that has to be one of the dice.
+   *
+   * The number you raise something TO is not one of them. The rule book is
+   * explicit: "The index (or exponent) is chosen by the contender and is not one
+   * of the numbers rolled, nor does an index count as the use of one of the
+   * three rolled numbers." So on a roll of 2, 3 and 4 you may write
+   * 2³ + 3² + 4² = 33 -- the little threes and twos are free, and all three
+   * dice have been used as bases.
+   *
+   * Which is why this walks past the right-hand side of a power.
+   */
   function numbersIn(node, into) {
     const found = into || [];
     if (!node) return found;
     if (node.number !== undefined) { found.push(node.number); return found; }
     numbersIn(node.left, found);
-    numbersIn(node.right, found);
+    if (node.op !== "^") numbersIn(node.right, found);
+    return found;
+  }
+
+  /** Every number used as an index, so the game can talk about them. */
+  function indicesIn(node, into) {
+    const found = into || [];
+    if (!node || node.number !== undefined) return found;
+    if (node.op === "^") numbersIn(node.right, found);
+    indicesIn(node.left, found);
+    indicesIn(node.right, found);
     return found;
   }
 
@@ -296,6 +317,7 @@
     TOO_BIG: TOO_BIG, MAX_POWER: MAX_POWER,
     tokenize: tokenize, parse: parse, evaluate: evaluate, numbersIn: numbersIn,
     describe: describe, usesTheDice: usesTheDice, wholeNumber: wholeNumber,
+    indicesIn: indicesIn,
     splitClaim: splitClaim, check: check,
   };
 })();
