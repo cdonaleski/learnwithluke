@@ -231,6 +231,15 @@
   Cube3DView.prototype._animate = function () {
     var self = this;
     function frame() {
+      if (self._viewGlide) {
+        var glide = self._viewGlide;
+        var gNow = (typeof performance !== "undefined" ? performance.now() : Date.now());
+        var gt = Math.min(1, (gNow - glide.started) / glide.ms);
+        var gEase = 1 - Math.pow(1 - gt, 3);
+        self.camera.position.lerpVectors(glide.fromPos, glide.toPos, gEase);
+        self.controls.target.set(0, 0, 0);
+        if (gt >= 1) self._viewGlide = null;
+      }
       if (self._swing) {
         var swing = self._swing;
         var now = (typeof performance !== "undefined" ? performance.now() : Date.now());
@@ -312,6 +321,20 @@
     }
     this._pivot.rotation.set(0, 0, 0);
     if (swing.done) swing.done();
+  };
+
+  /**
+   * Glides the camera back to where it started, so however far the cube has
+   * been spun around, one press puts the front face front again. A glide
+   * rather than a jump, so nobody loses track of which way it went.
+   */
+  Cube3DView.prototype.faceTheFront = function () {
+    this._viewGlide = {
+      fromPos: this.camera.position.clone(),
+      toPos: new THREE.Vector3(4.2, 3.4, 4.8),
+      started: (typeof performance !== "undefined" ? performance.now() : Date.now()),
+      ms: 450,
+    };
   };
 
   Cube3DView.prototype.updateColors = function (cubeState) {

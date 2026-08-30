@@ -68,6 +68,7 @@
     stepsListOl: document.getElementById("steps-list-ol"),
     btnReset: document.getElementById("btn-reset"),
     btnBlank: document.getElementById("btn-blank"),
+    btnFaceFront: document.getElementById("btn-face-front"),
     btnScramble: document.getElementById("btn-scramble"),
     btnSolve: document.getElementById("btn-solve"),
     btnPrev: document.getElementById("btn-prev-step"),
@@ -924,6 +925,14 @@
     liveCheck();
   }
 
+  if (els.btnFaceFront) {
+    els.btnFaceFront.addEventListener("click", function () {
+      if (cube3d && cube3d.faceTheFront) {
+        setViewMode("3d");
+        cube3d.faceTheFront();
+      }
+    });
+  }
   els.btnReset.addEventListener("click", resetCube);
   if (els.btnBlank) {
     els.btnBlank.addEventListener("click", function () {
