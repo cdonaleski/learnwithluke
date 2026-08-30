@@ -87,7 +87,10 @@
     this.scene.background = null;
 
     this.camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
-    this.camera.position.set(4.2, 3.4, 4.8);
+    // Far enough back that the cube fits WHICHEVER way it is turned. Corner-on
+    // it spans about 5.3 units across, and the old distance framed only 5.5 --
+    // so any spin towards a corner clipped the edges off.
+    this.camera.position.set(5.1, 4.1, 5.8);
     this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -331,7 +334,7 @@
   Cube3DView.prototype.faceTheFront = function () {
     this._viewGlide = {
       fromPos: this.camera.position.clone(),
-      toPos: new THREE.Vector3(4.2, 3.4, 4.8),
+      toPos: new THREE.Vector3(5.1, 4.1, 5.8),
       started: (typeof performance !== "undefined" ? performance.now() : Date.now()),
       ms: 450,
     };
