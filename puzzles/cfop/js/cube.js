@@ -175,18 +175,29 @@
     }).join(" ");
   }
 
-  /** How an algorithm is usually written out, tidied up. */
+  /**
+   * How an algorithm is usually written out. Two of the same turn in a row are
+   * a half turn, whichever way round they go -- U' U' is U2, and nobody writes
+   * it any other way.
+   */
   function tidy(text) {
     const read = parse(text);
     if (read.error) return String(text);
     const out = [];
     read.moves.forEach(function (move) {
-      const last = out[out.length - 1];
       const written = move.name + (move.back ? "'" : "");
-      if (last === written && !move.back) { out[out.length - 1] = move.name + "2"; return; }
+      if (out.length && out[out.length - 1] === written) {
+        out[out.length - 1] = move.name + "2";
+        return;
+      }
       out.push(written);
     });
     return out.join(" ");
+  }
+
+  /** The undoing of an algorithm, written the way anybody would write it. */
+  function setupFor(text) {
+    return tidy(inverse(text));
   }
 
   function isSolved(state) {
@@ -201,6 +212,6 @@
     FACES: FACES, STICKERS: STICKERS, TURNS: TURNS,
     spotOf: spotOf, slotAt: slotAt, shuffleFor: shuffleFor,
     solved: solved, turn: turn, parse: parse, step: step, run: run,
-    inverse: inverse, tidy: tidy, isSolved: isSolved,
+    inverse: inverse, tidy: tidy, setupFor: setupFor, isSolved: isSolved,
   };
 })();

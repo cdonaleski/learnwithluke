@@ -169,7 +169,7 @@
       card.className = "case" + (done[id] ? " is-learnt" : "");
       card.innerHTML = D.draw(caseState(item), {
         mode: stage.mode, rows: stage.rows, size: 16,
-        label: label + ". Set up with " + C.inverse(item.alg),
+        label: label + ". Set up with " + C.setupFor(item.alg),
       }) + '<span class="case-label">' + label + "</span>";
       card.addEventListener("click", function () { openCase(item); });
       el.cases.appendChild(card);
@@ -198,7 +198,7 @@
     el.player.hidden = false;
     el.caseName.textContent = (item.n ? item.n + ". " : "") + (item.name || item.id);
     el.algText.textContent = C.tidy(item.alg);
-    el.setup.textContent = C.inverse(item.alg);
+    el.setup.textContent = C.setupFor(item.alg);
     el.note.textContent = item.note || (item.group ? item.group : "");
     const done = learnt()[state.stage] || {};
     setLearntButton(Boolean(done[caseId(item)]));
