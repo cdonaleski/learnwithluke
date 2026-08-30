@@ -231,11 +231,82 @@
   Cube3DView.prototype._animate = function () {
     var self = this;
     function frame() {
+      if (self._swing) {
+        var swing = self._swing;
+        var now = (typeof performance !== "undefined" ? performance.now() : Date.now());
+        var t = Math.min(1, (now - swing.started) / swing.ms);
+        var eased = 1 - Math.pow(1 - t, 3);
+        self._pivot.rotation.set(0, 0, 0);
+        self._pivot.rotation[swing.axis] = swing.angle * eased;
+        if (t >= 1) self._finishSwing();
+      }
       self._animId = requestAnimationFrame(frame);
       self.controls.update();
       self.renderer.render(self.scene, self.camera);
     }
     frame();
+  };
+
+  /**
+   * Swings one move of the solution on this painted cube: the stickers of the
+   * turning slab are gathered into a pivot, swung a quarter (or half) turn,
+   * and then the whole animation is thrown away and the caller repaints from
+   * the real state -- the same throwaway trick the Learn CFOP page uses, so
+   * nothing can drift. Slab membership is read off each sticker's position,
+   * and which way to swing comes from CubeMath's own definition of the move.
+   */
+  Cube3DView.prototype.animateMove = function (moveText, ms, done) {
+    var M = global.CubeMath;
+    if (!M || !this.scene) { if (done) done(); return; }
+    var read = M.parse(moveText);
+    if (read.error || !read.moves.length) { if (done) done(); return; }
+    if (this._swing) this._finishSwing();
+
+    var move = read.moves[0];
+    var turn = M.TURNS[move.name];
+    if (!turn) { if (done) done(); return; }
+    var axisIndex = { x: "x", y: "y", z: "z" }[turn.axis];
+    var quarter = -turn.way * Math.PI / 2 * (move.back ? -1 : 1);
+    // A written "U2" arrives as two identical moves; swing them as one half turn.
+    var angle = quarter * read.moves.length;
+
+    if (!this._pivot) {
+      this._pivot = new THREE.Group();
+      this.scene.add(this._pivot);
+    }
+    var caught = [];
+    var axisOf = { x: 0, y: 1, z: 2 };
+    for (var key in this.stickerMeshes) {
+      var mesh = this.stickerMeshes[key];
+      var at = [mesh.position.x, mesh.position.y, mesh.position.z][axisOf[turn.axis]];
+      var slab = Math.max(-1, Math.min(1, Math.round(at)));
+      if (turn.slabs.indexOf(slab) === -1) continue;
+      caught.push({ mesh: mesh,
+                    home: mesh.position.clone(), spin: mesh.rotation.clone() });
+      this._pivot.attach(mesh);
+    }
+    var view = this;
+    this._swing = {
+      caught: caught, axis: axisIndex, angle: angle,
+      started: (typeof performance !== "undefined" ? performance.now() : Date.now()),
+      ms: Math.max(1, ms || 450), done: done,
+    };
+    // Frames stop in hidden tabs; the timer lands the swing either way.
+    setTimeout(function () { view._finishSwing(); }, (ms || 450) + 200);
+  };
+
+  Cube3DView.prototype._finishSwing = function () {
+    var swing = this._swing;
+    if (!swing) return;
+    this._swing = null;
+    for (var i = 0; i < swing.caught.length; i++) {
+      var kept = swing.caught[i];
+      this.scene.attach(kept.mesh);
+      kept.mesh.position.copy(kept.home);
+      kept.mesh.rotation.copy(kept.spin);
+    }
+    this._pivot.rotation.set(0, 0, 0);
+    if (swing.done) swing.done();
   };
 
   Cube3DView.prototype.updateColors = function (cubeState) {

@@ -42,6 +42,9 @@
   let solverReady = false;
   let solutionSteps = [];
   let stepStages = null;
+  let solutionStart = null;   // the cube as painted when Solve was pressed
+  let shownMoves = 0;         // how many solution moves the display has played
+  let displayFaces = null;    // what the views show during playback, or null
   let currentStepIndex = 0;
 
   const els = {
@@ -63,6 +66,7 @@
     stepsList: document.getElementById("steps-list"),
     stepsListOl: document.getElementById("steps-list-ol"),
     btnReset: document.getElementById("btn-reset"),
+    btnBlank: document.getElementById("btn-blank"),
     btnScramble: document.getElementById("btn-scramble"),
     btnSolve: document.getElementById("btn-solve"),
     btnPrev: document.getElementById("btn-prev-step"),
@@ -137,6 +141,15 @@
       counts[f] = 0;
     });
 
+    let unpainted = 0;
+    FACELETTERS.forEach((f) => {
+      state[f].forEach((letter) => { if (letter === BLANK) unpainted += 1; });
+    });
+    if (unpainted) {
+      return { valid: false, error: "There " + (unpainted === 1 ? "is" : "are") + " still " +
+        unpainted + " grey square" + (unpainted === 1 ? "" : "s") + " to paint before it can be solved." };
+    }
+
     for (const face of FACELETTERS) {
       for (const letter of state[face]) {
         if (!counts.hasOwnProperty(letter)) {
@@ -200,6 +213,33 @@
   }
 
   /** How many stickers of each colour are on the cube right now. */
+  /**
+   * An unpainted sticker. Starting from a blank cube is the honest way to
+   * clone a real one: on a cube that starts solved, a sticker you forget to
+   * repaint keeps its solved colour and the result still validates -- a
+   * perfectly possible cube that simply is not yours, which no checker can
+   * catch. A forgotten sticker on a blank cube stays grey, and grey is
+   * visible.
+   */
+  const BLANK = "none";
+
+  function createBlankState() {
+    const state = {};
+    FACELETTERS.forEach((id) => {
+      state[id] = Array(9).fill(BLANK);
+      state[id][4] = id;                    // centres cannot move, so they stay
+    });
+    return state;
+  }
+
+  function blankCount() {
+    let n = 0;
+    FACELETTERS.forEach((face) => {
+      cubeState[face].forEach((letter) => { if (letter === BLANK) n += 1; });
+    });
+    return n;
+  }
+
   function colorCounts() {
     const counts = {};
     FACELETTERS.forEach((f) => { counts[f] = 0; });
@@ -229,6 +269,8 @@
       return;
     }
     cubeState[faceId][index] = selectedColor;
+    displayFaces = null;
+    shownMoves = 0;
     updateCubeViews();
     hideMessage();
     els.solutionPanel.hidden = true;
@@ -247,8 +289,10 @@
     const counts = colorCounts();
     const missing = FACELETTERS.filter((f) => counts[f] < 9);
     if (missing.length) {
+      const blanks = blankCount();
       const bits = missing.map((f) => (9 - counts[f]) + " " + FACE_INFO[f].color.toLowerCase());
-      els.liveStatus.textContent = "Still to place: " + bits.join(", ") + ".";
+      els.liveStatus.textContent = "Still to place: " + bits.join(", ") +
+        (blanks ? " — " + blanks + " grey square" + (blanks === 1 ? "" : "s") + " left." : ".");
       els.liveStatus.className = "live-status";
       return;
     }
@@ -263,12 +307,32 @@
   }
 
   function updateCubeViews() {
+    const showing = displayFaces || cubeState;
     if (cube3d) {
-      cube3d.updateColors(cubeState);
+      cube3d.updateColors(showing);
     }
     if (viewMode === "2d") {
       renderNet();
     }
+  }
+
+  /** The painted cube advanced by the first `k` solution moves, as face arrays. */
+  function facesAfter(k) {
+    if (!window.CubeMath || !solutionStart) return null;
+    let state = solutionStart;
+    if (k > 0) state = window.CubeMath.run(state, solutionSteps.slice(0, k).join(" ")).state;
+    const faces = {};
+    FACELETTERS.forEach((face, f) => {
+      faces[face] = state.slice(f * 9, f * 9 + 9);
+    });
+    return faces;
+  }
+
+  /** Repaints the views to show the cube after `k` moves of the solution. */
+  function showDisplayAt(k) {
+    shownMoves = k;
+    displayFaces = k === 0 ? null : facesAfter(k);
+    updateCubeViews();
   }
 
   function setViewMode(mode) {
@@ -373,6 +437,7 @@
 
   function renderNet() {
     els.net.innerHTML = "";
+    const showing = displayFaces || cubeState;
 
     NET_ORDER.forEach((faceId) => {
       const faceMeta = FACES.find((f) => f.id === faceId);
@@ -388,7 +453,7 @@
       for (let i = 0; i < 9; i++) {
         const sticker = document.createElement("button");
         sticker.type = "button";
-        const color = cubeState[faceId][i];
+        const color = showing[faceId][i];
         sticker.className = "sticker sticker--" + color + (i === 4 ? " is-center" : "");
         sticker.dataset.face = faceId;
         sticker.dataset.index = String(i);
@@ -447,14 +512,80 @@
     return { notation: parsed.notation, html: direction };
   }
 
+  function prefersStillness() {
+    try {
+      return Boolean(window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    } catch (err) { return false; }
+  }
+
   function stageLabelFor(index) {
     if (!stepStages) return "";
     return stepStages[index] || "";
   }
 
+  /**
+   * Why each stage exists, said once at the moment it begins. The labels the
+   * solver emits carry detail ("Orient the top (Sune)"), so matching is by
+   * what the label starts with.
+   */
+  const STAGE_WHY = [
+    ["The cross", "First job: four edges round the bottom centre, each matched to " +
+      "the side it touches. Everything else is built on top of this."],
+    ["Pair ", "Now corners and edges go in together as pairs, filling the bottom " +
+      "two layers at once — this is the trick that makes CFOP fast. The whole-cube " +
+      "turns just change which corner you are working at."],
+    ["Orient the top", "The top face becomes one colour. Never mind where each " +
+      "piece is yet — only which way up it is. This is one of the 57 patterns " +
+      "from the Learn CFOP page."],
+    ["Move the top pieces home", "Last job: the top pieces slide round to their " +
+      "own corners and edges without turning over. One of the 21 permutations, " +
+      "and then it is done."],
+    ["Straighten the top", "Everything is solved — the top layer just needs " +
+      "turning round to line up."],
+  ];
+
+  function stageWhy(label) {
+    for (let i = 0; i < STAGE_WHY.length; i++) {
+      if (label.indexOf(STAGE_WHY[i][0]) === 0) return STAGE_WHY[i][1];
+    }
+    return "";
+  }
+
+  /** Is this step the first of its stage? That is when the why gets said. */
+  function stageStartsHere(index) {
+    if (!stepStages) return false;
+    return index === 0 || stepStages[index] !== stepStages[index - 1];
+  }
+
+  /**
+   * Shows step `index`, and moves the cube on screen to match: the display
+   * always shows the cube as it stands BEFORE the step being read, so you
+   * read the move, press next, and watch that very move happen. Stepping one
+   * place swings the turn; jumping about snaps.
+   */
   function showStep(index) {
     if (!solutionSteps.length) return;
+    const was = currentStepIndex;
     currentStepIndex = Math.max(0, Math.min(index, solutionSteps.length - 1));
+
+    const want = currentStepIndex;
+    if (want !== shownMoves) {
+      const oneOn = want === shownMoves + 1;
+      const oneBack = want === shownMoves - 1;
+      if (cube3d && cube3d.animateMove && (oneOn || oneBack) && !prefersStillness()) {
+        const token = oneOn ? solutionSteps[shownMoves]
+                            : window.CubeMath ? window.CubeMath.inverse(solutionSteps[want]) : null;
+        if (token) {
+          cube3d.animateMove(token, 450, function () { showDisplayAt(want); });
+        } else {
+          showDisplayAt(want);
+        }
+      } else {
+        showDisplayAt(want);
+      }
+    }
+    void was;
     const move = solutionSteps[currentStepIndex];
     const desc = describeMove(move);
 
@@ -462,12 +593,14 @@
       "Step " + (currentStepIndex + 1) + " of " + solutionSteps.length;
     els.currentStepMove.textContent = desc.notation;
     const stage = stageLabelFor(currentStepIndex);
+    const why = stage && stageStartsHere(currentStepIndex) ? stageWhy(stage) : "";
     els.currentStepDesc.innerHTML = (stage
-      ? '<span class="stage-tag">' + stage + "</span> " : "") + desc.html;
+      ? '<span class="stage-tag">' + stage + "</span> " : "") + desc.html +
+      (why ? '<span class="stage-why">' + why + "</span>" : "");
     els.stepCounter.textContent = currentStepIndex + 1 + " / " + solutionSteps.length;
 
-    els.btnPrev.disabled = currentStepIndex === 0;
-    els.btnNext.disabled = currentStepIndex === solutionSteps.length - 1;
+    els.btnPrev.disabled = currentStepIndex === 0 && shownMoves === 0;
+    els.btnNext.disabled = shownMoves >= solutionSteps.length;
 
     let stepAt = -1;
     els.stepsListOl.querySelectorAll("li").forEach((li) => {
@@ -481,6 +614,12 @@
     solutionSteps = algorithm.trim().split(/\s+/).filter(Boolean);
     stepStages = stageOf || null;
     currentStepIndex = 0;
+    shownMoves = 0;
+    displayFaces = null;
+    solutionStart = [];
+    FACELETTERS.forEach((face) => {
+      cubeState[face].forEach((letter) => { solutionStart.push(letter); });
+    });
 
     els.solutionSummary.textContent = summary ||
       solutionSteps.length +
@@ -755,12 +894,50 @@
   }
 
   els.btnReset.addEventListener("click", resetCube);
+  if (els.btnBlank) {
+    els.btnBlank.addEventListener("click", function () {
+      cubeState = createBlankState();
+      updateCubeViews();
+      hideMessage();
+      els.solutionPanel.hidden = true;
+      renderPalette();
+      liveCheck();
+    });
+  }
   els.btnScramble.addEventListener("click", scrambleCube);
   els.btnSolve.addEventListener("click", solveCube);
   els.btnView3d.addEventListener("click", () => setViewMode("3d"));
   els.btnView2d.addEventListener("click", () => setViewMode("2d"));
-  els.btnPrev.addEventListener("click", () => showStep(currentStepIndex - 1));
-  els.btnNext.addEventListener("click", () => showStep(currentStepIndex + 1));
+  els.btnPrev.addEventListener("click", () => {
+    // Standing at the first step with a move already played means stepping the
+    // cube back rather than the reading.
+    if (currentStepIndex === 0 && shownMoves > 0) {
+      if (cube3d && cube3d.animateMove && !prefersStillness() && window.CubeMath) {
+        cube3d.animateMove(window.CubeMath.inverse(solutionSteps[0]), 450,
+          function () { showDisplayAt(0); showStep(0); });
+      } else { showDisplayAt(0); showStep(0); }
+      return;
+    }
+    showStep(currentStepIndex - 1);
+  });
+  els.btnNext.addEventListener("click", () => {
+    // The last step's own move still deserves watching: the reading stays put
+    // and the cube plays it, ending solved.
+    if (currentStepIndex === solutionSteps.length - 1 && shownMoves === solutionSteps.length - 1) {
+      const finish = function () {
+        showDisplayAt(solutionSteps.length);
+        els.currentStepDesc.innerHTML =
+          "🎉 <strong>That's it — solved!</strong> The cube on screen is now one colour a side.";
+        els.btnNext.disabled = true;
+        els.btnPrev.disabled = false;
+      };
+      if (cube3d && cube3d.animateMove && !prefersStillness()) {
+        cube3d.animateMove(solutionSteps[solutionSteps.length - 1], 450, finish);
+      } else finish();
+      return;
+    }
+    showStep(currentStepIndex + 1);
+  });
   els.btnToggleList.addEventListener("click", () => {
     const isHidden = els.stepsList.hidden;
     els.stepsList.hidden = !isHidden;
