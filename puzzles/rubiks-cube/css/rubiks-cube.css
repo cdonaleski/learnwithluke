@@ -453,13 +453,19 @@
 .face-highlight--R { background: #b71234; }
 
 .step-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.6rem;
   align-items: center;
-  justify-content: center;
   margin-bottom: 1rem;
 }
+
+/* Three columns cannot wrap, so Previous and Next always share a line --
+   they are a pair and reading them on separate rows made the count between
+   them look like a heading for the second one. */
+.step-nav .btn { font-size: 0.95rem; padding: 0.5rem 0.9rem; white-space: nowrap; }
+.step-nav .btn:first-child { justify-self: start; }
+.step-nav .btn:last-child { justify-self: end; }
 
 .step-counter {
   font-family: var(--font-display);
@@ -696,4 +702,101 @@
   border-color: var(--color-purple);
   color: var(--color-text);
   outline: none;
+}
+
+/* --- Setting up the cube: three small, equal buttons on one line --- */
+.rubiks-actions--setup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+
+.btn-small {
+  font-size: 0.85rem;
+  padding: 0.45rem 0.5rem;
+  justify-content: center;
+}
+
+/* --- Choosing a method: a compact list, not three paragraphs --- */
+.method-heading {
+  margin: 1rem 0 0.4rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.solve-methods { display: grid; gap: 0.35rem; margin-top: 0; }
+
+.method {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  cursor: pointer;
+}
+
+.method:has(input:checked) { border-color: var(--color-purple); background: #f7f4fd; }
+
+.method input { grid-row: 1; margin: 0; }
+
+.method-name {
+  grid-row: 1;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.method-name em { font-style: normal; font-weight: 400; color: var(--color-text-muted); }
+
+/* The move count is the honest trade-off, so it sits where the eye lands. */
+.method-cost {
+  grid-row: 1;
+  justify-self: end;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-purple);
+  white-space: nowrap;
+}
+
+.method-why {
+  grid-row: 2;
+  grid-column: 2 / -1;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.rubiks-actions--go { margin-top: 0.7rem; }
+.rubiks-actions--go .btn { width: 100%; justify-content: center; }
+
+/* --- The Move Guide is reference: available, not always open --- */
+.move-legend > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.move-legend > summary::-webkit-details-marker { display: none; }
+
+.move-legend > summary::before {
+  content: "▸";
+  color: var(--color-purple);
+  font-size: 0.8rem;
+  transition: transform 0.15s;
+}
+
+.move-legend[open] > summary::before { transform: rotate(90deg); }
+.move-legend > summary h3 { display: inline; margin: 0; }
+.move-legend-note { margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .move-legend > summary::before { transition: none; }
 }

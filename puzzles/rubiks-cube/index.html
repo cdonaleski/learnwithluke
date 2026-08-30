@@ -64,32 +64,38 @@
           <strong>Spin View:</strong> drag to rotate the cube, then click a sticker to paint it with your chosen color.
         </p>
 
-        <div class="rubiks-actions">
-          <button type="button" class="btn btn-secondary" id="btn-reset">Reset to Solved</button>
-          <button type="button" class="btn btn-secondary" id="btn-scramble">Random Scramble</button>
-          <button type="button" class="btn btn-secondary" id="btn-blank">🧹 Blank cube</button>
-          <button type="button" class="btn btn-primary" id="btn-solve">Solve!</button>
+        <div class="rubiks-actions rubiks-actions--setup">
+          <button type="button" class="btn btn-secondary btn-small" id="btn-blank">🧹 Blank</button>
+          <button type="button" class="btn btn-secondary btn-small" id="btn-reset">Reset</button>
+          <button type="button" class="btn btn-secondary btn-small" id="btn-scramble">Scramble</button>
         </div>
 
+        <p class="method-heading">How should it be solved?</p>
         <div class="solve-methods" id="solve-methods" role="radiogroup"
              aria-label="How to solve it — easiest first, shortest last">
           <label class="method">
             <input type="radio" name="method" value="beginner" checked>
-            <span><strong>Beginner, layer by layer</strong> — the most moves
-            (about 200) but the least to remember: seven little stages, each one
-            repeating one or two short move patterns. Start here.</span>
+            <span class="method-name">Beginner <em>layer by layer</em></span>
+            <span class="method-cost">~200 moves</span>
+            <span class="method-why">Most moves, least to remember. Start here.</span>
           </label>
           <label class="method">
             <input type="radio" name="method" value="cfop">
-            <span><strong>The CFOP way</strong> — about 85 moves, in the four
-            stages a speedcuber uses: cross, first two layers, orient, permute.
+            <span class="method-name">The CFOP way</span>
+            <span class="method-cost">~85 moves</span>
+            <span class="method-why">The four stages speedcubers use.
             Pairs with <a href="../cfop/index.html">Learn CFOP</a>.</span>
           </label>
           <label class="method">
             <input type="radio" name="method" value="fast">
-            <span><strong>Fewest moves</strong> — about twenty, from the computer.
-            Quick to follow, but it will not teach you anything.</span>
+            <span class="method-name">Fewest moves</span>
+            <span class="method-cost">~20 moves</span>
+            <span class="method-why">Quickest to follow, but teaches nothing.</span>
           </label>
+        </div>
+
+        <div class="rubiks-actions rubiks-actions--go">
+          <button type="button" class="btn btn-primary" id="btn-solve">Solve!</button>
         </div>
 
         <div id="rubiks-message" class="rubiks-message" role="alert" hidden></div>
@@ -122,8 +128,8 @@
           <ol id="steps-list-ol"></ol>
         </div>
 
-        <div class="move-legend">
-          <h3>Move Guide</h3>
+        <details class="move-legend">
+          <summary><h3>Move Guide</h3></summary>
           <dl>
             <dt>U / U' / U2</dt>
             <dd>Top (white) face — clockwise, counter-clockwise, or half turn</dd>
@@ -138,10 +144,10 @@
             <dt>R / R' / R2</dt>
             <dd>Right (red) face</dd>
           </dl>
-          <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-muted);">
+          <p class="move-legend-note">
             Hold the cube so the named face is on top or front, then turn that layer the way the arrow would go if you were looking straight at it.
           </p>
-        </div>
+        </details>
       </section>
     </div>
   </main>
