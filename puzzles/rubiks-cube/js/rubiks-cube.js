@@ -969,6 +969,14 @@
     viewMode = "2d";
     showMessage("3D view couldn't load. You can still use Flat View!", "info");
   }
-  setViewMode(viewMode);
+  updateCubeViews();
+  // The canvas was sized before the side-by-side layout settled, so it must be
+  // measured again once it has -- and again whenever its column changes width.
+  window.setTimeout(function () { if (cube3d && cube3d._resize) cube3d._resize(); }, 50);
+  if (window.ResizeObserver && els.cube3d) {
+    new ResizeObserver(function () {
+      if (cube3d && cube3d._resize) cube3d._resize();
+    }).observe(els.cube3d);
+  }
   initSolver();
 })();

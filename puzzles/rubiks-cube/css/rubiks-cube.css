@@ -646,13 +646,19 @@
 /* Both views side by side: the spinning cube to look at, the flat map to check. */
 .cube-viewport--both {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: 0.8rem;
+  /* The cube keeps most of the room -- it is the thing being looked at; the
+     flat map is the checker beside it. Halving them evenly shrank the cube
+     to a letterbox, which was rightly complained about. */
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 0.9rem;
   align-items: center;
 }
 
-@media (max-width: 640px) {
+.cube-viewport--both .cube-3d-container { min-height: 320px; }
+
+@media (max-width: 700px) {
   .cube-viewport--both { grid-template-columns: 1fr; }
+  .cube-viewport--both .cube-net { max-width: 22rem; margin: 0 auto; }
 }
 
 .cube-3d-holder { position: relative; }
