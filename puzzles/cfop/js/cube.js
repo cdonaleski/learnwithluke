@@ -227,7 +227,11 @@
     return true;
   }
 
-  window.Cube = {
+  // Named CubeMath rather than Cube because the cube helper page also loads
+  // the vendored cubejs solver, which owns the global Cube -- and the two
+  // living under one name meant a freshly loaded page called a solved cube
+  // impossible. Different jobs, different names.
+  window.CubeMath = {
     FACES: FACES, STICKERS: STICKERS, TURNS: TURNS,
     spotOf: spotOf, slotAt: slotAt, shuffleFor: shuffleFor,
     solved: solved, turn: turn, parse: parse, step: step, run: run,

@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  const C = window.Cube;
+  const C = window.CubeMath;
 
   const COLOURS = {
     U: "#ffd500", D: "#ffffff", F: "#009b48", B: "#0046ad", L: "#ff5800", R: "#b71234",

@@ -13,7 +13,7 @@
 
   const stageEl = document.getElementById("stages");
   if (!stageEl) return;
-  const C = window.Cube;
+  const C = window.CubeMath;
   const D = window.CubeDiagram;
 
   const LEARNT_KEY = "cfop-learnt";

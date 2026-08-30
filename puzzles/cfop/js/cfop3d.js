@@ -16,7 +16,7 @@
 (function () {
   "use strict";
 
-  const C = window.Cube;
+  const C = window.CubeMath;
 
   const STICKER_HEX = {
     U: 0xffd500, D: 0xffffff, F: 0x009b48, B: 0x0046ad, L: 0xff5800, R: 0xb71234,

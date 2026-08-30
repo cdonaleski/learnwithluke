@@ -518,7 +518,7 @@
    * on a solved cube, it is not shown.
    */
   function solveTheCfopWay(validation) {
-    if (!window.CFOPSolver || !window.Cube) {
+    if (!window.CFOPSolver || !window.CubeMath) {
       showMessage("The CFOP solver has not loaded — try the fewest-moves way.", "error");
       return;
     }
@@ -549,9 +549,9 @@
       // The claim is checked before it is shown, exactly as the fast way is.
       let check = state54;
       solution.stages.forEach(function (stage) {
-        if (stage.moves.length) check = window.Cube.run(check, stage.moves.join(" ")).state;
+        if (stage.moves.length) check = window.CubeMath.run(check, stage.moves.join(" ")).state;
       });
-      if (!window.Cube.isSolved(check)) {
+      if (!window.CubeMath.isSolved(check)) {
         showMessage("Something went wrong working that out — try the fewest-moves way.", "error");
         els.solutionPanel.hidden = true;
         return;
