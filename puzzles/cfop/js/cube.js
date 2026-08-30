@@ -200,6 +200,25 @@
     return tidy(inverse(text));
   }
 
+  /**
+   * The same algorithm done with the other hand: everything reflected in the
+   * mirror between R and L. Each move becomes its opposite letter, turned the
+   * other way -- R becomes L', U becomes U', and a half turn stays a half turn.
+   * An algorithm that fills the front-right slot, mirrored, fills the
+   * front-left, which is how one list of cases serves both hands.
+   */
+  const MIRROR = { R: "L", L: "R", U: "U", D: "D", F: "F", B: "B",
+                   r: "l", l: "r", u: "u", d: "d", f: "f", b: "b",
+                   M: "M", E: "E", S: "S", x: "x", y: "y", z: "z" };
+
+  function mirror(text) {
+    const read = parse(text);
+    if (read.error) return "";
+    return tidy(read.moves.map(function (move) {
+      return MIRROR[move.name] + (move.back ? "" : "'");
+    }).join(" "));
+  }
+
   function isSolved(state) {
     for (let f = 0; f < 6; f++) {
       const colour = state[f * 9 + 4];
@@ -212,6 +231,6 @@
     FACES: FACES, STICKERS: STICKERS, TURNS: TURNS,
     spotOf: spotOf, slotAt: slotAt, shuffleFor: shuffleFor,
     solved: solved, turn: turn, parse: parse, step: step, run: run,
-    inverse: inverse, tidy: tidy, setupFor: setupFor, isSolved: isSolved,
+    inverse: inverse, tidy: tidy, setupFor: setupFor, mirror: mirror, isSolved: isSolved,
   };
 })();

@@ -72,6 +72,9 @@
     setup: document.getElementById("setup-text"),
     note: document.getElementById("case-note"),
     where: document.getElementById("player-where"),
+    board3d: document.getElementById("player-3d"),
+    speed: document.getElementById("speed"),
+    mirrorText: document.getElementById("mirror-text"),
     back: document.getElementById("btn-back"),
     next: document.getElementById("btn-next"),
     play: document.getElementById("btn-play"),
@@ -83,6 +86,8 @@
 
   const state = {
     stage: "cross",
+    view3d: null,
+    animating: false,
     open: null,        // the case being stepped through
     moves: [],
     at: 0,
@@ -200,6 +205,8 @@
     el.algText.textContent = C.tidy(item.alg);
     el.setup.textContent = C.setupFor(item.alg);
     el.note.textContent = item.note || (item.group ? item.group : "");
+    if (el.mirrorText) el.mirrorText.textContent = C.mirror(item.alg);
+    wake3d();
     const done = learnt()[state.stage] || {};
     setLearntButton(Boolean(done[caseId(item)]));
     drawPlayer();
@@ -212,6 +219,75 @@
     stopPlaying();
     state.open = null;
     el.player.hidden = true;
+  }
+
+  /* ---------------- The turning cube ---------------- */
+
+  /** How long one swing takes, from the speed slider. Slow is for learning. */
+  function swingMs() {
+    const setting = el.speed ? Number(el.speed.value) : 3;
+    return [1400, 950, 650, 420, 240][Math.max(0, Math.min(4, setting - 1))] || 650;
+  }
+
+  function still() {
+    try {
+      return Boolean(window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    } catch (err) { return false; }
+  }
+
+  function wake3d() {
+    if (!window.CFOP3D || !el.board3d) return;
+    if (!state.view3d) {
+      state.view3d = window.CFOP3D.makeView(el.board3d);
+      if (state.view3d) {
+        const loop = function () {
+          state.view3d.tick();
+          window.requestAnimationFrame(loop);
+        };
+        window.requestAnimationFrame(loop);
+        window.addEventListener("resize", function () { state.view3d.resize(); });
+      }
+    }
+    if (state.view3d) state.view3d.paint(nowState());
+  }
+
+  /**
+   * One step, swung on the cube rather than snapped -- forwards plays the
+   * move, backwards plays its undoing, and the books are only touched when
+   * the swing lands, so the picture and the count always agree.
+   */
+  function stepAnimated(by, done) {
+    if (state.animating) return false;
+    const forwards = by > 0;
+    const at = forwards ? state.at : state.at - 1;
+    if (at < 0 || at >= state.moves.length) { if (done) done(); return false; }
+    const move = state.moves[at];
+    const played = forwards ? move : { name: move.name, back: !move.back };
+
+    if (!state.view3d || still()) {
+      state.at += by;
+      drawPlayer();
+      if (state.view3d) state.view3d.paint(nowState());
+      if (done) done();
+      return true;
+    }
+
+    state.animating = true;
+    state.view3d.animate(played, swingMs(), function () {
+      state.animating = false;
+      state.at += by;
+      drawPlayer();
+      state.view3d.paint(nowState());
+      if (done) done();
+    });
+    // The highlight moves as the swing begins, so you watch the move you read.
+    if (forwards) {
+      state.at += by;
+      drawPlayer();
+      state.at -= by;
+    }
+    return true;
   }
 
   /** The cube after however many moves have been stepped through. */
@@ -249,22 +325,35 @@
   }
 
   function stopPlaying() {
-    if (state.playing) { window.clearTimeout(state.playing); state.playing = null; }
+    if (typeof state.playing === "number") window.clearTimeout(state.playing);
+    state.playing = null;
     if (el.play) el.play.textContent = "▶ Play";
   }
 
+  /**
+   * Plays the algorithm through, each move swinging at the chosen speed and
+   * booking the next when it lands -- so slowing the slider mid-play slows
+   * the very next turn, which is what a learner following along wants.
+   */
   function play() {
     if (state.playing) { stopPlaying(); return; }
-    if (state.at >= state.moves.length) state.at = 0;
+    if (state.at >= state.moves.length) {
+      state.at = 0;
+      drawPlayer();
+      if (state.view3d) state.view3d.paint(nowState());
+    }
     el.play.textContent = "⏸ Pause";
-    const tick = function () {
-      if (state.at >= state.moves.length) { stopPlaying(); return; }
-      move(1);
-      if (state.at >= state.moves.length) { stopPlaying(); return; }
-      state.playing = window.setTimeout(tick, 700);
+    state.playing = true;
+    const breath = function () { return Math.round(swingMs() * 0.3); };
+    const next = function () {
+      if (!state.playing || state.at >= state.moves.length) { stopPlaying(); return; }
+      stepAnimated(1, function () {
+        if (!state.playing) return;
+        if (state.at >= state.moves.length) { stopPlaying(); return; }
+        state.playing = window.setTimeout(next, breath()) || true;
+      });
     };
-    drawPlayer();
-    state.playing = window.setTimeout(tick, 700);
+    next();
   }
 
   function setLearntButton(yes) {
@@ -276,8 +365,8 @@
 
   /* ---------------- Wiring ---------------- */
 
-  if (el.back) el.back.addEventListener("click", function () { stopPlaying(); move(-1); });
-  if (el.next) el.next.addEventListener("click", function () { stopPlaying(); move(1); });
+  if (el.back) el.back.addEventListener("click", function () { stopPlaying(); stepAnimated(-1); });
+  if (el.next) el.next.addEventListener("click", function () { stopPlaying(); stepAnimated(1); });
   if (el.play) el.play.addEventListener("click", play);
   if (el.close) el.close.addEventListener("click", closeCase);
   if (el.learnt) el.learnt.addEventListener("click", function () {
@@ -293,8 +382,8 @@
   window.addEventListener("keydown", function (event) {
     if (event.target && event.target.tagName === "INPUT") return;
     if (!state.open) return;
-    if (event.key === "ArrowRight") { stopPlaying(); move(1); event.preventDefault(); }
-    if (event.key === "ArrowLeft") { stopPlaying(); move(-1); event.preventDefault(); }
+    if (event.key === "ArrowRight") { stopPlaying(); stepAnimated(1); event.preventDefault(); }
+    if (event.key === "ArrowLeft") { stopPlaying(); stepAnimated(-1); event.preventDefault(); }
     if (event.key === "Escape") { closeCase(); event.preventDefault(); }
   });
 
@@ -305,6 +394,7 @@
     state: state, STAGES: STAGES, C: C, D: D,
     caseState: caseState, openCase: openCase, closeCase: closeCase,
     move: move, play: play, nowState: nowState, drawStage: drawStage,
+    stepAnimated: stepAnimated, swingMs: swingMs,
     caseId: caseId, learnt: learnt, markLearnt: markLearnt,
   };
 })();

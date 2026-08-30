@@ -164,3 +164,32 @@
 .tip p { color: var(--color-text-muted); font-size: 0.92rem; }
 
 @media (prefers-reduced-motion: reduce) { .case { transition: none; } }
+
+/* The turning cube */
+.player-3d {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 0.6rem;
+  width: min(22rem, 88vw);
+  cursor: grab;
+}
+
+.player-3d:active { cursor: grabbing; }
+.player-3d canvas { border-radius: var(--radius-md); }
+
+/* With the cube doing the showing, the flat sheet is a reference beside it. */
+.player-board .cube-diagram { width: min(11rem, 45vw); }
+
+.speed-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.speed-row input { width: min(14rem, 55vw); accent-color: var(--color-purple); }

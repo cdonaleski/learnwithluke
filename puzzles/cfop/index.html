@@ -43,10 +43,18 @@
       <h3 class="case-name" id="case-name"></h3>
       <p class="case-note" id="case-note"></p>
 
+      <div class="player-3d" id="player-3d" aria-label="The cube, turning as the moves play"></div>
       <div class="player-board" id="player-board"></div>
+
+      <label class="speed-row">
+        <span>Speed</span>
+        <input type="range" id="speed" min="1" max="5" value="3" step="1"
+               aria-label="How fast the turns play, one slowest, five fastest">
+      </label>
 
       <p class="alg" id="alg-text"></p>
       <p class="setup">To set it up on a real cube, do: <span id="setup-text"></span></p>
+      <p class="setup">The same case with the left hand: <span id="mirror-text"></span></p>
 
       <div class="game-actions">
         <button type="button" class="btn btn-secondary" id="btn-back">◀ Back</button>
@@ -84,10 +92,20 @@
         is all that matters at that stage.</dd>
 
         <dt>Stepping through</dt>
-        <dd>Click any case to open it. <strong>Next</strong> and
-        <strong>Back</strong> walk through the algorithm a move at a time,
-        <strong>Play</strong> runs it, and the arrow keys work too. The picture
-        is worked out from the moves, so it can never be out of step with them.</dd>
+        <dd>Click any case to open it. The cube turns in three dimensions as
+        each move plays, with the move being made picked out in the algorithm
+        underneath — <strong>Next</strong> and <strong>Back</strong> go a move
+        at a time, <strong>Play</strong> runs the whole thing, and the arrow
+        keys work too. Drag the cube round to see the back of it. The
+        <strong>speed</strong> slider goes from very slow, for following along
+        with a cube in your hands, up to full speed. The flat picture beside it
+        is worked out from the same moves, so the two can never disagree.</dd>
+
+        <dt>The left hand</dt>
+        <dd>Every case also shows its mirror — the same thing done with the left
+        hand. It is worked out from the right-hand algorithm rather than kept as
+        a second list, so the two can never drift apart. Fast solvers use
+        whichever hand the case favours.</dd>
 
         <dt>Trying it on a real cube</dt>
         <dd>Every case shows the moves that <em>set it up</em> from a solved
@@ -114,11 +132,14 @@
 
   <div id="site-footer"></div>
   <script src="../../js/nav.js"></script>
+  <script src="../../vendor/three.min.js"></script>
+  <script src="../../vendor/OrbitControls.js"></script>
   <script src="js/cube.js"></script>
   <script src="js/diagram.js"></script>
   <script src="js/f2l.js"></script>
   <script src="js/oll.js"></script>
   <script src="js/pll.js"></script>
+  <script src="js/cfop3d.js"></script>
   <script src="js/cfop.js"></script>
 </body>
 </html>

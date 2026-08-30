@@ -1,82 +1,148 @@
 /**
- * The first two layers, pairing a corner with its edge and putting them in.
+ * The first two layers: all forty-one cases, filling the front-right slot.
  *
- * Each says which slot it fills. The right-hand ones fill the front-right slot;
- * the left-hand ones turn the cube first and so fill the front-left. Both are
- * worth knowing, because turning the whole cube for every pair is slow.
+ * Only the algorithm is written down; each case is what you get by running its
+ * algorithm backwards from a solved cube. The left-hand version of any case is
+ * worked out by mirroring the algorithm, not stored, so the two hands cannot
+ * drift apart.
  *
- * The other two slots are these same cases with the cube turned round, which is
- * why learning them once is enough.
+ * There are exactly 41, and the tests count rather than trust: the pair's
+ * corner can be in fifteen states (four places on top times three twists, or
+ * its own slot times three) and its edge in ten (four places times two flips,
+ * or its slot times two). That is 150 arrangements, which Burnside's count
+ * over the four turns of the top folds to (150 + 6 + 6 + 6) / 4 = 42 cases --
+ * one of which is the pair already home. The 41 here land one on each of the
+ * others, so a wrong algorithm shows up as a duplicate or a gap.
  *
- * As with the last layer, only the algorithm is written down; the case is what
- * you get by running it backwards from a solved cube. The tests then insist
- * that running it backwards disturbs the front-right corner and the front-right
- * edge and NOTHING else -- no other slot, no other layer. An algorithm that
- * wrecks a finished slot would be worse than useless, and that is exactly the
- * mistake this catches.
+ * The three longest are genuinely long: a pair sitting in its slot the wrong
+ * way round has to come out before it can go back in.
  */
 (function () {
   "use strict";
 
   window.F2L = [
-    // --- The pair is already made, sitting on top ---
-    { n: 1, group: "Pair already made", name: "Straight in, right",
-      note: "The pair is together and facing you. Just tuck it in.",
-      slot: "FR", alg: "U R U' R'" },
-    { n: 2, group: "Pair already made", name: "Straight in, left",
-      note: "The mirror of the last one, going the other way.",
-      slot: "FL", alg: "U' L' U L" },
-    { n: 3, group: "Pair already made", name: "Round the back",
-      note: "The pair is made but pointing the wrong way, so send it round.",
-      slot: "FR", alg: "U' R U R'" },
-    { n: 4, group: "Pair already made", name: "Round the back, left",
-      note: "The mirror again.",
-      slot: "FL", alg: "U L' U' L" },
-
-    // --- Corner on top facing up: the awkward ones ---
-    { n: 5, group: "Corner facing up", name: "Split, then join",
-      note: "The white is on top, so separate them first and rejoin.",
-      slot: "FR", alg: "U' R U2 R' U R U' R'" },
-    { n: 6, group: "Corner facing up", name: "Split, then join, left",
-      slot: "FL", alg: "U L' U2 L U' L' U L" },
-    { n: 7, group: "Corner facing up", name: "Three-move set-up",
-      slot: "FR", alg: "U' R U R' U R U R'" },
-    { n: 8, group: "Corner facing up", name: "Three-move set-up, left",
-      slot: "FL", alg: "U L' U' L U' L' U' L" },
-
-    // --- Corner in the slot already, edge on top ---
-    { n: 9, group: "Corner already down", name: "Corner in, edge on top",
-      note: "The corner is home but the edge is still up there. Pull it out and redo it.",
-      slot: "FR", alg: "R U' R' U R U' R' U2 R U' R'" },
-    { n: 10, group: "Corner already down", name: "Corner in, edge on top, left",
-      slot: "FL", alg: "L' U L U' L' U L U2 L' U L" },
-    { n: 11, group: "Corner already down", name: "Corner twisted in place",
-      note: "Take the corner out, then treat it like a normal case.",
-      slot: "FR", alg: "R U R' U' R U R' U' R U R'" },
-
-    // --- Both pieces in the slot but wrong ---
-    { n: 12, group: "Both in, wrongly", name: "Edge in, corner on top",
-      note: "The edge is in but flipped, or the pair is in the wrong way round.",
-      slot: "FR", alg: "R U' R' U R U' R' U R U' R'" },
-    { n: 13, group: "Both in, wrongly", name: "Pair in backwards",
-      note: "Both are in the slot but swapped. Take them both out and start again.",
-      slot: "FR", alg: "R U' R' U' R U R' U2 R U' R'" },
-    { n: 14, group: "Both in, wrongly", name: "Pair in, both turned",
-      slot: "FR", alg: "R U' R' U R U2 R' U R U' R'" },
-
-    // --- The two everybody meets first ---
-    { n: 15, group: "The common ones", name: "The three-mover",
-      note: "The shortest case there is. Learn to spot it.",
-      slot: "FR", alg: "R U R'" },
-    { n: 16, group: "The common ones", name: "The three-mover, left",
-      slot: "FL", alg: "L' U' L" },
-    { n: 17, group: "The common ones", name: "Corner up, edge across",
-      slot: "FR", alg: "U R U2 R' U R U' R'" },
-    { n: 18, group: "The common ones", name: "Corner up, edge across, left",
-      slot: "FL", alg: "U' L' U2 L U' L' U L" },
-    { n: 19, group: "The common ones", name: "Hidden pair, right",
-      slot: "FR", alg: "U2 R U R' U R U' R'" },
-    { n: 20, group: "The common ones", name: "Hidden pair, left",
-      slot: "FL", alg: "U2 L' U' L U' L' U L" },
+    { n: 1, group: "Both on top", name: "Quick one",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "F' U F" },
+    { n: 2, group: "Both on top", name: "Quick one 2",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "F' U' F" },
+    { n: 3, group: "Both on top", name: "Straight in",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "U R U' R'" },
+    { n: 4, group: "Both on top", name: "Round the back",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "U' R U R'" },
+    { n: 5, group: "Both on top", name: "Middling",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "F' U F U' R U R'" },
+    { n: 6, group: "Both on top", name: "Longer",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "R U R' U2 F' U' F" },
+    { n: 7, group: "Both on top", name: "Longer 2",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "R U' R' U2 F' U' F" },
+    { n: 8, group: "Both on top", name: "Longer 3",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "F' U2 F U2 F' U F" },
+    { n: 9, group: "Both on top", name: "Longer 4",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "U' R U R' U2 R U' R'" },
+    { n: 10, group: "Both on top", name: "Longer 5",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "U F' U' F U2 F' U F" },
+    { n: 11, group: "Both on top", name: "Longer 6",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "R U R' U R U' R' U R U' R'" },
+    { n: 12, group: "Both on top", name: "Corner in, edge on top",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "R U' R' U R U' R' U2 R U' R'" },
+    { n: 13, group: "Both on top", name: "The long way",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "R U R' U2 R U' R' U R U' R'" },
+    { n: 14, group: "Both on top", name: "The long way 2",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "F' U2 F R U R' U2 F' U' F" },
+    { n: 15, group: "Both on top", name: "The long way 3",
+      note: "The corner is on top with its white facing sideways. The edge is on top, turned the awkward way round.",
+      alg: "R U2 R' U R U2 R' U R U' R'" },
+    { n: 16, group: "Both on top", name: "The long way 4",
+      note: "The corner is on top with its white facing sideways. The edge is on top.",
+      alg: "R2 F2 U2 F R2 F' U2 F2 R2 F' U F" },
+    { n: 17, group: "White facing up", name: "Split, then join",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top, turned the awkward way round.",
+      alg: "U' R U2 R' U R U' R'" },
+    { n: 18, group: "White facing up", name: "Longer 7",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top, turned the awkward way round.",
+      alg: "U R U2 R' U' R U R'" },
+    { n: 19, group: "White facing up", name: "Longer 8",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top.",
+      alg: "U F' U2 F U' F' U F" },
+    { n: 20, group: "White facing up", name: "Longer 9",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top.",
+      alg: "U' F' U2 F U F' U' F" },
+    { n: 21, group: "White facing up", name: "Longer 10",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top.",
+      alg: "U2 F' U' F U' F' U F" },
+    { n: 22, group: "White facing up", name: "The long way 5",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top, turned the awkward way round.",
+      alg: "R U' R' U2 R U' R' U R U' R'" },
+    { n: 23, group: "White facing up", name: "The long way 6",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top.",
+      alg: "R U2 R' F' U2 F U2 F' U F" },
+    { n: 24, group: "White facing up", name: "The long way 7",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is on top, turned the awkward way round.",
+      alg: "F' U F R U' R' U2 R U' R' U R U' R'" },
+    { n: 25, group: "Corner already down", name: "Middling 2",
+      note: "The corner is in its slot but twisted. The edge is on top, turned the awkward way round.",
+      alg: "R U' R' U R U' R'" },
+    { n: 26, group: "Corner already down", name: "Middling 3",
+      note: "The corner is in its slot but twisted. The edge is on top.",
+      alg: "F' U F U' F' U F" },
+    { n: 27, group: "Corner already down", name: "Middling 4",
+      note: "The corner is already in its slot, sitting the right way up. The edge is on top.",
+      alg: "R U R' U' F' U' F" },
+    { n: 28, group: "Corner already down", name: "Middling 5",
+      note: "The corner is in its slot but twisted. The edge is on top.",
+      alg: "F' U' F U F' U' F" },
+    { n: 29, group: "Corner already down", name: "Middling 6",
+      note: "The corner is already in its slot, sitting the right way up. The edge is on top, turned the awkward way round.",
+      alg: "F' U F U R U' R'" },
+    { n: 30, group: "Corner already down", name: "Three-move set-up",
+      note: "The corner is in its slot but twisted. The edge is on top, turned the awkward way round.",
+      alg: "U' R U R' U' R U R'" },
+    { n: 31, group: "Edge already down", name: "Middling 7",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is in but flipped.",
+      alg: "R U' R' U F' U F" },
+    { n: 32, group: "Edge already down", name: "Middling 8",
+      note: "The corner is on top with its white facing sideways. The edge is in but flipped.",
+      alg: "F' U F U R U R'" },
+    { n: 33, group: "Edge already down", name: "Longer 11",
+      note: "The corner is on top with its white facing sideways. The edge is already in, the right way round.",
+      alg: "R U R' U' R U' R' U R U' R'" },
+    { n: 34, group: "Edge already down", name: "Longer 12",
+      note: "The corner is on top with its white facing sideways. The edge is already in, the right way round.",
+      alg: "R U' R' U R U' R' U' R U R'" },
+    { n: 35, group: "Edge already down", name: "Longer 13",
+      note: "The corner is on top with its white facing sideways. The edge is in but flipped.",
+      alg: "F' U' F2 U F' R F U' F' R'" },
+    { n: 36, group: "Edge already down", name: "The long way 8",
+      note: "The corner is on top with its white facing straight up — the awkward way. The edge is already in, the right way round.",
+      alg: "U R U' R' U R U' R' U R U' R'" },
+    { n: 37, group: "Both already in the slot", name: "Pair in, both turned",
+      note: "The corner is in its slot but twisted. The edge is already in, the right way round.",
+      alg: "R U' R' U R U2 R' U R U' R'" },
+    { n: 38, group: "Both already in the slot", name: "Pair in backwards",
+      note: "The corner is in its slot but twisted. The edge is already in, the right way round.",
+      alg: "R U' R' U' R U R' U2 R U' R'" },
+    { n: 39, group: "Both already in the slot", name: "The long way 9",
+      note: "The corner is in its slot but twisted. The edge is in but flipped.",
+      alg: "R U' R' U2 F' U' F U' F' U F" },
+    { n: 40, group: "Both already in the slot", name: "The long way 10",
+      note: "The corner is already in its slot, sitting the right way up. The edge is in but flipped.",
+      alg: "F' U F R U R' U R U' R' U R U' R'" },
+    { n: 41, group: "Both already in the slot", name: "The long way 11",
+      note: "The corner is in its slot but twisted. The edge is in but flipped.",
+      alg: "F' U' F U R U R' U2 R U' R' U R U' R'" },
   ];
 })();
