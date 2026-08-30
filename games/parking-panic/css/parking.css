@@ -1,0 +1,124 @@
+/* Parking Panic — page-specific styles */
+
+.level-name {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 5vw, 1.5rem);
+  color: var(--color-coral);
+  margin-bottom: 0.6rem;
+}
+
+.lot-wrap { display: flex; justify-content: center; padding: 0.3rem; }
+
+/* The car park itself. Vehicles sit on top of the bays and are moved by
+   transform, so sliding one is cheap and never re-lays the board out. */
+.lot {
+  --square: 48px;
+  position: relative;
+  width: calc(var(--square) * 6);
+  height: calc(var(--square) * 6);
+  border-radius: var(--radius-md);
+  background: #6b6257;
+  padding: 0;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.28);
+  touch-action: none;         /* dragging a car must not scroll the page */
+}
+
+.floor {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(6, var(--square));
+  grid-template-rows: repeat(6, var(--square));
+}
+
+.bay {
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  margin: 2px;
+  cursor: pointer;
+}
+
+/* The gap in the wall the red car is aiming for. */
+.way-out {
+  position: absolute;
+  right: -2px;
+  top: calc(var(--row) * var(--square));
+  height: var(--square);
+  width: 8px;
+  border-radius: 0 5px 5px 0;
+  background: var(--color-sun);
+  color: transparent;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(255, 230, 109, 0.8);
+}
+
+.car {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 9px;
+  background: #cfd8dc;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  padding: 0;
+  border: 0;
+  transition: box-shadow 0.15s;
+  /* A little inset so the tarmac shows between vehicles. */
+  outline: 3px solid transparent;
+  outline-offset: -3px;
+}
+
+.car:active { cursor: grabbing; }
+
+.car--hero {
+  background: linear-gradient(160deg, #ff6b5a, #e04a3a);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.28), 0 0 0 2px #fff3, 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.car.is-picked { outline-color: #fff; }
+.car:focus-visible { outline: 3px solid #fff; outline-offset: -3px; }
+
+/* A windscreen, so a car looks like a car and its direction is obvious. */
+.car::after {
+  content: "";
+  position: absolute;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.car--h::after { top: 22%; bottom: 22%; left: 12%; width: 26%; }
+.car--v::after { left: 22%; right: 22%; top: 12%; height: 26%; }
+
+.lot.is-stuck { animation: lot-shake 0.5s; }
+
+@keyframes lot-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.chip {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chip:hover, .chip:focus-visible { border-color: var(--color-coral); outline: none; }
+.chip.is-on { background: var(--color-coral); border-color: var(--color-coral); color: #fff; }
+.chip.is-done { border-color: #bfe6d6; color: #2f9e78; }
+.chip.is-done.is-on { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .car { transition: none; }
+  .lot.is-stuck { animation: none; }
+}

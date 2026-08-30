@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Parking Panic — slide the cars and lorries out of the way and get the red car out of the car park. On Learn With Luke">
+  <title>Parking Panic · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/parking.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🚗 Parking Panic</h1>
+      <p class="game-instructions" role="note">
+        <strong>Get the red car out.</strong>
+        Everything can slide forwards and backwards, but nothing can turn — so
+        the only question is what to shift, and in which order.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="lot-title">
+      <h2 id="lot-title" class="visually-hidden">The car park</h2>
+
+      <p class="level-name" id="level-name">—</p>
+
+      <div class="lot-wrap">
+        <div class="lot" id="lot" role="group" aria-label="The car park"></div>
+      </div>
+
+      <p class="game-status" id="status" role="status" aria-live="polite">Drag a vehicle to begin.</p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-undo">↩️ Take it back</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">🔄 Start again</button>
+        <button type="button" class="btn btn-secondary" id="btn-hint">💡 Hint</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Your moves</span><span class="stat-value" id="moves">0</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Fewest possible</span><span class="stat-value" id="best">—</span></div>
+        <div class="stat"><span class="stat-label">You got out in</span><span class="stat-value" id="yours">—</span></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="picker-title">
+      <h2 id="picker-title">The jams</h2>
+      <p class="lb-note">The number in brackets is the fewest moves it can be done in.</p>
+      <div class="chips" id="picker"></div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel"></section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Play</h2>
+      <dl>
+        <dt>The goal</dt>
+        <dd>Drive the <strong>red car</strong> off the right-hand side of the car
+        park. Everything else is only there to be got out of the way.</dd>
+
+        <dt>How things move</dt>
+        <dd>Every vehicle slides <strong>along its own length</strong> and no
+        other way. A car lying across can only go left and right; one lying up
+        and down can only go up and down. Nothing turns, nothing lifts out, and
+        nothing drives through anything else.</dd>
+
+        <dt>Moving one</dt>
+        <dd>Drag it. Or tap it to pick it out, then tap an empty square along its
+        line to send it there. With a keyboard, tab to a vehicle and use the
+        arrow keys.</dd>
+
+        <dt>What counts as a move</dt>
+        <dd>Sliding one vehicle counts as <strong>one move</strong>, however far
+        it goes. So shifting a lorry three squares is one move, not three — which
+        is why it is worth looking for the long shove rather than a series of
+        little ones.</dd>
+
+        <dt>The number in brackets</dt>
+        <dd>That is the fewest moves the jam can possibly be cleared in. It is
+        not a guess: every jam here was solved by working outwards from the
+        starting position through every arrangement in turn, so the first way out
+        found is the shortest one there is. Matching it is genuinely hard.</dd>
+
+        <dt>Hints</dt>
+        <dd>A hint works out the way out from <em>your</em> car park as it stands
+        and makes one move along it — it is never reading from a stored answer.
+        If you have jammed yourself so solidly that there is no way out at all,
+        it tells you that instead, which is worth knowing. A jam solved with
+        hints does not go on the fewest-moves board.</dd>
+
+        <dt>Getting stuck is normal</dt>
+        <dd>You can shuffle a car park into a state it cannot get out of. That is
+        part of the puzzle, not a fault — take a move back, or start again, and
+        look for a different order.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="js/lot.js"></script>
+  <script src="js/solver.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/parking.js"></script>
+</body>
+</html>
