@@ -227,12 +227,37 @@
   }
 
   /**
+   * Splits "4 × 5 − 2 = 18" into the sum and the answer claimed for it.
+   *
+   * Saying what you think it comes to is the point of writing an equation, and
+   * it is the difference between doing the arithmetic and letting the computer
+   * do it for you. It stays optional, because a child working out what a sum
+   * makes is also worth doing -- but if a claim is made it has to be right.
+   */
+  function splitClaim(text) {
+    const parts = String(text).split("=");
+    if (parts.length === 1) return { sum: parts[0], claim: null };
+    if (parts.length > 2) return { error: "One equals sign is enough." };
+    const claimed = parts[1].trim();
+    if (!claimed) return { error: "You have written an equals sign but not said what it comes to." };
+    if (!/^-?[0-9]+$/.test(claimed)) {
+      return { error: "After the equals sign, just the number you think it makes." };
+    }
+    return { sum: parts[0], claim: Number(claimed) };
+  }
+
+  /**
    * The whole check, in one call: does it parse, does it use the dice, does it
-   * come out as a whole number. What it does NOT decide is whether that number
-   * is on the board -- the game knows that.
+   * come out as a whole number, and -- if an answer was claimed -- is that the
+   * answer. What it does NOT decide is whether the number is on the board;
+   * the game knows that.
    */
   function check(text, dice, allowed) {
     if (!String(text || "").trim()) return { ok: false, why: "Type a sum first." };
+    const split = splitClaim(text);
+    if (split.error) return { ok: false, why: split.error };
+    if (!String(split.sum || "").trim()) return { ok: false, why: "Type a sum first." };
+    text = split.sum;
     const lexed = tokenize(text);
     if (lexed.error) return { ok: false, why: lexed.error };
     if (!lexed.tokens.length) return { ok: false, why: "Type a sum first." };
@@ -260,12 +285,17 @@
       return { ok: false, why: "That comes to " + Math.round(worked.value * 100) / 100 +
         ", which is not a whole number." };
     }
-    return { ok: true, value: whole, tidy: describe(parsed.tree) };
+    if (split.claim !== null && split.claim !== whole) {
+      return { ok: false, claimed: split.claim, value: whole,
+        why: "That sum comes to " + whole + ", not " + split.claim + "." };
+    }
+    return { ok: true, value: whole, claimed: split.claim, tidy: describe(parsed.tree) };
   }
 
   window.Expression = {
     TOO_BIG: TOO_BIG, MAX_POWER: MAX_POWER,
     tokenize: tokenize, parse: parse, evaluate: evaluate, numbersIn: numbersIn,
-    describe: describe, usesTheDice: usesTheDice, wholeNumber: wholeNumber, check: check,
+    describe: describe, usesTheDice: usesTheDice, wholeNumber: wholeNumber,
+    splitClaim: splitClaim, check: check,
   };
 })();

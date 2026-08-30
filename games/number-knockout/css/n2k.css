@@ -59,6 +59,13 @@
 .key:hover, .key:focus-visible { border-color: var(--color-green); outline: none; }
 .key:active { transform: translateY(2px); }
 
+/* Saying what you think it comes to is the point, so the sign is highlighted. */
+.key--equals {
+  background: #fff4c9;
+  border-color: #f0d98a;
+  color: #a37a00;
+}
+
 /* The numbers you actually rolled, so they stand out from the signs. */
 .key--die {
   background: #eaf7ec;

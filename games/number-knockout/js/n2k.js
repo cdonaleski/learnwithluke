@@ -186,7 +186,8 @@
     drawBoard();
     el.score.textContent = state.score;
     flash(value);
-    say("✔ " + checked.tidy + " = " + value + ". Knocked out!");
+    say("✔ " + checked.tidy + " = " + value + ". Knocked out!" +
+      (checked.claimed === null ? "  (Try writing = and the answer next time — it counts for more.)" : ""));
 
     const leftToFind = state.possible.filter(function (n) { return !state.gone[n]; });
     if (!leftToFind.length) {
@@ -217,14 +218,16 @@
     });
     keys.push({ label: "+", put: "+" }, { label: "−", put: "-" },
               { label: "×", put: "*" }, { label: "÷", put: "/" },
-              { label: "(", put: "(" }, { label: ")", put: ")" });
+              { label: "(", put: "(" }, { label: ")", put: ")" },
+              { label: "=", put: "=", kind: "equals" });
     if (level().ops.indexOf("^") !== -1) keys.push({ label: "^", put: "^" });
     if (level().ops.indexOf("√") !== -1) keys.push({ label: "√", put: "√" });
 
     keys.forEach(function (key) {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "key" + (key.kind === "die" ? " key--die" : "");
+      button.className = "key" + (key.kind === "die" ? " key--die" : "") +
+        (key.kind === "equals" ? " key--equals" : "");
       button.textContent = key.label;
       button.setAttribute("aria-label", key.kind === "die" ? "The " + key.label + " you rolled" : key.label);
       button.addEventListener("click", function () { put(key.put); });
@@ -356,7 +359,7 @@
     if (event.key === "Enter") { event.preventDefault(); if (state.running) submit(); else startRound(); return; }
     if (event.key === "Backspace") { event.preventDefault(); rub(); return; }
     if (event.key === "Escape") { event.preventDefault(); clearTyped(); return; }
-    if (/^[0-9+\-*/()^]$/.test(event.key)) { event.preventDefault(); put(event.key); return; }
+    if (/^[0-9+\-*/()^=]$/.test(event.key)) { event.preventDefault(); put(event.key); return; }
     if (event.key === "r" || event.key === "R") { event.preventDefault(); put("√"); }
   });
 
