@@ -69,17 +69,23 @@
         </div>
 
         <div class="solve-methods" id="solve-methods" role="radiogroup"
-             aria-label="How to solve it">
+             aria-label="How to solve it — easiest first, shortest last">
           <label class="method">
-            <input type="radio" name="method" value="fast" checked>
-            <span><strong>Fewest moves</strong> — about twenty, from the computer.
-            Quick to follow, but it will not teach you anything.</span>
+            <input type="radio" name="method" value="beginner" checked>
+            <span><strong>Beginner, layer by layer</strong> — the most moves
+            (about 200) but the least to remember: seven little stages, each one
+            repeating one or two short move patterns. Start here.</span>
           </label>
           <label class="method">
             <input type="radio" name="method" value="cfop">
-            <span><strong>The CFOP way</strong> — more moves, in the four stages a
-            speedcuber uses: cross, first two layers, orient, permute. Pairs with
-            <a href="../cfop/index.html">Learn CFOP</a>.</span>
+            <span><strong>The CFOP way</strong> — about 85 moves, in the four
+            stages a speedcuber uses: cross, first two layers, orient, permute.
+            Pairs with <a href="../cfop/index.html">Learn CFOP</a>.</span>
+          </label>
+          <label class="method">
+            <input type="radio" name="method" value="fast">
+            <span><strong>Fewest moves</strong> — about twenty, from the computer.
+            Quick to follow, but it will not teach you anything.</span>
           </label>
         </div>
 
@@ -151,6 +157,7 @@
   <script src="../cfop/js/oll.js"></script>
   <script src="../cfop/js/pll.js"></script>
   <script src="../cfop/js/cfop-solver.js"></script>
+  <script src="../cfop/js/lbl-solver.js"></script>
   <script src="js/rubiks-cube.js"></script>
 </body>
 </html>

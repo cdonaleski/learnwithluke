@@ -544,6 +544,23 @@
       "and then it is done."],
     ["Straighten the top", "Everything is solved — the top layer just needs " +
       "turning round to line up."],
+    ["The bottom cross", "First job: four edges round the bottom centre, each " +
+      "matched to the side it touches. Do this by looking, not by memorising."],
+    ["Bottom corner", "Each bottom corner drops in with the same little loop — " +
+      "R U R' U' — repeated until it sits right. Turn the whole cube between " +
+      "corners so the one you are working on is always at the front right."],
+    ["Middle edge", "The middle edges go in with one of two mirror-image " +
+      "patterns, depending which way the edge is facing. These are the only " +
+      "two patterns this stage needs."],
+    ["The top cross", "F R U R' U' F' turns the top edges over: dot to L-shape " +
+      "to line to cross. Same pattern every time, just from the right angle."],
+    ["Top edges round", "The edges are up; now they slide round to their own " +
+      "faces with one repeated pattern."],
+    ["Top corners round", "Three corners swap round at a time. Ignore which " +
+      "way up they are — that is the last stage's job."],
+    ["Turning the last corners", "The famous bit: the bottom layers will look " +
+      "wrecked in the middle of this. Do not panic and do not restart — they " +
+      "come back exactly as the last corner lands."],
   ];
 
   function stageWhy(label) {
@@ -663,14 +680,17 @@
    * against the painted cube before being shown: if applying it does not end
    * on a solved cube, it is not shown.
    */
-  function solveTheCfopWay(validation) {
-    if (!window.CFOPSolver || !window.CubeMath) {
-      showMessage("The CFOP solver has not loaded — try the fewest-moves way.", "error");
+  function solveTheTeachingWay(validation, method) {
+    const solver = method === "beginner" ? window.LBLSolver : window.CFOPSolver;
+    if (!solver || !window.CubeMath) {
+      showMessage("That solver has not loaded — try the fewest-moves way.", "error");
       return;
     }
     els.btnSolve.disabled = true;
     els.solverStatus.hidden = false;
-    els.solverStatusText.textContent = "Solving it the CFOP way — cross, pairs, then the top…";
+    els.solverStatusText.textContent = method === "beginner"
+      ? "Solving it layer by layer, the way you would learn first…"
+      : "Solving it the CFOP way — cross, pairs, then the top…";
 
     // A breath, so the status paints before the work starts.
     window.setTimeout(function () {
@@ -680,7 +700,7 @@
       });
 
       let solution = null;
-      try { solution = window.CFOPSolver.solve(state54); } catch (err) { solution = null; }
+      try { solution = solver.solve(state54); } catch (err) { solution = null; }
       els.solverStatus.hidden = true;
       els.btnSolve.disabled = false;
 
@@ -711,10 +731,14 @@
           stageOf.push(stage.label);
         });
       });
-      showMessage("Solved the CFOP way — the stages are labelled as you go.", "success");
+      showMessage(method === "beginner"
+        ? "Solved layer by layer — lots of moves, hardly anything to remember."
+        : "Solved the CFOP way — the stages are labelled as you go.", "success");
       showSolution(moves.join(" "), stageOf,
-        moves.length + " moves in " + solution.stages.length +
-        " named stages — the same stages the Learn CFOP page teaches.");
+        moves.length + " moves in " + solution.stages.length + " named stages" +
+        (method === "beginner"
+          ? " — each stage repeats one or two little patterns."
+          : " — the same stages the Learn CFOP page teaches."));
     }, 60);
   }
 
@@ -836,8 +860,8 @@
       ? (els.methods.querySelector("input:checked") || {}).value || "fast"
       : "fast";
 
-    if (method === "cfop") {
-      solveTheCfopWay(validation);
+    if (method === "cfop" || method === "beginner") {
+      solveTheTeachingWay(validation, method);
       return;
     }
 

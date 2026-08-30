@@ -272,7 +272,12 @@
 
     if (!this._pivot) {
       this._pivot = new THREE.Group();
-      this.scene.add(this._pivot);
+      // Inside the cube group, NOT the scene. The group carries the display
+      // tilt, and a pivot hung off the scene swings about the scene's axes --
+      // which shears the stickers off in all directions and then, on restore,
+      // strands them outside the tilted group with group-local coordinates.
+      // That was precisely the exploded cube in the bug report.
+      this.cubeGroup.add(this._pivot);
     }
     var caught = [];
     var axisOf = { x: 0, y: 1, z: 2 };
@@ -301,7 +306,7 @@
     this._swing = null;
     for (var i = 0; i < swing.caught.length; i++) {
       var kept = swing.caught[i];
-      this.scene.attach(kept.mesh);
+      this.cubeGroup.attach(kept.mesh);
       kept.mesh.position.copy(kept.home);
       kept.mesh.rotation.copy(kept.spin);
     }
