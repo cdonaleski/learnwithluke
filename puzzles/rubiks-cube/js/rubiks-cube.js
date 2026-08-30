@@ -45,6 +45,7 @@
   let solutionStart = null;   // the cube as painted when Solve was pressed
   let shownMoves = 0;         // how many solution moves the display has played
   let displayFaces = null;    // what the views show during playback, or null
+  let playbackSeq = 0;        // stamps each display change, so a late swing repaints nothing
   let currentStepIndex = 0;
 
   const els = {
@@ -569,20 +570,26 @@
     const was = currentStepIndex;
     currentStepIndex = Math.max(0, Math.min(index, solutionSteps.length - 1));
 
+    // The books never wait for the picture. The display state is settled here
+    // and now, so pressing next faster than the cube can turn, or an old swing
+    // landing late, cannot disorder anything -- at worst a swing is skipped.
     const want = currentStepIndex;
     if (want !== shownMoves) {
       const oneOn = want === shownMoves + 1;
       const oneBack = want === shownMoves - 1;
-      if (cube3d && cube3d.animateMove && (oneOn || oneBack) && !prefersStillness()) {
-        const token = oneOn ? solutionSteps[shownMoves]
-                            : window.CubeMath ? window.CubeMath.inverse(solutionSteps[want]) : null;
-        if (token) {
-          cube3d.animateMove(token, 450, function () { showDisplayAt(want); });
-        } else {
-          showDisplayAt(want);
-        }
-      } else {
-        showDisplayAt(want);
+      const token = oneOn ? solutionSteps[shownMoves]
+        : oneBack && window.CubeMath ? window.CubeMath.inverse(solutionSteps[want]) : null;
+      const seq = ++playbackSeq;
+      showDisplayAt(want);
+      if (token && cube3d && cube3d.animateMove && !prefersStillness()) {
+        // Rewind one frame visually and swing forward to where the books are.
+        // If another press has moved things on by the time it lands, the
+        // repaint is skipped: the books already repainted for the newer press.
+        cube3d.updateColors(facesAfter(oneOn ? want - 1 : want + 1) ||
+          (displayFaces || cubeState));
+        cube3d.animateMove(token, 450, function () {
+          if (seq === playbackSeq) updateCubeViews();
+        });
       }
     }
     void was;
@@ -912,10 +919,14 @@
     // Standing at the first step with a move already played means stepping the
     // cube back rather than the reading.
     if (currentStepIndex === 0 && shownMoves > 0) {
+      const seq = ++playbackSeq;
+      showDisplayAt(0);
+      showStep(0);
       if (cube3d && cube3d.animateMove && !prefersStillness() && window.CubeMath) {
+        cube3d.updateColors(facesAfter(1) || cubeState);
         cube3d.animateMove(window.CubeMath.inverse(solutionSteps[0]), 450,
-          function () { showDisplayAt(0); showStep(0); });
-      } else { showDisplayAt(0); showStep(0); }
+          function () { if (seq === playbackSeq) updateCubeViews(); });
+      }
       return;
     }
     showStep(currentStepIndex - 1);
@@ -924,16 +935,17 @@
     // The last step's own move still deserves watching: the reading stays put
     // and the cube plays it, ending solved.
     if (currentStepIndex === solutionSteps.length - 1 && shownMoves === solutionSteps.length - 1) {
-      const finish = function () {
-        showDisplayAt(solutionSteps.length);
-        els.currentStepDesc.innerHTML =
-          "🎉 <strong>That's it — solved!</strong> The cube on screen is now one colour a side.";
-        els.btnNext.disabled = true;
-        els.btnPrev.disabled = false;
-      };
+      const seq = ++playbackSeq;
+      showDisplayAt(solutionSteps.length);
+      els.currentStepDesc.innerHTML =
+        "🎉 <strong>That's it — solved!</strong> The cube on screen is now one colour a side.";
+      els.btnNext.disabled = true;
+      els.btnPrev.disabled = false;
       if (cube3d && cube3d.animateMove && !prefersStillness()) {
-        cube3d.animateMove(solutionSteps[solutionSteps.length - 1], 450, finish);
-      } else finish();
+        cube3d.updateColors(facesAfter(solutionSteps.length - 1) || cubeState);
+        cube3d.animateMove(solutionSteps[solutionSteps.length - 1], 450,
+          function () { if (seq === playbackSeq) updateCubeViews(); });
+      }
       return;
     }
     showStep(currentStepIndex + 1);
