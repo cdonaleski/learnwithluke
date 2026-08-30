@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Number Knockout — roll three dice and use all three numbers to knock out as many numbers on the board as you can. On Learn With Luke">
+  <title>Number Knockout · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="../../css/dice3d.css">
+  <link rel="stylesheet" href="css/n2k.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Games</a>
+
+    <header class="game-header">
+      <h1>🎯 Number Knockout</h1>
+      <p class="game-instructions" role="note">
+        <strong>Use all the numbers you rolled, every time.</strong>
+        Make any number on the board and knock it out. How many can you get
+        before the time runs out?
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="game-title">
+      <h2 id="game-title" class="visually-hidden">The game</h2>
+
+      <div class="tray" id="tray" role="img" aria-label="The dice"></div>
+
+      <p class="typed" id="typed">…</p>
+      <div class="keys" id="keys" role="group" aria-label="Numbers and signs"></div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-rub">⌫ Rub out</button>
+        <button type="button" class="btn btn-primary" id="btn-enter">✓ Knock it out</button>
+      </div>
+
+      <p class="game-status" id="status" role="status" aria-live="polite">Press Start.</p>
+
+      <div class="board" id="board" role="group" aria-label="The board"></div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="clock">—</span></div>
+        <div class="stat stat--alt"><span class="stat-label">Knocked out</span><span class="stat-value" id="score">0</span></div>
+        <div class="stat"><span class="stat-label">Still up</span><span class="stat-value" id="left">—</span></div>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-primary" id="btn-start">Start</button>
+      </div>
+
+      <div class="summary" id="summary" hidden>
+        <h3 class="summary-score" id="summary-score"></h3>
+        <div class="missed" id="missed"></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="levels-title">
+      <h2 id="levels-title">How hard</h2>
+      <div class="chips" id="levels" role="group" aria-label="How hard"></div>
+    </section>
+
+    <section class="game-panel" id="leaderboard-panel"></section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Play</h2>
+      <dl>
+        <dt>The one rule that matters</dt>
+        <dd>Every number you rolled must be used <strong>exactly once</strong> in
+        each sum. Roll 4, 5 and 2 and you may write 4 × 5 − 2 = 18, but not
+        4 + 5 = 9, because the 2 has been left out.</dd>
+
+        <dt>Knocking one out</dt>
+        <dd>Make any number still standing on the board and it is crossed off.
+        Each number can only be knocked out once, so once 18 has gone you need a
+        different answer.</dd>
+
+        <dt>Signs you can use</dt>
+        <dd>Add, take away, times and divide, plus brackets to say what to do
+        first. On the hardest level you also get <strong>powers</strong> (2^3 is
+        2 × 2 × 2 = 8) and <strong>square roots</strong> (√9 = 3), which open up
+        an enormous number of extra answers.</dd>
+
+        <dt>Brackets are where the points are</dt>
+        <dd>4 + 5 × 2 is 14, because times happens before add. But
+        (4 + 5) × 2 is 18. Same three numbers, different answer — and with a
+        board of 36 numbers, moving the brackets about is how you find them.</dd>
+
+        <dt>Fractions along the way are fine</dt>
+        <dd>Only the answer has to be a whole number. 5 ÷ 2 × 4 is perfectly
+        allowed: it goes through 2.5 and comes out at 10.</dd>
+
+        <dt>At the end</dt>
+        <dd>It tells you what else that last roll could have made. Sometimes it
+        is one or two; sometimes it is fifteen and you will want another go.</dd>
+
+        <dt>On a keyboard</dt>
+        <dd>Type the digits and signs, <kbd>R</kbd> for a square root,
+        <kbd>Backspace</kbd> to rub out, <kbd>Esc</kbd> to clear, and
+        <kbd>Enter</kbd> to knock it out.</dd>
+
+        <dt>Where this game comes from</dt>
+        <dd>Number Knockout is played by Classical Conversations students, who
+        run it as a national competition for 11 to 14 year olds — three dice, a
+        6 by 6 board, and sixty seconds. This is our own version of it, built to
+        practise at home. You can read about the real thing at
+        <a href="https://classicalconversations.com/national-number-knockout/"
+           target="_blank" rel="noopener noreferrer">classicalconversations.com</a>.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../js/leaderboard.js"></script>
+  <script src="../../js/dice3d.js"></script>
+  <script src="js/expression.js"></script>
+  <script src="js/finder.js"></script>
+  <script src="js/n2k.js"></script>
+</body>
+</html>
