@@ -541,3 +541,85 @@
   }
 }
 .learn-link { text-align: center; color: var(--color-text-muted); margin-top: 0.4rem; }
+
+/* Live verdict while painting */
+.live-status {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  min-height: 1.3em;
+  margin-bottom: 0.5rem;
+}
+
+.live-status.is-good { color: #2f9e78; }
+.live-status.is-bad { color: var(--color-coral); }
+
+/* How many of each colour are left to place */
+.color-swatch { position: relative; }
+
+.swatch-left {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.45rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: var(--color-text);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.62rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.swatch-left.is-spent { background: #b8b0a0; }
+
+/* Choosing how to solve */
+.solve-methods {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.method {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.method:has(input:checked) { border-color: var(--color-purple); background: #f7f4fd; }
+.method input { margin-top: 0.25rem; }
+
+/* Stage names inside a CFOP solution */
+.step-stage {
+  list-style: none;
+  margin: 0.6rem 0 0.2rem -1.2rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-purple);
+}
+
+.stage-tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  margin-right: 0.3rem;
+  border-radius: 999px;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+}

@@ -36,6 +36,7 @@
       <section class="rubiks-panel" aria-labelledby="cube-input-title">
         <h2 id="cube-input-title">Your Cube</h2>
 
+        <p class="live-status" id="live-status" role="status" aria-live="polite"></p>
         <div class="color-palette" role="toolbar" aria-label="Choose a sticker color">
           <!-- Populated by JS -->
         </div>
@@ -64,6 +65,21 @@
           <button type="button" class="btn btn-secondary" id="btn-reset">Reset to Solved</button>
           <button type="button" class="btn btn-secondary" id="btn-scramble">Random Scramble</button>
           <button type="button" class="btn btn-primary" id="btn-solve">Solve!</button>
+        </div>
+
+        <div class="solve-methods" id="solve-methods" role="radiogroup"
+             aria-label="How to solve it">
+          <label class="method">
+            <input type="radio" name="method" value="fast" checked>
+            <span><strong>Fewest moves</strong> — about twenty, from the computer.
+            Quick to follow, but it will not teach you anything.</span>
+          </label>
+          <label class="method">
+            <input type="radio" name="method" value="cfop">
+            <span><strong>The CFOP way</strong> — more moves, in the four stages a
+            speedcuber uses: cross, first two layers, orient, permute. Pairs with
+            <a href="../cfop/index.html">Learn CFOP</a>.</span>
+          </label>
         </div>
 
         <div id="rubiks-message" class="rubiks-message" role="alert" hidden></div>
@@ -129,6 +145,11 @@
   <script src="../../vendor/cubejs/async.js"></script>
   <script src="../../js/nav.js"></script>
   <script src="js/cube3d.js"></script>
+  <script src="../cfop/js/cube.js"></script>
+  <script src="../cfop/js/f2l.js"></script>
+  <script src="../cfop/js/oll.js"></script>
+  <script src="../cfop/js/pll.js"></script>
+  <script src="../cfop/js/cfop-solver.js"></script>
   <script src="js/rubiks-cube.js"></script>
 </body>
 </html>

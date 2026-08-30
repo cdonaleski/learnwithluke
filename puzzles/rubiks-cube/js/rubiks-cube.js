@@ -41,6 +41,7 @@
   let cubeState = createSolvedState();
   let solverReady = false;
   let solutionSteps = [];
+  let stepStages = null;
   let currentStepIndex = 0;
 
   const els = {
@@ -67,6 +68,8 @@
     btnPrev: document.getElementById("btn-prev-step"),
     btnNext: document.getElementById("btn-next-step"),
     btnToggleList: document.getElementById("btn-toggle-list"),
+    liveStatus: document.getElementById("live-status"),
+    methods: document.getElementById("solve-methods"),
   };
 
   function createSolvedState() {
@@ -196,12 +199,67 @@
     return { valid: true, faceletString, alreadySolved: testCube.isSolved() };
   }
 
+  /** How many stickers of each colour are on the cube right now. */
+  function colorCounts() {
+    const counts = {};
+    FACELETTERS.forEach((f) => { counts[f] = 0; });
+    FACELETTERS.forEach((face) => {
+      cubeState[face].forEach((letter) => { counts[letter] += 1; });
+    });
+    return counts;
+  }
+
+  /**
+   * Painting is refused, not merely warned about, when it would put a tenth
+   * sticker of a colour on the cube. A real cube has nine of each and no
+   * amount of turning changes that -- letting the tenth on would only mean
+   * telling them at the end that the whole thing is wrong.
+   *
+   * Painting over a sticker that is already that colour, or repainting with
+   * a colour that still has spares, goes through as before.
+   */
   function paintSticker(faceId, index) {
     if (index === 4) return;
+    const was = cubeState[faceId][index];
+    if (was !== selectedColor && colorCounts()[selectedColor] >= 9) {
+      const info = FACE_INFO[selectedColor];
+      showMessage(
+        "All nine " + info.color.toLowerCase() + " stickers are already on the cube. " +
+        "Paint over one of them with a different colour first.", "error");
+      return;
+    }
     cubeState[faceId][index] = selectedColor;
     updateCubeViews();
     hideMessage();
     els.solutionPanel.hidden = true;
+    renderPalette();
+    liveCheck();
+  }
+
+  /**
+   * A running verdict while they paint, so an impossible pattern is caught the
+   * moment it is complete rather than when Solve is pressed. While colours are
+   * still short it stays quiet -- a half-painted cube is not wrong, just
+   * unfinished.
+   */
+  function liveCheck() {
+    if (!els.liveStatus) return;
+    const counts = colorCounts();
+    const missing = FACELETTERS.filter((f) => counts[f] < 9);
+    if (missing.length) {
+      const bits = missing.map((f) => (9 - counts[f]) + " " + FACE_INFO[f].color.toLowerCase());
+      els.liveStatus.textContent = "Still to place: " + bits.join(", ") + ".";
+      els.liveStatus.className = "live-status";
+      return;
+    }
+    const verdict = validateState(cubeState);
+    if (!verdict.valid) {
+      els.liveStatus.textContent = "⚠ " + verdict.error;
+      els.liveStatus.className = "live-status is-bad";
+      return;
+    }
+    els.liveStatus.textContent = "✓ All 54 placed, and this pattern is possible. Ready to solve.";
+    els.liveStatus.className = "live-status is-good";
   }
 
   function updateCubeViews() {
@@ -294,6 +352,15 @@
         renderPalette();
       });
 
+      const counts = colorCounts();
+      const left = 9 - counts[id];
+      const badge = document.createElement("span");
+      badge.className = "swatch-left" + (left === 0 ? " is-spent" : "");
+      badge.textContent = left;
+      badge.setAttribute("aria-hidden", "true");
+      btn.appendChild(badge);
+      btn.setAttribute("aria-label", "Select " + label + " color, " + left + " left to place");
+
       const lbl = document.createElement("span");
       lbl.className = "color-swatch-label";
       lbl.textContent = id;
@@ -344,6 +411,10 @@
   }
 
   function parseMove(moveStr) {
+    if (/^y(2|')?$/.test(moveStr)) {
+      const mod = moveStr.slice(1);
+      return { face: "y", mod: mod, notation: moveStr };
+    }
     const match = moveStr.match(/^([URFDLB])(2|'|)?$/);
     if (!match) return null;
     const face = match[1];
@@ -355,6 +426,14 @@
     const parsed = parseMove(moveStr);
     if (!parsed) return { notation: moveStr, html: moveStr };
 
+    if (parsed.face === "y") {
+      const how = parsed.mod === "2" ? "half way round"
+        : parsed.mod === "'" ? "a quarter turn to the right"
+        : "a quarter turn to the left";
+      return { notation: parsed.notation,
+               html: "Turn the <strong>whole cube</strong> " + how +
+                     " — nothing moves, you are just holding it differently." };
+    }
     const info = FACE_INFO[parsed.face];
     let direction;
     if (parsed.mod === "2") {
@@ -368,6 +447,11 @@
     return { notation: parsed.notation, html: direction };
   }
 
+  function stageLabelFor(index) {
+    if (!stepStages) return "";
+    return stepStages[index] || "";
+  }
+
   function showStep(index) {
     if (!solutionSteps.length) return;
     currentStepIndex = Math.max(0, Math.min(index, solutionSteps.length - 1));
@@ -377,28 +461,42 @@
     els.currentStepNumber.textContent =
       "Step " + (currentStepIndex + 1) + " of " + solutionSteps.length;
     els.currentStepMove.textContent = desc.notation;
-    els.currentStepDesc.innerHTML = desc.html;
+    const stage = stageLabelFor(currentStepIndex);
+    els.currentStepDesc.innerHTML = (stage
+      ? '<span class="stage-tag">' + stage + "</span> " : "") + desc.html;
     els.stepCounter.textContent = currentStepIndex + 1 + " / " + solutionSteps.length;
 
     els.btnPrev.disabled = currentStepIndex === 0;
     els.btnNext.disabled = currentStepIndex === solutionSteps.length - 1;
 
-    els.stepsListOl.querySelectorAll("li").forEach((li, i) => {
-      li.classList.toggle("is-active", i === currentStepIndex);
+    let stepAt = -1;
+    els.stepsListOl.querySelectorAll("li").forEach((li) => {
+      if (li.classList.contains("step-stage")) return;   // a heading, not a step
+      stepAt += 1;
+      li.classList.toggle("is-active", stepAt === currentStepIndex);
     });
   }
 
-  function showSolution(algorithm) {
+  function showSolution(algorithm, stageOf, summary) {
     solutionSteps = algorithm.trim().split(/\s+/).filter(Boolean);
+    stepStages = stageOf || null;
     currentStepIndex = 0;
 
-    els.solutionSummary.textContent =
+    els.solutionSummary.textContent = summary ||
       solutionSteps.length +
       (solutionSteps.length === 1 ? " move" : " moves") +
       " to solve your cube. Follow one step at a time on your real cube!";
 
     els.stepsListOl.innerHTML = "";
+    let lastStage = null;
     solutionSteps.forEach((move, i) => {
+      if (stepStages && stepStages[i] !== lastStage) {
+        lastStage = stepStages[i];
+        const heading = document.createElement("li");
+        heading.className = "step-stage";
+        heading.textContent = lastStage;
+        els.stepsListOl.appendChild(heading);
+      }
       const li = document.createElement("li");
       li.textContent = i + 1 + ". " + move + " — " + describeMove(move).html.replace(/<[^>]+>/g, "");
       li.addEventListener("click", () => showStep(i));
@@ -407,6 +505,71 @@
 
     els.solutionPanel.hidden = false;
     showStep(0);
+  }
+
+  /**
+   * The CFOP answer: the same cube solved the way the Learn CFOP page
+   * teaches, in named stages. More moves than the computer's answer -- around
+   * eighty-five against twenty -- but every one of them belongs to a stage a
+   * learner knows the name of, using the very algorithms the lessons teach.
+   *
+   * The stages come from the CFOP engine, and the whole solution is checked
+   * against the painted cube before being shown: if applying it does not end
+   * on a solved cube, it is not shown.
+   */
+  function solveTheCfopWay(validation) {
+    if (!window.CFOPSolver || !window.Cube) {
+      showMessage("The CFOP solver has not loaded — try the fewest-moves way.", "error");
+      return;
+    }
+    els.btnSolve.disabled = true;
+    els.solverStatus.hidden = false;
+    els.solverStatusText.textContent = "Solving it the CFOP way — cross, pairs, then the top…";
+
+    // A breath, so the status paints before the work starts.
+    window.setTimeout(function () {
+      const state54 = [];
+      FACELETTERS.forEach(function (face) {
+        cubeState[face].forEach(function (letter) { state54.push(letter); });
+      });
+
+      let solution = null;
+      try { solution = window.CFOPSolver.solve(state54); } catch (err) { solution = null; }
+      els.solverStatus.hidden = true;
+      els.btnSolve.disabled = false;
+
+      if (!solution) {
+        showMessage(
+          "Hmm, this cube state can't be solved — it might be impossible (like a " +
+          "sticker that was peeled and put back wrong). Check your colors!", "error");
+        els.solutionPanel.hidden = true;
+        return;
+      }
+
+      // The claim is checked before it is shown, exactly as the fast way is.
+      let check = state54;
+      solution.stages.forEach(function (stage) {
+        if (stage.moves.length) check = window.Cube.run(check, stage.moves.join(" ")).state;
+      });
+      if (!window.Cube.isSolved(check)) {
+        showMessage("Something went wrong working that out — try the fewest-moves way.", "error");
+        els.solutionPanel.hidden = true;
+        return;
+      }
+
+      const moves = [];
+      const stageOf = [];
+      solution.stages.forEach(function (stage) {
+        stage.moves.forEach(function (m) {
+          moves.push(m);
+          stageOf.push(stage.label);
+        });
+      });
+      showMessage("Solved the CFOP way — the stages are labelled as you go.", "success");
+      showSolution(moves.join(" "), stageOf,
+        moves.length + " moves in " + solution.stages.length +
+        " named stages — the same stages the Learn CFOP page teaches.");
+    }, 60);
   }
 
   function markSolverReady() {
@@ -523,6 +686,15 @@
       return;
     }
 
+    const method = els.methods
+      ? (els.methods.querySelector("input:checked") || {}).value || "fast"
+      : "fast";
+
+    if (method === "cfop") {
+      solveTheCfopWay(validation);
+      return;
+    }
+
     els.btnSolve.disabled = true;
     els.solverStatus.hidden = false;
     els.solverStatusText.textContent = "Finding the best moves…";
@@ -561,6 +733,8 @@
     updateCubeViews();
     hideMessage();
     els.solutionPanel.hidden = true;
+    renderPalette();
+    liveCheck();
   }
 
   function scrambleCube() {
@@ -576,6 +750,8 @@
     updateCubeViews();
     hideMessage();
     els.solutionPanel.hidden = true;
+    renderPalette();
+    liveCheck();
   }
 
   els.btnReset.addEventListener("click", resetCube);
@@ -593,6 +769,7 @@
   });
 
   renderPalette();
+  liveCheck();
   initViewMode();
   const has3d = initCube3d();
   if (!has3d && viewMode === "3d") {
