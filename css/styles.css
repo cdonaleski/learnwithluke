@@ -602,9 +602,9 @@ main {
      card is what tells you the page is a grid of choices rather than an
      article. That needed about sixty pixels, taken from the places with the
      most air rather than all from one. */
-  .card { padding: 1.3rem 1.25rem; }
+  .card { padding: 1.05rem 1.2rem; }
   .card h3, .card .card-title { margin-bottom: 0.35rem; }
-  .hero { padding: 0.8rem 0 1rem; }
+  .hero { padding: 0.75rem 0 0.55rem; }
   .hero h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin-bottom: 0.4rem; }
   .hero-badge { font-size: 0.85rem; padding: 0.3rem 0.8rem; margin-bottom: 0.6rem; }
   .hero-subtitle { font-size: 1rem; }
