@@ -591,3 +591,93 @@ kbd {
 }
 
 .contact-ways a { font-weight: 600; overflow-wrap: anywhere; }
+
+/* --- Members --- */
+.members { display: grid; gap: 0.7rem; }
+
+.member {
+  padding: 0.9rem 1rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.member-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.member-name { font-family: var(--font-display); font-size: 1.1rem; margin: 0; }
+
+.member-wca {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.member-wca:hover { border-color: var(--color-purple); color: var(--color-text); }
+
+.member-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.7rem; }
+
+.member-stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 5.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+}
+
+.member-stat-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.member-stat-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-coral);
+}
+
+.member-result + .member-result { margin-top: 0.5rem; }
+.member-where { font-size: 0.9rem; }
+.member-round { color: var(--color-text-muted); font-size: 0.84rem; }
+
+.solve-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.35rem 0 0;
+}
+
+.solve {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+/* The best and the worst do not count towards the average, which is why they
+   are written in brackets on every results sheet in the sport. */
+.solve--dropped { color: var(--color-text-muted); opacity: 0.75; }
+.member-note { margin-top: 0.6rem; font-size: 0.86rem; color: var(--color-text-muted); }

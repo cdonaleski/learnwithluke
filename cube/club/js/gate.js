@@ -135,6 +135,9 @@
     const unlockedHeading = document.getElementById("unlocked-heading");
     if (unlockedHeading) unlockedHeading.hidden = false;
     wireTabs();
+    // The member list is data inside the content and code out here, so it has
+    // to be drawn once the content has actually arrived.
+    if (window.ClubMembers) window.ClubMembers.render(hold);
   }
 
   const button = form.querySelector("button");
