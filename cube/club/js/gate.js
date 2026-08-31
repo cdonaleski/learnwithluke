@@ -89,6 +89,43 @@
 
   const button = form.querySelector("button");
 
+  /**
+   * Opened straight off the disk, this page cannot work at all, and no
+   * password will ever make it.
+   *
+   * Two separate things block it. fetch() refuses to read a neighbouring file
+   * over file://, treating it as a cross-origin request; and crypto.subtle --
+   * the whole basis of the decryption -- is only handed to a "secure context",
+   * which file:// is not. Both are the browser protecting you, and neither can
+   * be argued with from inside the page.
+   *
+   * Saying so is the only useful thing to do. Reporting a correct password as
+   * wrong, which is what happened before this, sends somebody off hunting for
+   * a problem that is not there.
+   */
+  function cannotWorkHere() {
+    if (window.location.protocol === "file:") return "file";
+    if (!window.isSecureContext) return "insecure";
+    if (!window.crypto || !window.crypto.subtle) return "nocrypto";
+    return null;
+  }
+
+  const blocked = cannotWorkHere();
+  if (blocked) {
+    message.className = "gate-message is-bad";
+    message.innerHTML = blocked === "file"
+      ? "This page is open straight from a file on your computer, and browsers " +
+        "will not let a file decrypt anything — no password can work here. " +
+        'Open <a href="https://learnwithluke.com/cube/club/index.html">the live ' +
+        "page</a> instead, or serve the folder over http."
+      : "Your browser will not do the decrypting on this address — it only " +
+        'offers that over https. Try <a href="https://learnwithluke.com/cube/club/index.html">' +
+        "the live page</a>.";
+    if (button) button.disabled = true;
+    input.disabled = true;
+    return;
+  }
+
   async function tryPassword(password, quietly) {
     if (!quietly) {
       // Deriving the key is deliberately slow -- a second or two on a phone --
