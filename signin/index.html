@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in — for members of the invitation-only club.">
+  <!-- Not somewhere to be found by searching. There is nothing here for anybody
+       who does not already have an account, and no way to make one. -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Sign in · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/game.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page game-page--narrow">
+    <header class="game-header">
+      <h1>🔑 Sign in</h1>
+      <p class="game-instructions" role="note">
+        For members of the after-homeschool club. Everything else on this site
+        is open to everybody and needs no account at all.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="signin-title">
+      <h2 id="signin-title" class="visually-hidden">Sign in</h2>
+
+      <form class="signin-form" id="signin-form">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="username"
+               autocapitalize="none" spellcheck="false" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               autocomplete="current-password" required>
+
+        <button type="submit" class="btn btn-primary" id="btn-signin">Sign in</button>
+      </form>
+
+      <p class="signin-message" id="signin-message" role="status" aria-live="polite"></p>
+
+      <div class="signin-done" id="signin-done" hidden>
+        <p class="club-lead" id="signin-who"></p>
+        <div class="game-actions">
+          <a class="btn btn-secondary" href="../cube/club/index.html">Go to the club</a>
+          <a class="btn btn-secondary" href="../admin/index.html" id="link-admin" hidden>Admin</a>
+          <button type="button" class="btn btn-secondary" id="btn-signout">Sign out</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">Haven't got an account?</h2>
+      <dl>
+        <dt>There is no sign-up</dt>
+        <dd>Accounts are made by hand, for people the club organiser knows, and
+        for a child only after a parent has said yes. That is deliberate: it
+        means nobody can quietly create one.</dd>
+
+        <dt>Forgotten the password</dt>
+        <dd>Ask the club organiser and he will set a new one. There is no
+        automatic reset, because that would need a working email inbox and most
+        of the members are children.</dd>
+
+        <dt>What signing in stores</dt>
+        <dd>A token in this browser, so you are not asked again on every page.
+        Signing out removes it. The <a href="../privacy/index.html">privacy
+        page</a> explains the rest.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../js/nav.js"></script>
+  <script src="../vendor/supabase.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="js/signin.js"></script>
+</body>
+</html>

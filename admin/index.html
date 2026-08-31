@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Club administration.">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Admin · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/game.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <header class="game-header">
+      <h1>🛠️ Admin</h1>
+      <p class="game-instructions" role="note" id="admin-intro">
+        Checking who you are…
+      </p>
+    </header>
+
+    <section class="game-panel" id="admin-locked" hidden>
+      <p class="club-lead" id="admin-locked-why"></p>
+      <div class="game-actions">
+        <a class="btn btn-secondary" href="../signin/index.html">Sign in</a>
+      </div>
+    </section>
+
+    <div id="admin-work" hidden>
+      <div class="tabs">
+        <div class="tab-strip" role="tablist" aria-label="What to manage">
+          <button type="button" class="tab is-on" role="tab" id="tab-members"
+                  aria-controls="panel-members" aria-selected="true">🧑‍🤝‍🧑 Members</button>
+          <button type="button" class="tab" role="tab" id="tab-events"
+                  aria-controls="panel-events" aria-selected="false" tabindex="-1">📅 Competitions</button>
+          <button type="button" class="tab" role="tab" id="tab-pages"
+                  aria-controls="panel-pages" aria-selected="false" tabindex="-1">📄 Pages</button>
+        </div>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-members" aria-labelledby="tab-members">
+          <h2>Members</h2>
+          <form class="admin-form" id="member-form">
+            <input type="hidden" id="member-id">
+            <label for="member-name">Name</label>
+            <input type="text" id="member-name" required>
+            <label for="member-role">Role <span class="admin-hint">(blank for a competing member)</span></label>
+            <input type="text" id="member-role" placeholder="Parent sponsor">
+            <label for="member-wca">WCA id <span class="admin-hint">(optional)</span></label>
+            <input type="text" id="member-wca" placeholder="2025DONA02">
+            <label for="member-note">Note</label>
+            <input type="text" id="member-note">
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save member</button>
+              <button type="button" class="btn btn-secondary" id="member-clear">Clear</button>
+            </div>
+          </form>
+          <div class="admin-list" id="member-list"></div>
+        </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-events" aria-labelledby="tab-events" hidden>
+          <h2>Competitions</h2>
+          <form class="admin-form" id="event-form">
+            <input type="hidden" id="event-id">
+            <label for="event-name">Name</label>
+            <input type="text" id="event-name" required>
+            <label for="event-date">Date</label>
+            <input type="date" id="event-date" required>
+            <label for="event-slug">WCA competition id <span class="admin-hint">(the bit at the end of its web address)</span></label>
+            <input type="text" id="event-slug" placeholder="HoustonHolidayHustle2026">
+            <label for="event-venue">Venue</label>
+            <input type="text" id="event-venue">
+            <label for="event-city">City</label>
+            <input type="text" id="event-city">
+            <label for="event-fee">Fee</label>
+            <input type="text" id="event-fee" placeholder="$35">
+            <label for="event-capacity">Competitor limit</label>
+            <input type="number" id="event-capacity" min="1">
+            <label for="event-note">Note</label>
+            <input type="text" id="event-note">
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save competition</button>
+              <button type="button" class="btn btn-secondary" id="event-clear">Clear</button>
+            </div>
+          </form>
+          <div class="admin-list" id="event-list"></div>
+        </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-pages" aria-labelledby="tab-pages" hidden>
+          <h2>Pages</h2>
+          <p class="club-lead">The words on the club's Welcome, Rules and Contact tabs.</p>
+          <form class="admin-form" id="page-form">
+            <label for="page-key">Which page</label>
+            <select id="page-key">
+              <option value="welcome">Welcome</option>
+              <option value="rules">Rules</option>
+              <option value="contact">Contact</option>
+            </select>
+            <label for="page-title">Heading</label>
+            <input type="text" id="page-title" required>
+            <label for="page-body">Words</label>
+            <textarea id="page-body" rows="12"></textarea>
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save page</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <p class="admin-message" id="admin-message" role="status" aria-live="polite"></p>
+
+      <section class="game-panel game-help">
+        <h2>Making someone an account</h2>
+        <dl>
+          <dt>Not from here</dt>
+          <dd>Creating a login needs a key that can bypass every security rule
+          in the database, and a key like that must never be in a web page.
+          So new accounts are made in the Supabase dashboard, under
+          Authentication → Users → Add user, and a member row here is linked to
+          it afterwards.</dd>
+
+          <dt>A member is not a login</dt>
+          <dd>You can list somebody as a member without them ever having an
+          account — useful for a child whose parent would rather they did not
+          sign in to anything.</dd>
+        </dl>
+      </section>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../js/nav.js"></script>
+  <script src="../vendor/supabase.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

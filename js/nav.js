@@ -57,7 +57,7 @@
    * here whether or not they belong in the menu.
    */
   const TOP_LEVEL = SECTIONS.map(function (section) { return section.id; })
-    .concat(["support"]);
+    .concat(["support", "privacy", "signin", "admin"]);
   const path = window.location.pathname;
   const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
 
@@ -119,7 +119,8 @@
   const footerHTML = `
     <footer class="site-footer">
       <p>Made with ❤️ for curious kids · <strong>Learn With Luke</strong></p>
-      <p class="footer-small">Free, no adverts, nothing tracked · <a class="footer-support" href="${root}support/index.html">Support this site</a></p>
+      <p class="footer-small">Free, no adverts, nothing tracked · <a class="footer-support" href="${root}support/index.html">Support this site</a> · <a href="${root}privacy/index.html">Privacy</a></p>
+      <p class="footer-quiet"><a href="${root}signin/index.html">Club member sign in</a></p>
     </footer>
   `;
 

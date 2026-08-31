@@ -742,3 +742,80 @@ kbd {
    it or the heading parks underneath the header and the reader arrives
    looking at the wrong thing. */
 #events, #events-title, .tab-panel, [id^="panel-"] { scroll-margin-top: 5.5rem; }
+
+/* Signing in: a small form, not a shopfront. */
+.game-page--narrow { max-width: 34rem; margin-left: auto; margin-right: auto; }
+
+.signin-form { display: grid; gap: 0.45rem; max-width: 22rem; margin: 0 auto; }
+.signin-form label { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; }
+
+.signin-form input {
+  padding: 0.55rem 0.8rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 1rem;
+}
+
+.signin-form input:focus-visible { outline: none; border-color: var(--color-purple); }
+.signin-form .btn { margin-top: 0.4rem; justify-content: center; }
+
+.signin-message {
+  text-align: center;
+  margin-top: 0.7rem;
+  min-height: 1.3em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.signin-message.is-bad { color: var(--color-coral); }
+.signin-done { text-align: center; }
+
+/* Admin portal */
+.admin-form { display: grid; gap: 0.4rem; max-width: 32rem; margin-bottom: 1.2rem; }
+.admin-form label { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; }
+.admin-hint { font-weight: 400; color: var(--color-text-muted); font-size: 0.78rem; }
+
+.admin-form input, .admin-form select, .admin-form textarea {
+  padding: 0.5rem 0.7rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.admin-form input:focus-visible,
+.admin-form select:focus-visible,
+.admin-form textarea:focus-visible { outline: none; border-color: var(--color-purple); }
+
+.admin-list { display: grid; gap: 0.4rem; }
+
+.admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.admin-row-title { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.admin-row-detail { font-size: 0.83rem; color: var(--color-text-muted); }
+.admin-row-actions { display: flex; gap: 0.35rem; }
+
+.admin-message {
+  text-align: center;
+  min-height: 1.3em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2f9e78;
+}
+
+.admin-message.is-bad { color: var(--color-coral); }

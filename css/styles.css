@@ -625,3 +625,8 @@ main {
   .hero-badge { display: none; }
   .hero-subtitle { margin-bottom: 0.3rem; }
 }
+
+/* The way in for club members: present, but not advertised. */
+.footer-quiet { margin-top: 0.35rem; font-size: 0.78rem; opacity: 0.72; }
+.footer-quiet a { color: var(--color-text-muted); }
+.footer-quiet a:hover { color: var(--color-text); }
