@@ -434,3 +434,85 @@ kbd {
 }
 
 .gate-message.is-bad { color: var(--color-coral); }
+
+/* Competitions on the club page: a date block beside the details, so the
+   "when" is scannable down the left rather than buried in a sentence. */
+.event-list { display: grid; gap: 0.7rem; }
+
+.event {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.event--soon { border-color: #f0b429; background: #fffaf0; }
+
+.event-when {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.2rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+}
+
+.event-day {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-coral);
+}
+
+.event-month {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.event-what h3 { font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 0.2rem; }
+.event-where { font-size: 0.86rem; color: var(--color-text-muted); margin-bottom: 0.4rem; }
+
+.event-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.4rem;
+}
+
+.event-facts li {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.event-facts .event-warn { background: #fff1cf; border-color: #f0b429; color: #8a5a00; }
+.event-note { font-size: 0.86rem; color: var(--color-text-muted); }
+
+.event-source {
+  margin-top: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .event { grid-template-columns: 1fr; }
+  .event-when { flex-direction: row; gap: 0.4rem; min-width: 0; }
+}
