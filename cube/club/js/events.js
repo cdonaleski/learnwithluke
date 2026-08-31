@@ -1,0 +1,185 @@
+/**
+ * Drawing the competitions, and working out which one is next.
+ *
+ * The dates used to be written into the page as words -- "5 Sep 2026" beside a
+ * hand-typed warning that it was days away. That is true for about a week, and
+ * then the page is quietly lying: a competition that has been and gone still
+ * sits at the top looking like something you could go to, and nobody notices
+ * until somebody asks about it.
+ *
+ * So the events are data with real dates, and everything the reader sees is
+ * worked out from today: how many days away it is, whether it has passed, and
+ * which one is next. The page stays right on its own.
+ *
+ * As with the members, the logic is out here in the open and the events live
+ * inside the encrypted file.
+ */
+(function () {
+  "use strict";
+
+  const DAY = 24 * 60 * 60 * 1000;
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  /** Midnight, so a competition is "today" all day rather than until 00:01. */
+  function midnight(value) {
+    const d = value instanceof Date ? new Date(value) : new Date(value + "T00:00:00");
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  /** Whole days from today to the date, negative once it has passed. */
+  function daysUntil(date, today) {
+    const from = midnight(today || new Date());
+    const to = midnight(date);
+    return Math.round((to - from) / DAY);
+  }
+
+  /** How far off it is, said the way a person would say it. */
+  function whenWords(days) {
+    if (days === 0) return "today";
+    if (days === 1) return "tomorrow";
+    if (days === -1) return "yesterday";
+    if (days < 0) return Math.abs(days) + " days ago";
+    if (days < 14) return "in " + days + " days";
+    if (days < 60) return "in " + Math.round(days / 7) + " weeks";
+    return "in " + Math.round(days / 30) + " months";
+  }
+
+  function dayOf(date) { return midnight(date).getDate(); }
+  function monthOf(date) {
+    const d = midnight(date);
+    return MONTHS[d.getMonth()] + " " + d.getFullYear();
+  }
+
+  /** Soonest first, and anything already past sorted to the end. */
+  function order(events, today) {
+    return events.slice().sort(function (a, b) {
+      const da = daysUntil(a.date, today), db = daysUntil(b.date, today);
+      const aPast = da < 0, bPast = db < 0;
+      if (aPast !== bPast) return aPast ? 1 : -1;
+      return aPast ? db - da : da - db;
+    });
+  }
+
+  /** The next one that has not happened yet, or null. */
+  function nextUp(events, today) {
+    const coming = order(events, today).filter(function (e) {
+      return daysUntil(e.date, today) >= 0;
+    });
+    return coming.length ? coming[0] : null;
+  }
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function wcaLink(slug) {
+    return "https://www.worldcubeassociation.org/competitions/" + slug;
+  }
+
+  function drawEvent(event, today) {
+    const days = daysUntil(event.date, today);
+    const past = days < 0;
+    const soon = !past && days <= 7;
+
+    const card = el("article", "event" + (soon ? " event--soon" : "") + (past ? " event--past" : ""));
+
+    const when = el("div", "event-when");
+    when.appendChild(el("span", "event-day", String(dayOf(event.date))));
+    when.appendChild(el("span", "event-month", monthOf(event.date)));
+    card.appendChild(when);
+
+    const what = el("div", "event-what");
+    const title = el("h3");
+    if (event.slug) {
+      const link = el("a", null, event.name);
+      link.href = wcaLink(event.slug);
+      link.target = "_blank";
+      link.rel = "noopener";
+      title.appendChild(link);
+    } else {
+      title.textContent = event.name;
+    }
+    what.appendChild(title);
+
+    what.appendChild(el("p", "event-where",
+      [event.venue, event.city].filter(Boolean).join(" — ")));
+
+    const facts = el("ul", "event-facts");
+    facts.appendChild(el("li", past ? "" : "event-when-chip", whenWords(days)));
+    if (event.fee) facts.appendChild(el("li", null, event.fee + " to enter"));
+    if (event.limit) facts.appendChild(el("li", null, event.limit + " competitors"));
+    if (soon) facts.appendChild(el("li", "event-warn", "Very soon"));
+    what.appendChild(facts);
+
+    if (event.note) what.appendChild(el("p", "event-note", event.note));
+    card.appendChild(what);
+    return card;
+  }
+
+  /** Draws the list, and returns what it found so the banner can use it. */
+  function render(root, today) {
+    const scope = root || document;
+    const holder = scope.querySelector("#events-list");
+    const source = scope.querySelector("#club-events");
+    if (!holder || !source) return null;
+
+    let events = [];
+    try { events = JSON.parse(source.textContent) || []; } catch (err) { events = []; }
+
+    holder.innerHTML = "";
+    const sorted = order(events, today);
+    sorted.forEach(function (event) { holder.appendChild(drawEvent(event, today)); });
+    if (!sorted.length) holder.appendChild(el("p", "club-note", "Nothing on the calendar yet."));
+
+    const next = nextUp(events, today);
+    const banner = scope.querySelector("#next-up");
+    if (banner) {
+      banner.innerHTML = "";
+      if (next) {
+        const days = daysUntil(next.date, today);
+        banner.appendChild(el("span", "next-up-label", "Next up"));
+        const link = el("a", "next-up-name", next.name);
+        link.href = "#events-title";
+        /**
+         * Scrolled rather than jumped, for two reasons. The site header is
+         * sticky, so a plain anchor jump parks the heading underneath it and
+         * the reader lands looking at the wrong thing; and a jump that moves
+         * two screens without warning is disorienting, where a scroll shows
+         * you where you went. Anyone who has asked for less motion gets the
+         * jump instead, which is the honest trade.
+         */
+        link.addEventListener("click", function (event) {
+          const target = document.getElementById("events-title");
+          if (!target) return;
+          event.preventDefault();
+          let still = false;
+          try {
+            still = Boolean(window.matchMedia &&
+              window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+          } catch (err) { still = false; }
+          target.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+        });
+        banner.appendChild(link);
+        banner.appendChild(el("span", "next-up-when", whenWords(days) +
+          " · " + dayOf(next.date) + " " + monthOf(next.date)));
+        banner.hidden = false;
+      } else {
+        banner.appendChild(el("span", "next-up-label", "Nothing booked"));
+        banner.appendChild(el("span", "next-up-when",
+          "No competition or meet-up on the calendar just now."));
+        banner.hidden = false;
+      }
+    }
+    return { shown: sorted.length, next: next };
+  }
+
+  window.ClubEvents = {
+    render: render, daysUntil: daysUntil, whenWords: whenWords,
+    order: order, nextUp: nextUp, monthOf: monthOf, dayOf: dayOf,
+  };
+})();

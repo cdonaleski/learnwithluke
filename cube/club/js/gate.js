@@ -138,6 +138,9 @@
     // The member list is data inside the content and code out here, so it has
     // to be drawn once the content has actually arrived.
     if (window.ClubMembers) window.ClubMembers.render(hold);
+    // The events banner lives above the content it summarises, so it is drawn
+    // against the whole page rather than just the unlocked part.
+    if (window.ClubEvents) window.ClubEvents.render(document);
   }
 
   const button = form.querySelector("button");

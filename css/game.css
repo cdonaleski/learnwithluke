@@ -693,3 +693,52 @@ kbd {
   font-size: 0.7rem;
   color: #6b4fa8;
 }
+
+/* --- Next up: the one fact a club page exists to tell you --- */
+.next-up {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 34rem;
+  margin: 0 auto 1rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid #f0b429;
+  border-radius: 999px;
+  background: #fffaf0;
+}
+
+.next-up-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a5a00;
+}
+
+.next-up-name { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+.next-up-when { font-size: 0.85rem; color: var(--color-text-muted); }
+
+/* How far off it is, said in words, is more use than a bare date. */
+.event-when-chip { background: #eaf3ff !important; border-color: #a8ccf0 !important; color: #1d4e89 !important; }
+
+/* A competition that has been and gone stays listed, but stops shouting. */
+.event--past { opacity: 0.62; }
+.event--past .event-day { color: var(--color-text-muted); }
+
+/* The first-timer guide is read once, so it folds away. */
+.first-timer { margin-top: 1rem; }
+.first-timer > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
+.first-timer > summary::-webkit-details-marker { display: none; }
+.first-timer > summary::before { content: "▸"; color: var(--color-purple); font-size: 0.8rem; }
+.first-timer[open] > summary::before { content: "▾"; }
+.first-timer > summary h3 { display: inline; margin: 0; font-family: var(--font-display); font-size: 1rem; }
+.first-timer .club-points { margin-top: 0.7rem; }
+.club-point h4 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 0.3rem; }
+
+/* The site header is sticky, so anything an anchor lands on needs room above
+   it or the heading parks underneath the header and the reader arrives
+   looking at the wrong thing. */
+#events, #events-title, .tab-panel, [id^="panel-"] { scroll-margin-top: 5.5rem; }
