@@ -400,3 +400,37 @@ kbd {
   .game-header { margin-bottom: 0.7rem; }
   .game-panel { padding: 0.9rem; margin-bottom: 0.8rem; }
 }
+
+/* The club password gate */
+.gate-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.gate-form label { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; }
+
+.gate-form input {
+  padding: 0.5rem 0.8rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 1rem;
+  min-width: 11rem;
+}
+
+.gate-form input:focus-visible { outline: none; border-color: var(--color-purple); }
+
+.gate-message {
+  text-align: center;
+  margin-top: 0.6rem;
+  min-height: 1.3em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.gate-message.is-bad { color: var(--color-coral); }

@@ -2,13 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Speedcube Club — not started yet. What it will be when it does, on Learn With Luke">
   <title>Speedcube Club · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
 </head>
 <body>
-  <!-- The contents of this page were removed from the repository's history.
-       This version briefly held the club text in plain HTML, before the page
-       was put behind a password and the content encrypted. The live page is
-       cube/club/index.html at the tip of main. -->
-  <p>Redacted from history.</p>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to the Cube</a>
+
+    <header class="game-header">
+      <h1>⏱️ Speedcube Club</h1>
+      <p class="game-instructions" role="note">
+        <strong>This page is for club members.</strong> Enter the password to
+        read it. If you have not got one, ask Luke.
+      </p>
+    </header>
+
+    <section class="game-panel" id="gate" aria-labelledby="gate-title">
+      <h2 id="gate-title" class="visually-hidden">Password</h2>
+      <form id="gate-form" class="gate-form">
+        <label for="gate-password">Club password</label>
+        <input type="password" id="gate-password" name="password"
+               autocomplete="off" autocapitalize="none" spellcheck="false"
+               aria-describedby="gate-message">
+        <button type="submit" class="btn btn-primary">Let me in</button>
+      </form>
+      <p class="gate-message" id="gate-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <div id="club-content" hidden></div>
+
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/gate.js"></script>
 </body>
 </html>
