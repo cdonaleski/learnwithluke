@@ -104,18 +104,27 @@
       link.title = "World Cube Association profile";
       head.appendChild(link);
     }
+    if (member.role) head.appendChild(el("span", "member-role", member.role));
     card.appendChild(head);
 
-    const summary = bests(member);
-    const stats = el("div", "member-stats");
-    [["Best single", summary.single], ["Best average", summary.average],
-     ["Competitions", String(summary.competitions)]].forEach(function (pair) {
-      const stat = el("div", "member-stat");
-      stat.appendChild(el("span", "member-stat-label", pair[0]));
-      stat.appendChild(el("span", "member-stat-value", pair[1]));
-      stats.appendChild(stat);
-    });
-    card.appendChild(stats);
+    /**
+     * Somebody who does not compete gets no results table. Showing them a row
+     * of dashes under "Best single" would be a small unkindness, and would
+     * also imply they had tried and failed rather than that they run the
+     * thing, so the stats only appear for people who have times.
+     */
+    if ((member.results || []).length) {
+      const summary = bests(member);
+      const stats = el("div", "member-stats");
+      [["Best single", summary.single], ["Best average", summary.average],
+       ["Competitions", String(summary.competitions)]].forEach(function (pair) {
+        const stat = el("div", "member-stat");
+        stat.appendChild(el("span", "member-stat-label", pair[0]));
+        stat.appendChild(el("span", "member-stat-value", pair[1]));
+        stats.appendChild(stat);
+      });
+      card.appendChild(stats);
+    }
 
     (member.results || []).forEach(function (r) {
       const row = el("div", "member-result");

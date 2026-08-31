@@ -681,3 +681,15 @@ kbd {
    are written in brackets on every results sheet in the sport. */
 .solve--dropped { color: var(--color-text-muted); opacity: 0.75; }
 .member-note { margin-top: 0.6rem; font-size: 0.86rem; color: var(--color-text-muted); }
+
+/* A member who runs the club rather than competing in it. */
+.member-role {
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  background: #efe9f8;
+  border: 2px solid #d6c9f0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: #6b4fa8;
+}
