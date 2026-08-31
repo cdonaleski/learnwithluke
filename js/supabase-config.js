@@ -14,5 +14,5 @@
  */
 window.LWL_SUPABASE = {
   url: "https://fqedetfaoslykoihxgow.supabase.co",
-  anonKey: "REPLACE_WITH_PUBLISHABLE_ANON_KEY",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZWRldGZhb3NseWtvaWh4Z293Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTc0NzUsImV4cCI6MjEwMzc3MzQ3NX0.DBkzh8Gfy8tiAZR67y5ouWg1JW0PihS8dSOQNKsfrMQ",
 };
