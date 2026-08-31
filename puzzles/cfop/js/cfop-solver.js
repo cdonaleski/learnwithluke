@@ -146,6 +146,33 @@
     return CROSS_STICKERS.every(function (i) { return stickerHome(state, i); });
   }
 
+
+  /**
+   * Which colour belongs underneath.
+   *
+   * In this palette the sticker letter U is white, and white on the bottom is
+   * what every beginner book assumes -- including the one Luke is learning
+   * from. Our own Learn CFOP diagrams paint the last layer yellow, which says
+   * the same thing from the other end. The helper's cube, though, is painted
+   * white-up, so a solve that just built on whatever face was down produced a
+   * YELLOW cross first and contradicted both.
+   */
+  const BOTTOM_COLOUR = "U";
+
+  /**
+   * The turn that puts white underneath, or null if it is already there.
+   * z2 comes first because it keeps the same face towards you -- the child
+   * tips the cube over and everything they were looking at is still in front.
+   */
+  function turnWhiteDown(state) {
+    if (centreOf(state, DOWN_FACE) === BOTTOM_COLOUR) return null;
+    const tries = ["z2", "x2", "x", "x'", "z", "z'", "x z", "x' z"];
+    for (let i = 0; i < tries.length; i++) {
+      if (centreOf(C.run(state, tries[i]).state, DOWN_FACE) === BOTTOM_COLOUR) return tries[i];
+    }
+    return null;
+  }
+
   /**
    * The cross, by breadth-first search. The first answer found is the
    * shortest, and it is verified by construction: the search only ever
@@ -324,6 +351,13 @@
   function solve(startState) {
     const stages = [];
     let here = startState.slice();
+
+    // Not on a cube that is already done: nothing to do means nothing to say.
+    const spin = C.isSolved(here) ? null : turnWhiteDown(here);
+    if (spin) {
+      stages.push({ id: "setup", label: "Turn white to the bottom", moves: [spin] });
+      here = C.run(here, spin).state;
+    }
 
     const cross = solveCross(here);
     if (cross === null) return null;

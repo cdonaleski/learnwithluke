@@ -61,6 +61,33 @@
     });
   }
 
+
+  /**
+   * Which colour belongs underneath.
+   *
+   * In this palette the sticker letter U is white, and white on the bottom is
+   * what every beginner book assumes -- including the one Luke is learning
+   * from. Our own Learn CFOP diagrams paint the last layer yellow, which says
+   * the same thing from the other end. The helper's cube, though, is painted
+   * white-up, so a solve that just built on whatever face was down produced a
+   * YELLOW cross first and contradicted both.
+   */
+  const BOTTOM_COLOUR = "U";
+
+  /**
+   * The turn that puts white underneath, or null if it is already there.
+   * z2 comes first because it keeps the same face towards you -- the child
+   * tips the cube over and everything they were looking at is still in front.
+   */
+  function turnWhiteDown(state) {
+    if (centreOf(state, DOWN) === BOTTOM_COLOUR) return null;
+    const tries = ["z2", "x2", "x", "x'", "z", "z'", "x z", "x' z"];
+    for (let i = 0; i < tries.length; i++) {
+      if (centreOf(C.run(state, tries[i]).state, DOWN) === BOTTOM_COLOUR) return tries[i];
+    }
+    return null;
+  }
+
   /** Runs `alg`, collecting the moves. */
   function play(ctx, alg) {
     ctx.state = C.run(ctx.state, alg).state;
@@ -284,6 +311,15 @@
       return true;
     }
 
+    // 0. White underneath first, the way every beginner book starts -- but
+    // not on a cube that is already done, which needs no holding advice.
+    const spin = C.isSolved(ctx.state) ? null : turnWhiteDown(ctx.state);
+    if (spin) {
+      ctx.moves = [];
+      play(ctx, spin);
+      stages.push({ id: "setup", label: "Turn white to the bottom", moves: ctx.moves.slice() });
+    }
+
     // 1. The bottom cross, borrowed from the CFOP solver: the search is the
     // same whichever method you are learning, and its answer is short.
     if (!stage("cross", "The bottom cross", function () {
@@ -297,7 +333,9 @@
     for (let k = 0; k < 4; k++) {
       if (!stage("corner" + (k + 1), "Bottom corner " + (k + 1) + " of 4", function () {
         if (!seatCorner(ctx)) return false;
-        if (k < 3) play(ctx, "y");
+        // Only turn to the next slot if there IS a next slot to do. Without
+        // this an already-finished bottom still collected three y turns.
+        if (k < 3 && !bottomDone(ctx.state)) play(ctx, "y");
         return true;
       }, function (s) { return crossDone(s); })) return null;
     }
@@ -307,7 +345,7 @@
     for (let k = 0; k < 4; k++) {
       if (!stage("edge" + (k + 1), "Middle edge " + (k + 1) + " of 4", function () {
         if (!seatEdge(ctx)) return false;
-        if (k < 3) play(ctx, "y");
+        if (k < 3 && !firstTwoDone(ctx.state)) play(ctx, "y");
         return true;
       }, bottomDone)) return null;
     }

@@ -478,9 +478,8 @@
   }
 
   function parseMove(moveStr) {
-    if (/^y(2|')?$/.test(moveStr)) {
-      const mod = moveStr.slice(1);
-      return { face: "y", mod: mod, notation: moveStr };
+    if (/^[xyz](2|')?$/.test(moveStr)) {
+      return { face: moveStr[0], mod: moveStr.slice(1), notation: moveStr };
     }
     const match = moveStr.match(/^([URFDLB])(2|'|)?$/);
     if (!match) return null;
@@ -493,6 +492,14 @@
     const parsed = parseMove(moveStr);
     if (!parsed) return { notation: moveStr, html: moveStr };
 
+    if (parsed.face === "x" || parsed.face === "z") {
+      const how = parsed.mod === "2" ? "right over, so the bottom becomes the top"
+        : parsed.face === "x" ? "away from you, like tipping it forwards"
+        : "sideways, keeping the same face towards you";
+      return { notation: parsed.notation,
+               html: "Turn the <strong>whole cube</strong> " + how +
+                     " — no layer moves, you are just holding it differently." };
+    }
     if (parsed.face === "y") {
       const how = parsed.mod === "2" ? "half way round"
         : parsed.mod === "'" ? "a quarter turn to the right"
@@ -545,6 +552,10 @@
       "and then it is done."],
     ["Straighten the top", "Everything is solved — the top layer just needs " +
       "turning round to line up."],
+    ["Turn white to the bottom", "Every beginner method builds the white side " +
+      "first, so start by tipping the cube over until white is underneath and " +
+      "yellow is on top. Nothing is being solved yet — you are just holding it " +
+      "the way the instructions expect."],
     ["The bottom cross", "First job: four edges round the bottom centre, each " +
       "matched to the side it touches. Do this by looking, not by memorising."],
     ["Bottom corner", "Each bottom corner drops in with the same little loop — " +
