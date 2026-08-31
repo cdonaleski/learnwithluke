@@ -819,3 +819,13 @@ kbd {
 }
 
 .admin-message.is-bad { color: var(--color-coral); }
+
+/* Asking for a different leaderboard name, kindly. */
+.lb-name-note {
+  margin-top: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-coral);
+  text-align: center;
+}

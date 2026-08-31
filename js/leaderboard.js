@@ -53,6 +53,7 @@
   }
 
   function rememberName(name) {
+    if (window.CleanWords && window.CleanWords.looksRude(name)) return;
     try {
       window.localStorage.setItem(NAME_KEY, name);
     } catch (err) { /* not important */ }
@@ -279,8 +280,27 @@
       row.appendChild(saveBtn);
       form.appendChild(row);
 
+      // Somewhere to say "pick another one" without losing the score.
+      const nameNote = document.createElement("p");
+      nameNote.className = "lb-name-note";
+      nameNote.hidden = true;
+      form.appendChild(nameNote);
+
       form.addEventListener("submit", (event) => {
         if (event && typeof event.preventDefault === "function") event.preventDefault();
+        /**
+         * Silly names are the point of a leaderboard, so this only turns away
+         * the genuinely rude ones -- and it says so kindly rather than telling
+         * a child off. The score is kept waiting, not thrown away, so nobody
+         * loses a good run over a bad name.
+         */
+        if (window.CleanWords && window.CleanWords.looksRude(input.value)) {
+          nameNote.textContent = "Let's have a different name for that one. Your score is safe.";
+          nameNote.hidden = false;
+          try { input.focus(); input.select(); } catch (err) { /* ok */ }
+          return;
+        }
+        nameNote.hidden = true;
         commit(input.value);
       });
 
