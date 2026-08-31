@@ -598,11 +598,19 @@ main {
    scarce, and only tighten spacing -- nothing changes size or moves, so a
    tall screen is untouched. */
 @media (max-height: 820px) {
-  .hero { padding: 1.1rem 0 1.4rem; }
+  /* The target is one whole card visible without scrolling: seeing a complete
+     card is what tells you the page is a grid of choices rather than an
+     article. That needed about sixty pixels, taken from the places with the
+     most air rather than all from one. */
+  .card { padding: 1.3rem 1.25rem; }
+  .card h3, .card .card-title { margin-bottom: 0.35rem; }
+  .hero { padding: 0.8rem 0 1rem; }
   .hero h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin-bottom: 0.4rem; }
   .hero-badge { font-size: 0.85rem; padding: 0.3rem 0.8rem; margin-bottom: 0.6rem; }
   .hero-subtitle { font-size: 1rem; }
-  .section-intro { margin-bottom: 1.1rem; }
+  .section-intro { margin-bottom: 0.8rem; }
+  .section-intro h2 { margin-bottom: 0.3rem; }
+  .hero-badge { margin-bottom: 0.35rem; }
   .cards-grid { gap: 1rem; }
   .site-footer { padding: 1.2rem 0; }
 }
