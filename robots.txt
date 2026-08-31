@@ -1,0 +1,8 @@
+# Learn With Luke
+
+User-agent: *
+# The club page is for members. Its contents are encrypted, so a crawler could
+# not read them in any case, but there is no reason for the address to turn up
+# in search results either.
+Disallow: /cube/club/
+Allow: /
