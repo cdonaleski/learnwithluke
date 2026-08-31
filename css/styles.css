@@ -587,3 +587,30 @@ main {
 @media (prefers-reduced-motion: reduce) {
   .nav-caret { transition: none; }
 }
+
+/* --- Short screens ------------------------------------------------------
+   The spacing above was set by width alone, so a laptop with a short screen
+   got the same generous margins as a big desktop monitor and had to scroll
+   past half a screen of nothing to reach the first card. On a 1280x720
+   laptop the hero alone was 363px of a 720px viewport.
+
+   These rules key off viewport HEIGHT, which is the thing that is actually
+   scarce, and only tighten spacing -- nothing changes size or moves, so a
+   tall screen is untouched. */
+@media (max-height: 820px) {
+  .hero { padding: 1.1rem 0 1.4rem; }
+  .hero h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin-bottom: 0.4rem; }
+  .hero-badge { font-size: 0.85rem; padding: 0.3rem 0.8rem; margin-bottom: 0.6rem; }
+  .hero-subtitle { font-size: 1rem; }
+  .section-intro { margin-bottom: 1.1rem; }
+  .cards-grid { gap: 1rem; }
+  .site-footer { padding: 1.2rem 0; }
+}
+
+@media (max-height: 680px) {
+  /* Shorter still -- a netbook, or a laptop with the browser chrome and a
+     bookmarks bar eating into it. The badge is decoration, so it goes. */
+  .hero { padding: 0.7rem 0 1rem; }
+  .hero-badge { display: none; }
+  .hero-subtitle { margin-bottom: 0.3rem; }
+}
