@@ -81,10 +81,60 @@
     return new TextDecoder().decode(plain);
   }
 
+  /**
+   * Tabs inside the unlocked content.
+   *
+   * The content arrives as a string and is written in with innerHTML, so any
+   * script inside it would never run -- the wiring has to be done from out
+   * here, after the writing.
+   */
+  function wireTabs() {
+    const strip = hold.querySelector(".tab-strip");
+    if (!strip) return;
+    const tabs = Array.prototype.slice.call(strip.querySelectorAll(".tab"));
+
+    function show(tab) {
+      tabs.forEach(function (other) {
+        const panel = document.getElementById(other.getAttribute("aria-controls"));
+        const chosen = other === tab;
+        other.setAttribute("aria-selected", String(chosen));
+        other.tabIndex = chosen ? 0 : -1;
+        other.classList.toggle("is-on", chosen);
+        if (panel) panel.hidden = !chosen;
+      });
+    }
+
+    tabs.forEach(function (tab, index) {
+      tab.classList.toggle("is-on", tab.getAttribute("aria-selected") === "true");
+      tab.addEventListener("click", function () { show(tab); });
+      // Left and right move between tabs, which is what a screen reader user
+      // and a keyboard user both expect of a tab strip.
+      tab.addEventListener("keydown", function (event) {
+        let next = null;
+        if (event.key === "ArrowRight") next = tabs[(index + 1) % tabs.length];
+        if (event.key === "ArrowLeft") next = tabs[(index - 1 + tabs.length) % tabs.length];
+        if (event.key === "Home") next = tabs[0];
+        if (event.key === "End") next = tabs[tabs.length - 1];
+        if (!next) return;
+        event.preventDefault();
+        show(next);
+        next.focus();
+      });
+    });
+  }
+
   function reveal(html) {
     hold.innerHTML = html;
     hold.hidden = false;
     if (gate) gate.hidden = true;
+    // The locked page has its own title and "enter the password" note. Once
+    // you are in, that note is answered and the title would simply appear
+    // twice, so it goes with the gate.
+    const lockedHeading = document.getElementById("locked-heading");
+    if (lockedHeading) lockedHeading.hidden = true;
+    const unlockedHeading = document.getElementById("unlocked-heading");
+    if (unlockedHeading) unlockedHeading.hidden = false;
+    wireTabs();
   }
 
   const button = form.querySelector("button");

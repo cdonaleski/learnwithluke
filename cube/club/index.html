@@ -18,7 +18,7 @@
   <main id="main-content" class="game-page">
     <a href="../index.html" class="game-back">← Back to the Cube</a>
 
-    <header class="game-header">
+    <header class="game-header" id="locked-heading">
       <h1>⏱️ Speedcube Club</h1>
       <p class="game-instructions" role="note">
         <strong>This page is for club members.</strong> Enter the password to
@@ -37,6 +37,10 @@
       </form>
       <p class="gate-message" id="gate-message" role="status" aria-live="polite"></p>
     </section>
+
+    <header class="game-header" id="unlocked-heading" hidden>
+      <h1>⏱️ Speedcube Club</h1>
+    </header>
 
     <div id="club-content" hidden></div>
 
