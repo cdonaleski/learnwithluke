@@ -673,7 +673,7 @@
 }
 
 .view-toggle-btn.is-active {
-  background: var(--color-teal, #4ec3b0);
+  background: var(--color-sky);
   color: #fff;
 }
 

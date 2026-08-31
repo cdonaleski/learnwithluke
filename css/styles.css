@@ -16,6 +16,9 @@
   --shadow-hover: 0 8px 30px rgba(45, 52, 54, 0.15);
   --radius: 20px;
   --radius-sm: 12px;
+  /* Ten stylesheets asked for --radius-md and nothing defined it, so every one
+     of those corners was rendering square. Sits between the other two. */
+  --radius-md: 16px;
   --font-display: "Fredoka", "Segoe UI", sans-serif;
   --font-body: "Nunito", "Segoe UI", sans-serif;
   --nav-height: 72px;
@@ -543,7 +546,7 @@ main {
 
 .nav-group-btn:hover,
 .nav-group-btn:focus-visible { background: var(--color-bg-alt); outline: none; }
-.nav-group-btn.active { background: var(--color-teal); color: #fff; }
+.nav-group-btn.active { background: var(--color-sky); color: #fff; }
 
 .nav-caret { font-size: 0.65rem; opacity: 0.7; }
 .nav-group.is-open .nav-caret { transform: rotate(180deg); }
