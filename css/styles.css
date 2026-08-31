@@ -519,3 +519,71 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Grouped menu -------------------------------------------------------
+   Nine links in a row wrapped onto a second line on a small laptop and
+   pushed the whole page down. Two of them are now drop-downs. */
+
+.nav-group { position: relative; }
+
+.nav-group-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.nav-group-btn:hover,
+.nav-group-btn:focus-visible { background: var(--color-bg-alt); outline: none; }
+.nav-group-btn.active { background: var(--color-teal); color: #fff; }
+
+.nav-caret { font-size: 0.65rem; opacity: 0.7; }
+.nav-group.is-open .nav-caret { transform: rotate(180deg); }
+
+.nav-submenu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 60;
+  display: none;
+  min-width: 9rem;
+  padding: 0.35rem;
+  margin: 0;
+  list-style: none;
+  background: var(--color-bg-alt, #fff);
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 8px 24px rgba(60, 50, 40, 0.13);
+}
+
+.nav-group.is-open .nav-submenu { display: block; }
+.nav-submenu li { width: 100%; }
+.nav-submenu a { display: block; width: 100%; white-space: nowrap; }
+
+@media (max-width: 860px) {
+  /* Stacked menu: a drop-down that overlays would cover the links under it,
+     so inside the burger the groups simply sit open as labelled sets. */
+  .nav-group-btn { width: 100%; justify-content: space-between; }
+  .nav-submenu {
+    position: static;
+    display: block;
+    border: none;
+    box-shadow: none;
+    padding: 0 0 0 0.75rem;
+    background: transparent;
+    min-width: 0;
+  }
+  .nav-caret { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-caret { transition: none; }
+}

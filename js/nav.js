@@ -8,6 +8,7 @@
    * navigation needs — the folder name must match the `id`.
    */
   const SECTIONS = [
+    { id: "cube", label: "The Cube" },
     { id: "puzzles", label: "Puzzles" },
     { id: "games", label: "Games" },
     { id: "tools", label: "Tools" },
@@ -17,6 +18,33 @@
     { id: "science", label: "Science" },
     { id: "ai", label: "AI" },
   ];
+
+  /**
+   * The menu, grouped.
+   *
+   * Nine things in a row is not a menu, it is a list -- on a small laptop it
+   * wrapped onto a second line and pushed the page down, and nothing in it
+   * told you which things belonged together. Grouping says something true:
+   * Maths, Science, Code and AI are the same kind of thing, and Puzzles and
+   * Games are another. Every section still appears exactly once.
+   *
+   * A group with `sections` becomes a drop-down; anything else is a plain
+   * link, and the group lights up when you are anywhere inside it.
+   */
+  const MENU = [
+    { id: "cube", label: "The Cube" },
+    { label: "Play", sections: ["puzzles", "games"] },
+    { label: "STEM", sections: ["maths", "science", "code", "ai"] },
+    { id: "tools", label: "Tools" },
+    { id: "scores", label: "Scores" },
+  ];
+
+  const labelOf = function (id) {
+    for (let i = 0; i < SECTIONS.length; i++) {
+      if (SECTIONS[i].id === id) return SECTIONS[i].label;
+    }
+    return id;
+  };
 
   /**
    * Every folder that sits directly under the site root — the menu sections
@@ -66,9 +94,22 @@
         <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
         <ul class="nav-links" role="navigation" aria-label="Main navigation">
           <li><a href="${root}index.html"${isHome ? ' class="active" aria-current="page"' : ""}>Home</a></li>
-          ${SECTIONS.map((section) => {
-            const active = section.id === activeSection ? ' class="active" aria-current="page"' : "";
-            return `<li><a href="${root}${section.id}/index.html"${active}>${section.label}</a></li>`;
+          ${MENU.map((item, index) => {
+            if (!item.sections) {
+              const active = item.id === activeSection ? ' class="active" aria-current="page"' : "";
+              return `<li><a href="${root}${item.id}/index.html"${active}>${item.label}</a></li>`;
+            }
+            const holdsActive = item.sections.indexOf(activeSection) !== -1;
+            const menuId = `nav-group-${index}`;
+            const children = item.sections.map((id) => {
+              const active = id === activeSection ? ' class="active" aria-current="page"' : "";
+              return `<li><a href="${root}${id}/index.html"${active}>${labelOf(id)}</a></li>`;
+            }).join("");
+            return `<li class="nav-group">
+              <button type="button" class="nav-group-btn${holdsActive ? " active" : ""}"
+                      aria-expanded="false" aria-controls="${menuId}">${item.label}<span class="nav-caret" aria-hidden="true">▾</span></button>
+              <ul class="nav-submenu" id="${menuId}">${children}</ul>
+            </li>`;
           }).join("\n          ")}
         </ul>
       </div>
@@ -101,6 +142,45 @@
       const isOpen = links.classList.toggle("is-open");
       toggle.setAttribute("aria-expanded", String(isOpen));
       toggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+    });
+
+    /**
+     * Drop-downs open on click, not on hover: hover menus are miserable on a
+     * touchscreen, and this site is used on both. Opening one closes any other.
+     */
+    links.querySelectorAll(".nav-group-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const group = button.parentElement;
+        const wasOpen = group.classList.contains("is-open");
+        links.querySelectorAll(".nav-group").forEach((other) => {
+          other.classList.remove("is-open");
+          const b = other.querySelector(".nav-group-btn");
+          if (b) b.setAttribute("aria-expanded", "false");
+        });
+        if (!wasOpen) {
+          group.classList.add("is-open");
+          button.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+
+    // A click anywhere else, or Escape, puts the menus away again.
+    document.addEventListener("click", () => {
+      links.querySelectorAll(".nav-group").forEach((group) => {
+        group.classList.remove("is-open");
+        const b = group.querySelector(".nav-group-btn");
+        if (b) b.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      links.querySelectorAll(".nav-group").forEach((group) => {
+        group.classList.remove("is-open");
+        const b = group.querySelector(".nav-group-btn");
+        if (b) b.setAttribute("aria-expanded", "false");
+      });
     });
 
     links.querySelectorAll("a").forEach((link) => {
