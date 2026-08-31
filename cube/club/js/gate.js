@@ -45,11 +45,39 @@
       material, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
   }
 
+  /**
+   * Fetching the locked file and decrypting it are two different jobs that
+   * fail for two different reasons, and the first version treated them as
+   * one: any failure at all was reported as "that is not the password". So if
+   * the file had not finished deploying, or the connection dropped, the page
+   * told you your perfectly correct password was wrong -- which is a horrible
+   * thing to be told, because there is nothing you can do about it.
+   */
+  async function fetchLocked() {
+    let response;
+    try {
+      response = await fetch("locked.json", { cache: "no-store" });
+    } catch (err) {
+      throw { kind: "network" };
+    }
+    if (!response.ok) throw { kind: "network", status: response.status };
+    try {
+      return await response.json();
+    } catch (err) {
+      throw { kind: "network" };
+    }
+  }
+
   async function unlock(password) {
-    const locked = await (await fetch("locked.json", { cache: "no-store" })).json();
-    const key = await keyFrom(password, bytes(locked.salt), locked.rounds);
-    const plain = await window.crypto.subtle.decrypt(
-      { name: "AES-GCM", iv: bytes(locked.iv) }, key, bytes(locked.data));
+    const locked = await fetchLocked();
+    let plain;
+    try {
+      const key = await keyFrom(password, bytes(locked.salt), locked.rounds);
+      plain = await window.crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: bytes(locked.iv) }, key, bytes(locked.data));
+    } catch (err) {
+      throw { kind: "password" };
+    }
     return new TextDecoder().decode(plain);
   }
 
@@ -59,26 +87,37 @@
     if (gate) gate.hidden = true;
   }
 
+  const button = form.querySelector("button");
+
   async function tryPassword(password, quietly) {
     if (!quietly) {
-      message.textContent = "Checking…";
+      // Deriving the key is deliberately slow -- a second or two on a phone --
+      // so say so, and stop the button being pressed again meanwhile.
+      message.textContent = "Checking… this takes a moment.";
       message.className = "gate-message";
+      if (button) button.disabled = true;
     }
     try {
       const html = await unlock(password);
       reveal(html);
+      message.textContent = "";
       try { window.sessionStorage.setItem(REMEMBER, password); } catch (err) { /* fine */ }
       return true;
     } catch (err) {
-      // A wrong password and a corrupted file look the same from here, and
-      // saying "wrong password" is the useful guess either way.
-      if (!quietly) {
-        message.textContent = "That is not the password. Ask Luke.";
-        message.className = "gate-message is-bad";
-        input.select();
-      }
       try { window.sessionStorage.removeItem(REMEMBER); } catch (err2) { /* fine */ }
+      if (!quietly) {
+        if (err && err.kind === "network") {
+          message.textContent = "Could not load the page just now — check your " +
+            "connection and try again in a moment. Your password may be perfectly fine.";
+        } else {
+          message.textContent = "That is not the password. Ask Luke.";
+          input.select();
+        }
+        message.className = "gate-message is-bad";
+      }
       return false;
+    } finally {
+      if (button) button.disabled = false;
     }
   }
 
