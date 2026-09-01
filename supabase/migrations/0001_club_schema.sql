@@ -39,10 +39,60 @@ begin
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
+-- Attaching this to auth.users is a convenience: it saves making a profile row
+-- by hand for each new account. Supabase restricts writing to the auth schema
+-- from the SQL editor on some projects, and if that refusal is allowed to
+-- escape, the whole migration rolls back and NO tables are created -- which is
+-- a lot of damage for a nicety. So the refusal is caught and reported, and
+-- everything else still lands. Without the trigger, add_profile() below fills
+-- the gap in one line.
+do $$
+begin
+  drop trigger if exists on_auth_user_created on auth.users;
+  create trigger on_auth_user_created
+    after insert on auth.users
+    for each row execute function public.handle_new_user();
+  raise notice 'profile trigger attached to auth.users';
+exception
+  when insufficient_privilege or feature_not_supported then
+    raise notice 'could not attach the trigger to auth.users (%). Everything else is created; use public.add_profile() after adding a user.', sqlerrm;
+end;
+$$;
+
+-- The manual version of what that trigger does, for when it could not be
+-- attached. Safe to run more than once.
+create or replace function public.add_profile(user_email text, make_admin boolean default false)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  found_id uuid;
+begin
+  select id into found_id from auth.users where email = user_email;
+  if found_id is null then
+    return 'No account with that email. Add the user first, under Authentication.';
+  end if;
+  insert into public.profiles (id, display_name, role)
+  values (found_id, user_email, case when make_admin then 'admin' else 'member' end)
+  on conflict (id) do update set role = excluded.role;
+  return 'Profile ready for ' || user_email ||
+         case when make_admin then ' (administrator).' else ' (member).' end;
+end;
+$$;
+
+-- PUBLIC first, and that word is the whole point.
+--
+-- Postgres grants EXECUTE on a new function to PUBLIC by default, and anon and
+-- authenticated both inherit from PUBLIC. An earlier version of this file said
+-- only "from anon, authenticated", which achieved precisely nothing: the
+-- function stayed callable by everybody. Since it is SECURITY DEFINER and so
+-- ignores row-level security, any stranger could have called
+--   POST /rest/v1/rpc/add_profile {"user_email":"...","make_admin":true}
+-- and made themselves an administrator. Supabase's own security advisor caught
+-- it; the tests now catch it too.
+revoke all on function public.add_profile(text, boolean) from public, anon, authenticated;
 
 -- Asking "is this person an administrator?" from inside a policy ON profiles
 -- would read profiles again and recurse for ever. security definer runs the
@@ -63,6 +113,17 @@ $$;
 
 comment on function public.is_admin() is
   'True when the CURRENT session belongs to an administrator. Never trusts anything the client sends.';
+
+-- A trigger function has no business being reachable over HTTP.
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+-- is_admin() must stay executable by `authenticated`, because the policies below
+-- call it and a policy runs with the querying role's own rights. Supabase's
+-- advisor flags that, and it is the one warning here we accept on purpose: the
+-- function reports only on its own caller, and answers false to a stranger.
+-- Nobody signed out needs it at all.
+revoke all on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;
 
 -- ------------------------------------------------------------ club content --
 
