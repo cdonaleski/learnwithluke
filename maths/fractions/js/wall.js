@@ -215,7 +215,8 @@
       button.type = "button";
       button.className = "choice";
       button.textContent = option.label;
-      button.addEventListener("click", function () { mark(option.value === answer, button); });
+      button.addEventListener("click", function () {
+        stopGoingOn(); mark(option.value === answer, button); });
       el.choices.appendChild(button);
     });
   }
@@ -261,6 +262,7 @@
   /* ---------------- Rounds ---------------- */
 
   function startRound() {
+    stopGoingOn();
     state.asked = 0;
     state.right = 0;
     state.running = true;
@@ -270,15 +272,51 @@
     say("Ten questions. Use the wall if you get stuck — that is what it is for.");
   }
 
+  /**
+   * Ten questions, a moment to see how it went, and then straight on.
+   *
+   * It used to stop dead and wait to be told to continue, which put a button
+   * press between a child and the next question every ten. Practice works
+   * better when it just keeps going: the score still gets its moment on
+   * screen, and anybody who wants to stop can, but the default is to carry on.
+   */
   function finishRound() {
     state.running = false;
-    el.start.textContent = "Go again";
     el.choices.innerHTML = "";
     el.question.textContent = state.right + " out of " + ROUND + " right";
     say(state.right === ROUND ? "Every single one. Try a harder kind of question."
                               : "Have another go — the wall is there to work it out on.");
     drawStats();
     if (board && state.right === ROUND) board.offer(Date.now() - state.started, state.kind);
+
+    // If the score qualified, the board is asking for a name; carrying on
+    // would snatch the question away mid-typing. So wait for that instead.
+    if (board && board.pending) {
+      el.start.textContent = "Go again";
+      return;
+    }
+    goOn();
+  }
+
+  /**
+   * Starts the next round shortly, unless somebody stops it first. The button
+   * says what will happen and how to prevent it, because a countdown nobody
+   * asked for is unnerving otherwise.
+   */
+  function goOn() {
+    stopGoingOn();
+    el.start.textContent = "Wait, stop";
+    state.carryingOn = window.setTimeout(function () {
+      state.carryingOn = null;
+      startRound();
+    }, 2600);
+  }
+
+  function stopGoingOn() {
+    if (state.carryingOn) {
+      window.clearTimeout(state.carryingOn);
+      state.carryingOn = null;
+    }
   }
 
   function drawStats() {
@@ -311,13 +349,26 @@
     gameName: "Fraction Wall",
     metric: { label: "Time", better: "lower", format: "time" },
     categories: Object.keys(KINDS).map(function (id) { return { id: id, label: KINDS[id].label }; }),
+    // A perfect round asks for a name. Carrying on mid-typing would snatch the
+    // question away, so the wait happens there instead -- and once the name is
+    // in, the next round comes on its own like any other.
+    onSaved: function () { goOn(); },
   }) : null;
   if (board) board.mount(document.getElementById("leaderboard-panel"));
 
   /* ---------------- Go ---------------- */
 
   el.start.addEventListener("click", function () {
+    // Pressing it while the next round is on its way means "no, stop" -- which
+    // is why the button says exactly that at the time.
+    if (state.carryingOn) {
+      stopGoingOn();
+      el.start.textContent = "Start";
+      say("Stopped. The wall is still yours to play with.");
+      return;
+    }
     if (state.running) {
+      stopGoingOn();
       state.running = false;
       el.start.textContent = "Start";
       el.choices.innerHTML = "";
