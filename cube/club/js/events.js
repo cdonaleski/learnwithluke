@@ -46,6 +46,18 @@
     return "in " + Math.round(days / 30) + " months";
   }
 
+  /** "14:30:00" reads as "2:30pm", which is how anybody would say it. */
+  function tidyTime(value) {
+    const bits = String(value || "").split(":");
+    if (bits.length < 2) return String(value || "");
+    let hour = Number(bits[0]);
+    const mins = bits[1];
+    const suffix = hour >= 12 ? "pm" : "am";
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
+    return hour + (mins === "00" ? "" : ":" + mins) + suffix;
+  }
+
   function dayOf(date) { return midnight(date).getDate(); }
   function monthOf(date) {
     const d = midnight(date);
@@ -106,8 +118,15 @@
     }
     what.appendChild(title);
 
+    // The whole address if we have it, so somebody could actually drive there.
     what.appendChild(el("p", "event-where",
-      [event.venue, event.city].filter(Boolean).join(" — ")));
+      [event.venue, event.address || event.city].filter(Boolean).join(" — ")));
+
+    if (event.startsAt) {
+      what.appendChild(el("p", "event-time",
+        "Starts " + tidyTime(event.startsAt) +
+        (event.endsAt ? ", until " + tidyTime(event.endsAt) : "")));
+    }
 
     const facts = el("ul", "event-facts");
     facts.appendChild(el("li", past ? "" : "event-when-chip", whenWords(days)));
@@ -117,6 +136,32 @@
     what.appendChild(facts);
 
     if (event.note) what.appendChild(el("p", "event-note", event.note));
+
+    // Somewhere to go, and a way to remember it. Neither is offered for a
+    // competition that has already happened.
+    if (!past) {
+      const links = el("p", "event-links");
+      const site = event.url || (event.slug ? wcaLink(event.slug) : null);
+      if (site) {
+        const page = el("a", "event-link", "Competition page");
+        page.href = site;
+        page.target = "_blank";
+        page.rel = "noopener";
+        links.appendChild(page);
+      }
+      if (window.ClubCalendar) {
+        const calendar = window.ClubCalendar.googleUrl(event);
+        if (calendar) {
+          const add = el("a", "event-link", "📅 Add to calendar");
+          add.href = calendar;
+          add.target = "_blank";
+          add.rel = "noopener";
+          links.appendChild(add);
+        }
+      }
+      if (links.childNodes.length) what.appendChild(links);
+    }
+
     card.appendChild(what);
     return card;
   }
@@ -230,7 +275,7 @@
   }
 
   window.ClubEvents = {
-    render: render, drawInto: drawInto, fillBanner: fillBanner, daysUntil: daysUntil, whenWords: whenWords,
+    render: render, tidyTime: tidyTime, drawInto: drawInto, fillBanner: fillBanner, daysUntil: daysUntil, whenWords: whenWords,
     order: order, nextUp: nextUp, monthOf: monthOf, dayOf: dayOf,
   };
 })();

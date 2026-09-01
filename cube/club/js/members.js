@@ -138,6 +138,44 @@
       card.appendChild(row);
     });
 
+    /*
+     * The parent's name shows for everybody -- knowing whose parent is whose
+     * is ordinary club information. Their email and phone only arrive at all
+     * if the database decided this reader may have them, so there is no test
+     * here for who is allowed what: if it is absent, it was refused, and the
+     * card simply has less on it.
+     */
+    if (member.parentName || member.parentContact) {
+      const parent = el("div", "member-parent");
+      parent.appendChild(el("span", "member-parent-label", "Parent"));
+      parent.appendChild(el("span", "member-parent-name",
+        member.parentName || "—"));
+
+      const contact = member.parentContact;
+      if (contact && (contact.email || contact.phone)) {
+        const ways = el("ul", "contact-ways");
+        if (contact.email) {
+          const item = document.createElement("li");
+          const link = el("a", null, contact.email);
+          link.href = "mailto:" + contact.email;
+          item.appendChild(link);
+          ways.appendChild(item);
+        }
+        if (contact.phone) {
+          const item = document.createElement("li");
+          const link = el("a", null, contact.phone);
+          link.href = "tel:+1" + String(contact.phone).replace(/[^0-9]/g, "");
+          item.appendChild(link);
+          ways.appendChild(item);
+        }
+        parent.appendChild(ways);
+      } else if (member.parentName) {
+        parent.appendChild(el("span", "member-parent-private",
+          "Contact details not shared"));
+      }
+      card.appendChild(parent);
+    }
+
     if (member.note) card.appendChild(el("p", "member-note", member.note));
     return card;
   }

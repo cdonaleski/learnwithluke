@@ -78,9 +78,20 @@
   async function drawMembers() {
     const holder = document.getElementById("members-list");
     if (!holder) return;
+    /*
+     * Two requests, not one join, and deliberately so. The children are
+     * readable by every member; a parent's email and phone are readable only
+     * where the parent said so, or by an administrator. Asking separately
+     * means the second request simply returns fewer rows for most people --
+     * the database applies the rule, and this code never has to decide who
+     * deserves to see what.
+     */
     const answer = await db.from("club_members")
-      .select("id, name, role, wca_id, note, sort_order, club_results (competition, event, round, place, single, average, solves)")
+      .select("id, name, role, wca_id, note, parent_name, share_parent_contact, sort_order, club_results (competition, event, round, place, single, average, solves)")
       .order("sort_order");
+    const contacts = await db.from("club_member_contacts").select("member_id, email, phone, note");
+    const contactFor = {};
+    (contacts.data || []).forEach(function (row) { contactFor[row.member_id] = row; });
     if (answer.error) { holder.appendChild(el("p", "club-note", "Could not load the members just now.")); return; }
 
     // The renderer built for the old page still applies: it takes members with
@@ -88,6 +99,7 @@
     const members = (answer.data || []).map(function (row) {
       return {
         name: row.name, role: row.role, wcaId: row.wca_id, note: row.note,
+        parentName: row.parent_name, parentContact: contactFor[row.id] || null,
         results: (row.club_results || []).map(function (r) {
           return { competition: r.competition, event: r.event, round: r.round,
                    place: r.place, single: r.single, average: r.average,
@@ -99,18 +111,59 @@
     if (window.ClubMembers) window.ClubMembers.drawInto(holder, members);
   }
 
+  /* ---------------- Who to ask ---------------- */
+
+  async function drawContact() {
+    const holder = document.getElementById("contact-list");
+    if (!holder) return;
+    const answer = await db.from("club_contact")
+      .select("name, role, email, phone, note").order("sort_order");
+    holder.innerHTML = "";
+    if (answer.error) {
+      holder.appendChild(el("p", "club-note", "Could not load the contact details just now."));
+      return;
+    }
+    (answer.data || []).forEach(function (row) {
+      const card = el("div", "contact-card");
+      card.appendChild(el("p", "contact-name", row.name));
+      if (row.role) card.appendChild(el("p", "contact-role", row.role));
+      const ways = el("ul", "contact-ways");
+      if (row.email) ways.appendChild(contactWay("Email", "mailto:" + row.email, row.email));
+      if (row.phone) {
+        const dialable = "+1" + String(row.phone).replace(/[^0-9]/g, "");
+        ways.appendChild(contactWay("Phone", "tel:" + dialable, row.phone));
+      }
+      card.appendChild(ways);
+      if (row.note) card.appendChild(el("p", "member-note", row.note));
+      holder.appendChild(card);
+    });
+    if (!answer.data || !answer.data.length) {
+      holder.appendChild(el("p", "club-note", "No contact details listed yet."));
+    }
+  }
+
+  function contactWay(label, href, text) {
+    const item = document.createElement("li");
+    item.appendChild(el("span", "contact-label", label));
+    const link = el("a", null, text);
+    link.href = href;
+    item.appendChild(link);
+    return item;
+  }
+
   /* ---------------- Competitions and meet-ups ---------------- */
 
   async function drawEvents() {
     const answer = await db.from("club_events")
-      .select("id, name, slug, held_on, venue, city, fee, capacity, note, kind")
+      .select("id, name, slug, held_on, venue, city, address, fee, capacity, note, kind, url, starts_at, ends_at")
       .order("held_on");
     if (answer.error) return;
 
     const all = (answer.data || []).map(function (row) {
       return { name: row.name, slug: row.slug, date: row.held_on, venue: row.venue,
-               city: row.city, fee: row.fee, limit: row.capacity, note: row.note,
-               kind: row.kind };
+               city: row.city, address: row.address, fee: row.fee, limit: row.capacity,
+               note: row.note, kind: row.kind, url: row.url,
+               startsAt: row.starts_at, endsAt: row.ends_at };
     });
 
     if (window.ClubEvents) {
@@ -149,7 +202,7 @@
     const name = state.profile.display_name || state.user.email;
     const hello = document.getElementById("club-hello");
     if (hello) hello.textContent = "Signed in as " + name + ".";
-    await Promise.all([drawAlerts(), drawMembers(), drawEvents()]);
+    await Promise.all([drawAlerts(), drawMembers(), drawEvents(), drawContact()]);
     if (window.ClubTabs) window.ClubTabs.wire(document.getElementById("club-tabs"));
   });
 

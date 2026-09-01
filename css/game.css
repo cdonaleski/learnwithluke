@@ -844,3 +844,63 @@ kbd {
 }
 
 .club-alert--warning { border-color: #f0b429; background: #fffaf0; color: #8a5a00; }
+
+/* A parent beside their child on a member card */
+.member-parent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 2px solid #f0ebe2;
+}
+
+.member-parent-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.member-parent-name { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; }
+.member-parent-private { font-size: 0.8rem; color: var(--color-text-muted); font-style: italic; }
+.member-parent .contact-ways { display: flex; gap: 0.6rem; margin: 0; }
+.member-parent .contact-ways li { justify-content: flex-start; }
+
+/* Event extras */
+.event-time { font-size: 0.84rem; color: var(--color-text-muted); margin-bottom: 0.3rem; }
+.event-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+
+.event-link {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg-alt);
+  text-decoration: none;
+}
+
+.event-link:hover { border-color: var(--color-purple); }
+
+.admin-rule { border: none; border-top: 2px solid #f0ebe2; margin: 0.8rem 0 0.2rem; }
+
+.admin-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  padding: 0.5rem 0.6rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.admin-check input { margin-top: 0.2rem; }

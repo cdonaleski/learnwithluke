@@ -130,16 +130,11 @@
             The club is run by Luke's dad. Ask about anything — joining, lifts to
             a competition, or whether your cube is any good.
           </p>
-          <div class="contact-card">
-            <p class="contact-name">Christopher Donaleski</p>
-            <p class="contact-role">Luke's dad</p>
-            <ul class="contact-ways">
-              <li><span class="contact-label">Email</span>
-                <a href="mailto:cdonaleski@osqii.com">cdonaleski@osqii.com</a></li>
-              <li><span class="contact-label">Phone</span>
-                <a href="tel:+12816861843">281-686-1843</a></li>
-            </ul>
-          </div>
+          <!-- Deliberately empty. The names, addresses and numbers arrive from
+               the database, which refuses anybody not signed in. Putting them
+               in this file would ship them to every stranger who views the
+               source, whatever `hidden` says. -->
+          <div id="contact-list"></div>
           <p class="club-note">
             Please do not repost these anywhere. Point people at the club
             instead and let them ask for themselves.
@@ -204,6 +199,7 @@
   <script src="../../js/auth.js"></script>
   <script src="js/tabs.js"></script>
   <script src="js/members.js"></script>
+  <script src="js/calendar.js"></script>
   <script src="js/events.js"></script>
   <script src="js/club.js"></script>
 </body>

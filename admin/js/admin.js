@@ -72,24 +72,34 @@
   const memberList = document.getElementById("member-list");
 
   function memberFields() {
+    const get = function (id) { return document.getElementById(id); };
     return {
-      id: document.getElementById("member-id"),
-      name: document.getElementById("member-name"),
-      role: document.getElementById("member-role"),
-      wca: document.getElementById("member-wca"),
-      note: document.getElementById("member-note"),
+      id: get("member-id"), name: get("member-name"), role: get("member-role"),
+      wca: get("member-wca"), note: get("member-note"),
+      parent: get("member-parent"), parentEmail: get("member-parent-email"),
+      parentPhone: get("member-parent-phone"), share: get("member-share"),
     };
   }
 
   async function loadMembers() {
     const answer = await db.from("club_members")
-      .select("id, name, role, wca_id, note").order("sort_order").order("name");
+      .select("id, name, role, wca_id, note, parent_name, share_parent_contact")
+      .order("sort_order").order("name");
     if (answer.error) { say("Could not load members: " + answer.error.message, true); return; }
+    const contacts = await db.from("club_member_contacts").select("member_id, email, phone");
+    const contactFor = {};
+    (contacts.data || []).forEach(function (row) { contactFor[row.member_id] = row; });
+
     memberList.innerHTML = "";
     (answer.data || []).forEach(function (row) {
+      row.contact = contactFor[row.id] || null;
+      const parentBit = row.parent_name
+        ? "parent: " + row.parent_name +
+          (row.share_parent_contact ? " (shared with members)" : " (only you can see their details)")
+        : "no parent recorded";
       memberList.appendChild(rowCard(
         row.name + (row.role ? " — " + row.role : ""),
-        [row.wca_id, row.note].filter(Boolean).join(" · "),
+        [row.wca_id, parentBit].filter(Boolean).join(" · "),
         function () { fillMember(row); },
         function () { removeRow("club_members", row.id, loadMembers, row.name); }
       ));
@@ -106,6 +116,10 @@
     f.role.value = row.role || "";
     f.wca.value = row.wca_id || "";
     f.note.value = row.note || "";
+    f.parent.value = row.parent_name || "";
+    f.parentEmail.value = (row.contact && row.contact.email) || "";
+    f.parentPhone.value = (row.contact && row.contact.phone) || "";
+    f.share.checked = Boolean(row.share_parent_contact);
     f.name.focus();
   }
 
@@ -118,11 +132,30 @@
         role: f.role.value.trim() || null,
         wca_id: f.wca.value.trim() || null,
         note: f.note.value.trim() || null,
+        parent_name: f.parent.value.trim() || null,
+        share_parent_contact: Boolean(f.share.checked),
       };
       const answer = f.id.value
-        ? await db.from("club_members").update(record).eq("id", f.id.value)
-        : await db.from("club_members").insert(record);
+        ? await db.from("club_members").update(record).eq("id", f.id.value).select("id")
+        : await db.from("club_members").insert(record).select("id");
       if (answer.error) { say("Not saved: " + answer.error.message, true); return; }
+
+      // The parent's details live in their own table, so they are saved
+      // separately -- and removed entirely if both boxes were emptied, rather
+      // than left behind as a blank row nobody can see.
+      const memberId = f.id.value || (answer.data && answer.data[0] && answer.data[0].id);
+      const email = f.parentEmail.value.trim();
+      const phone = f.parentPhone.value.trim();
+      if (memberId) {
+        if (email || phone) {
+          const kept = await db.from("club_member_contacts")
+            .upsert({ member_id: memberId, email: email || null, phone: phone || null },
+                    { onConflict: "member_id" });
+          if (kept.error) { say("Member saved, but the parent's details were not: " + kept.error.message, true); return; }
+        } else {
+          await db.from("club_member_contacts").delete().eq("member_id", memberId);
+        }
+      }
       say("Saved " + record.name + ".");
       memberForm.reset();
       f.id.value = "";
@@ -143,12 +176,14 @@
     const get = function (id) { return document.getElementById(id); };
     return { id: get("event-id"), name: get("event-name"), date: get("event-date"),
              slug: get("event-slug"), venue: get("event-venue"), city: get("event-city"),
+             address: get("event-address"), url: get("event-url"),
+             starts: get("event-starts"), ends: get("event-ends"),
              fee: get("event-fee"), capacity: get("event-capacity"), note: get("event-note") };
   }
 
   async function loadEvents() {
     const answer = await db.from("club_events")
-      .select("id, name, slug, held_on, venue, city, fee, capacity, note, kind")
+      .select("id, name, slug, held_on, venue, city, address, url, starts_at, ends_at, fee, capacity, note, kind")
       .eq("kind", "competition")
       .order("held_on");
     if (answer.error) { say("Could not load competitions: " + answer.error.message, true); return; }
@@ -174,6 +209,10 @@
     f.slug.value = row.slug || "";
     f.venue.value = row.venue || "";
     f.city.value = row.city || "";
+    f.address.value = row.address || "";
+    f.url.value = row.url || "";
+    f.starts.value = row.starts_at || "";
+    f.ends.value = row.ends_at || "";
     f.fee.value = row.fee || "";
     f.capacity.value = row.capacity || "";
     f.note.value = row.note || "";
@@ -190,6 +229,10 @@
         slug: f.slug.value.trim() || null,
         venue: f.venue.value.trim() || null,
         city: f.city.value.trim() || null,
+        address: f.address.value.trim() || null,
+        url: f.url.value.trim() || null,
+        starts_at: f.starts.value || null,
+        ends_at: f.ends.value || null,
         fee: f.fee.value.trim() || null,
         capacity: f.capacity.value ? Number(f.capacity.value) : null,
         note: f.note.value.trim() || null,
@@ -218,13 +261,14 @@
   function meetupFields() {
     const get = function (id) { return document.getElementById(id); };
     return { id: get("meetup-id"), name: get("meetup-name"), date: get("meetup-date"),
-             venue: get("meetup-venue"), city: get("meetup-city"), note: get("meetup-note") };
+             venue: get("meetup-venue"), city: get("meetup-city"), address: get("meetup-address"),
+             starts: get("meetup-starts"), ends: get("meetup-ends"), note: get("meetup-note") };
   }
 
   async function loadMeetups() {
     if (!meetupList) return;
     const answer = await db.from("club_events")
-      .select("id, name, held_on, venue, city, note, kind")
+      .select("id, name, held_on, venue, city, address, starts_at, ends_at, note, kind")
       .eq("kind", "meetup")
       .order("held_on");
     if (answer.error) { say("Could not load meet-ups: " + answer.error.message, true); return; }
@@ -249,6 +293,9 @@
     f.date.value = row.held_on || "";
     f.venue.value = row.venue || "";
     f.city.value = row.city || "";
+    f.address.value = row.address || "";
+    f.starts.value = row.starts_at || "";
+    f.ends.value = row.ends_at || "";
     f.note.value = row.note || "";
     f.name.focus();
   }
@@ -262,6 +309,9 @@
         held_on: f.date.value,
         venue: f.venue.value.trim() || null,
         city: f.city.value.trim() || null,
+        address: f.address.value.trim() || null,
+        starts_at: f.starts.value || null,
+        ends_at: f.ends.value || null,
         note: f.note.value.trim() || null,
         kind: "meetup",
       };
@@ -358,6 +408,73 @@
     });
   }
 
+  /* ---------------- Contact details ---------------- */
+
+  const contactForm = document.getElementById("contact-form");
+  const contactList = document.getElementById("contact-list-admin");
+
+  function contactFields() {
+    const get = function (id) { return document.getElementById(id); };
+    return { id: get("contact-id"), name: get("contact-name"), role: get("contact-role"),
+             email: get("contact-email"), phone: get("contact-phone"), note: get("contact-note") };
+  }
+
+  async function loadContacts() {
+    if (!contactList) return;
+    const answer = await db.from("club_contact")
+      .select("id, name, role, email, phone, note").order("sort_order");
+    if (answer.error) { say("Could not load contacts: " + answer.error.message, true); return; }
+    contactList.innerHTML = "";
+    (answer.data || []).forEach(function (row) {
+      contactList.appendChild(rowCard(
+        row.name + (row.role ? " — " + row.role : ""),
+        [row.email, row.phone].filter(Boolean).join(" · "),
+        function () { fillContact(row); },
+        function () { removeRow("club_contact", row.id, loadContacts, row.name); }
+      ));
+    });
+    if (!answer.data || !answer.data.length) {
+      contactList.appendChild(emptyNote("No contact details. The club page will say so."));
+    }
+  }
+
+  function fillContact(row) {
+    const f = contactFields();
+    f.id.value = row.id;
+    f.name.value = row.name || "";
+    f.role.value = row.role || "";
+    f.email.value = row.email || "";
+    f.phone.value = row.phone || "";
+    f.note.value = row.note || "";
+    f.name.focus();
+  }
+
+  if (contactForm) {
+    contactForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const f = contactFields();
+      const record = {
+        name: f.name.value.trim(),
+        role: f.role.value.trim() || null,
+        email: f.email.value.trim() || null,
+        phone: f.phone.value.trim() || null,
+        note: f.note.value.trim() || null,
+      };
+      const answer = f.id.value
+        ? await db.from("club_contact").update(record).eq("id", f.id.value)
+        : await db.from("club_contact").insert(record);
+      if (answer.error) { say("Not saved: " + answer.error.message, true); return; }
+      say("Saved " + record.name + ".");
+      contactForm.reset();
+      f.id.value = "";
+      loadContacts();
+    });
+    document.getElementById("contact-clear").addEventListener("click", function () {
+      contactForm.reset();
+      contactFields().id.value = "";
+    });
+  }
+
   /* ---------------- Shared bits ---------------- */
 
   function rowCard(title, detail, onEdit, onRemove) {
@@ -436,5 +553,6 @@
     loadEvents();
     loadMeetups();
     loadAlerts();
+    loadContacts();
   });
 })();

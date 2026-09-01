@@ -42,6 +42,8 @@
                   aria-controls="panel-meetups" aria-selected="false" tabindex="-1">☕ Meet-ups</button>
           <button type="button" class="tab" role="tab" id="tab-alerts"
                   aria-controls="panel-alerts" aria-selected="false" tabindex="-1">📢 Alerts</button>
+          <button type="button" class="tab" role="tab" id="tab-contact"
+                  aria-controls="panel-contact" aria-selected="false" tabindex="-1">✉️ Contact</button>
         </div>
 
         <section class="game-panel tab-panel" role="tabpanel" id="panel-members" aria-labelledby="tab-members">
@@ -56,6 +58,20 @@
             <input type="text" id="member-wca" placeholder="2025DONA02">
             <label for="member-note">Note</label>
             <input type="text" id="member-note">
+
+            <hr class="admin-rule">
+            <label for="member-parent">Parent's name</label>
+            <input type="text" id="member-parent">
+            <label for="member-parent-email">Parent's email</label>
+            <input type="email" id="member-parent-email">
+            <label for="member-parent-phone">Parent's phone</label>
+            <input type="text" id="member-parent-phone" placeholder="555-0100">
+            <label class="admin-check">
+              <input type="checkbox" id="member-share">
+              <span>Let other signed-in members see this parent's email and phone.
+              Left unticked, only you can see them — the child's name, WCA id and
+              times are always visible to every member either way.</span>
+            </label>
             <div class="game-actions">
               <button type="submit" class="btn btn-primary">Save member</button>
               <button type="button" class="btn btn-secondary" id="member-clear">Clear</button>
@@ -76,8 +92,16 @@
             <input type="text" id="event-slug" placeholder="HoustonHolidayHustle2026">
             <label for="event-venue">Venue</label>
             <input type="text" id="event-venue">
-            <label for="event-city">City</label>
+            <label for="event-city">Town</label>
             <input type="text" id="event-city">
+            <label for="event-address">Full address <span class="admin-hint">(this is what goes into a calendar entry)</span></label>
+            <input type="text" id="event-address" placeholder="3001 Kalahari Blvd, Round Rock, TX 78665">
+            <label for="event-url">Web page</label>
+            <input type="url" id="event-url" placeholder="https://www.worldcubeassociation.org/competitions/...">
+            <label for="event-starts">Starts at</label>
+            <input type="time" id="event-starts">
+            <label for="event-ends">Ends at <span class="admin-hint">(optional)</span></label>
+            <input type="time" id="event-ends">
             <label for="event-fee">Fee</label>
             <input type="text" id="event-fee" placeholder="$35">
             <label for="event-capacity">Competitor limit</label>
@@ -106,6 +130,12 @@
             <input type="text" id="meetup-venue" placeholder="The library, back room">
             <label for="meetup-city">Town</label>
             <input type="text" id="meetup-city">
+            <label for="meetup-address">Full address</label>
+            <input type="text" id="meetup-address">
+            <label for="meetup-starts">Starts at</label>
+            <input type="time" id="meetup-starts">
+            <label for="meetup-ends">Ends at</label>
+            <input type="time" id="meetup-ends">
             <label for="meetup-note">Anything else <span class="admin-hint">(time, what to bring)</span></label>
             <input type="text" id="meetup-note" placeholder="2pm until 4pm. Bring your own cube.">
             <div class="game-actions">
@@ -141,6 +171,31 @@
           <p class="club-note">An alert with an end date takes itself down, so
           nobody reads about a practice that happened last month.</p>
           <div class="admin-list" id="alert-list"></div>
+        </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-contact" aria-labelledby="tab-contact" hidden>
+          <h2>Contact details</h2>
+          <p class="club-lead">Who members should ask, and how to reach them.
+          These live in the database on purpose — putting them in the page would
+          hand them to every stranger who views the source.</p>
+          <form class="admin-form" id="contact-form">
+            <input type="hidden" id="contact-id">
+            <label for="contact-name">Name</label>
+            <input type="text" id="contact-name" required>
+            <label for="contact-role">Who they are</label>
+            <input type="text" id="contact-role" placeholder="Luke's dad">
+            <label for="contact-email">Email</label>
+            <input type="email" id="contact-email">
+            <label for="contact-phone">Phone</label>
+            <input type="text" id="contact-phone" placeholder="555-0100">
+            <label for="contact-note">Note</label>
+            <input type="text" id="contact-note">
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save contact</button>
+              <button type="button" class="btn btn-secondary" id="contact-clear">Clear</button>
+            </div>
+          </form>
+          <div class="admin-list" id="contact-list-admin"></div>
         </section>
 
       </div>
