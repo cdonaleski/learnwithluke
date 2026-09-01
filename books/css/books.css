@@ -1,0 +1,75 @@
+/* My Books — a shelf, not a spreadsheet */
+
+.books-form { max-width: 32rem; margin: 0 auto; }
+.book-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 0.7rem 0 0.9rem;
+}
+
+.book-stat {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.book-stat strong { color: var(--color-coral); }
+.book-list { display: grid; gap: 0.55rem; }
+
+.book {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.8rem;
+  align-items: start;
+  padding: 0.75rem 0.9rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+/* A spine down the left, so a shelf looks like a shelf. */
+.book-spine {
+  width: 0.5rem;
+  align-self: stretch;
+  min-height: 2.6rem;
+  border-radius: 999px;
+  background: var(--color-sky);
+}
+
+.book--want .book-spine { background: #c9b6ef; }
+.book--reading .book-spine { background: var(--color-sun, #f0b429); }
+.book--finished .book-spine { background: #7ad0a8; }
+.book--stopped .book-spine { background: #cfc7bb; }
+
+.book-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
+.book-author { font-size: 0.85rem; color: var(--color-text-muted); }
+.book-notes { font-size: 0.86rem; color: var(--color-text-muted); margin-top: 0.3rem; }
+
+.book-marks { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+
+.book-mark {
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.book-stars { color: #e8a600; letter-spacing: 0.05em; }
+.book-actions { display: flex; flex-direction: column; gap: 0.3rem; }
+.book-whose { font-size: 0.78rem; color: var(--color-text-muted); font-style: italic; }
+
+@media (max-width: 520px) {
+  .book { grid-template-columns: auto 1fr; }
+  .book-actions { flex-direction: row; grid-column: 1 / -1; }
+}
