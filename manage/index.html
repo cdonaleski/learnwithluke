@@ -11,18 +11,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/game.css">
+  <link rel="stylesheet" href="css/manage.css">
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
   <div id="site-header"></div>
 
-  <main id="main-content" class="game-page">
+  <main id="main-content" class="game-page game-page--wide">
     <div class="account-bar" id="account-bar" hidden></div>
-
-    <header class="game-header">
-      <h1>⚙️ Manage</h1>
-      <p class="game-instructions" role="note" id="manage-intro">Checking what you can do…</p>
-    </header>
 
     <section class="game-panel" id="manage-locked" hidden>
       <p class="club-lead" id="manage-locked-why"></p>
@@ -31,12 +27,33 @@
       </div>
     </section>
 
-    <div id="manage-body" hidden>
-      <!-- One strip of areas. Only the ones this person may actually use are
-           drawn, so nothing here leads to a refusal. -->
-      <div class="manage-areas" id="manage-areas" role="tablist" aria-label="What to manage"></div>
+    <!-- The console: what you may change on the left, the work on the right.
+         Sections are drawn by capability, so nothing here leads to a refusal. -->
+    <div class="console" id="console" hidden>
+      <aside class="console-nav" id="console-nav" aria-label="What to manage"></aside>
 
-      <div id="manage-panels"></div>
+      <section class="console-main">
+        <header class="console-head">
+          <div>
+            <h1 class="console-title" id="section-title">Manage</h1>
+            <p class="console-blurb" id="section-blurb"></p>
+          </div>
+          <div class="console-tools">
+            <input type="search" class="console-search" id="section-search"
+                   placeholder="Find…" aria-label="Search this list" hidden>
+            <button type="button" class="btn btn-primary console-add" id="section-add" hidden>＋ Add</button>
+          </div>
+        </header>
+
+        <!-- The form lives in a drawer that opens when asked for and gets out
+             of the way when it is not. A permanent form above every list makes
+             a console read like paperwork. -->
+        <div class="console-drawer" id="drawer" hidden>
+          <form class="admin-form" id="drawer-form"></form>
+        </div>
+
+        <div class="console-list" id="section-list"></div>
+      </section>
     </div>
 
     <p class="admin-message" id="manage-message" role="status" aria-live="polite"></p>
