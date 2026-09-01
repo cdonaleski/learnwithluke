@@ -151,7 +151,25 @@
     return num + (ends[num % 10] || "th");
   }
 
-  /** Reads the member list out of the unlocked content and draws it. */
+  /**
+   * Draws a list of members that somebody else fetched.
+   *
+   * Split out from render() when the members moved into the database: the
+   * drawing is identical, only where the list came from changed. Keeping one
+   * drawing function means the page cannot end up with two slightly different
+   * ideas of what a member card looks like.
+   */
+  function drawInto(holder, members) {
+    if (!holder) return 0;
+    holder.innerHTML = "";
+    (members || []).forEach(function (member) { holder.appendChild(drawMember(member)); });
+    if (!members || !members.length) {
+      holder.appendChild(el("p", "club-note", "No members listed yet."));
+    }
+    return (members || []).length;
+  }
+
+  /** Reads the member list out of the page and draws it. */
   function render(root) {
     const holder = (root || document).querySelector("#members-list");
     const source = (root || document).querySelector("#club-members");
@@ -165,7 +183,7 @@
   }
 
   window.ClubMembers = {
-    render: render, seconds: seconds, clock: clock,
+    render: render, drawInto: drawInto, seconds: seconds, clock: clock,
     averageOfFive: averageOfFive, bests: bests, ordinal: ordinal,
   };
 })();

@@ -38,8 +38,10 @@
                   aria-controls="panel-members" aria-selected="true">🧑‍🤝‍🧑 Members</button>
           <button type="button" class="tab" role="tab" id="tab-events"
                   aria-controls="panel-events" aria-selected="false" tabindex="-1">📅 Competitions</button>
-          <button type="button" class="tab" role="tab" id="tab-pages"
-                  aria-controls="panel-pages" aria-selected="false" tabindex="-1">📄 Pages</button>
+          <button type="button" class="tab" role="tab" id="tab-meetups"
+                  aria-controls="panel-meetups" aria-selected="false" tabindex="-1">☕ Meet-ups</button>
+          <button type="button" class="tab" role="tab" id="tab-alerts"
+                  aria-controls="panel-alerts" aria-selected="false" tabindex="-1">📢 Alerts</button>
         </div>
 
         <section class="game-panel tab-panel" role="tabpanel" id="panel-members" aria-labelledby="tab-members">
@@ -90,25 +92,57 @@
           <div class="admin-list" id="event-list"></div>
         </section>
 
-        <section class="game-panel tab-panel" role="tabpanel" id="panel-pages" aria-labelledby="tab-pages" hidden>
-          <h2>Pages</h2>
-          <p class="club-lead">The words on the club's Welcome, Rules and Contact tabs.</p>
-          <form class="admin-form" id="page-form">
-            <label for="page-key">Which page</label>
-            <select id="page-key">
-              <option value="welcome">Welcome</option>
-              <option value="rules">Rules</option>
-              <option value="contact">Contact</option>
-            </select>
-            <label for="page-title">Heading</label>
-            <input type="text" id="page-title" required>
-            <label for="page-body">Words</label>
-            <textarea id="page-body" rows="12"></textarea>
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-meetups" aria-labelledby="tab-meetups" hidden>
+          <h2>Meet-ups</h2>
+          <p class="club-lead">The club getting together. Same as a competition,
+          but ours — no entry fee, no governing body.</p>
+          <form class="admin-form" id="meetup-form">
+            <input type="hidden" id="meetup-id">
+            <label for="meetup-name">What it is</label>
+            <input type="text" id="meetup-name" placeholder="Saturday practice" required>
+            <label for="meetup-date">Date</label>
+            <input type="date" id="meetup-date" required>
+            <label for="meetup-venue">Where</label>
+            <input type="text" id="meetup-venue" placeholder="The library, back room">
+            <label for="meetup-city">Town</label>
+            <input type="text" id="meetup-city">
+            <label for="meetup-note">Anything else <span class="admin-hint">(time, what to bring)</span></label>
+            <input type="text" id="meetup-note" placeholder="2pm until 4pm. Bring your own cube.">
             <div class="game-actions">
-              <button type="submit" class="btn btn-primary">Save page</button>
+              <button type="submit" class="btn btn-primary">Save meet-up</button>
+              <button type="button" class="btn btn-secondary" id="meetup-clear">Clear</button>
             </div>
           </form>
+          <div class="admin-list" id="meetup-list"></div>
         </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-alerts" aria-labelledby="tab-alerts" hidden>
+          <h2>Alerts</h2>
+          <p class="club-lead">A short notice at the top of the club page — a
+          practice cancelled, a lift offered, a deadline coming up.</p>
+          <form class="admin-form" id="alert-form">
+            <input type="hidden" id="alert-id">
+            <label for="alert-message">What it says</label>
+            <input type="text" id="alert-message" placeholder="Saturday's practice is cancelled — hall is double booked." required>
+            <label for="alert-level">How loud</label>
+            <select id="alert-level">
+              <option value="info">Ordinary notice</option>
+              <option value="warning">Important</option>
+            </select>
+            <label for="alert-starts">Show from <span class="admin-hint">(leave blank for straight away)</span></label>
+            <input type="date" id="alert-starts">
+            <label for="alert-ends">Stop showing after <span class="admin-hint">(leave blank to keep it until you delete it)</span></label>
+            <input type="date" id="alert-ends">
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save alert</button>
+              <button type="button" class="btn btn-secondary" id="alert-clear">Clear</button>
+            </div>
+          </form>
+          <p class="club-note">An alert with an end date takes itself down, so
+          nobody reads about a practice that happened last month.</p>
+          <div class="admin-list" id="alert-list"></div>
+        </section>
+
       </div>
 
       <p class="admin-message" id="admin-message" role="status" aria-live="polite"></p>

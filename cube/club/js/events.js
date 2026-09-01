@@ -121,7 +121,58 @@
     return card;
   }
 
-  /** Draws the list, and returns what it found so the banner can use it. */
+  /**
+   * Draws events somebody else fetched, optionally filling a "next up" banner.
+   *
+   * Used for competitions and for meet-ups alike, because they are the same
+   * shape: a thing with a date. `emptyWords` is what to say when there are
+   * none, which differs -- no competitions is unusual, no meet-ups is the
+   * normal state of a club that has not started.
+   */
+  function drawInto(holder, events, banner, emptyWords, today) {
+    if (!holder) return null;
+    const sorted = order(events || [], today);
+    holder.innerHTML = "";
+    sorted.forEach(function (event) { holder.appendChild(drawEvent(event, today)); });
+    if (!sorted.length) {
+      holder.appendChild(el("p", "club-note", emptyWords || "Nothing on the calendar yet."));
+    }
+    if (banner) fillBanner(banner, nextUp(events || [], today), today);
+    return { shown: sorted.length, next: nextUp(events || [], today) };
+  }
+
+  /** The "next up" line: what is soonest, and how far off. */
+  function fillBanner(banner, next, today) {
+    banner.innerHTML = "";
+    if (!next) {
+      banner.appendChild(el("span", "next-up-label", "Nothing booked"));
+      banner.appendChild(el("span", "next-up-when",
+        "No competition on the calendar just now."));
+      banner.hidden = false;
+      return;
+    }
+    const days = daysUntil(next.date, today);
+    banner.appendChild(el("span", "next-up-label", "Next up"));
+    const link = el("a", "next-up-name", next.name);
+    link.href = "#events-title";
+    link.addEventListener("click", function (event) {
+      const target = document.getElementById("events-title");
+      if (!target) return;
+      event.preventDefault();
+      let still = false;
+      try {
+        still = Boolean(window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      } catch (err) { still = false; }
+      target.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+    });
+    banner.appendChild(link);
+    banner.appendChild(el("span", "next-up-when", whenWords(days) +
+      " · " + dayOf(next.date) + " " + monthOf(next.date)));
+    banner.hidden = false;
+  }
+
+  /** Draws the list from JSON embedded in the page. */
   function render(root, today) {
     const scope = root || document;
     const holder = scope.querySelector("#events-list");
@@ -179,7 +230,7 @@
   }
 
   window.ClubEvents = {
-    render: render, daysUntil: daysUntil, whenWords: whenWords,
+    render: render, drawInto: drawInto, fillBanner: fillBanner, daysUntil: daysUntil, whenWords: whenWords,
     order: order, nextUp: nextUp, monthOf: monthOf, dayOf: dayOf,
   };
 })();

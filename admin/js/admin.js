@@ -148,7 +148,8 @@
 
   async function loadEvents() {
     const answer = await db.from("club_events")
-      .select("id, name, slug, held_on, venue, city, fee, capacity, note")
+      .select("id, name, slug, held_on, venue, city, fee, capacity, note, kind")
+      .eq("kind", "competition")
       .order("held_on");
     if (answer.error) { say("Could not load competitions: " + answer.error.message, true); return; }
     eventList.innerHTML = "";
@@ -192,6 +193,7 @@
         fee: f.fee.value.trim() || null,
         capacity: f.capacity.value ? Number(f.capacity.value) : null,
         note: f.note.value.trim() || null,
+        kind: "competition",
       };
       const answer = f.id.value
         ? await db.from("club_events").update(record).eq("id", f.id.value)
@@ -208,32 +210,151 @@
     });
   }
 
-  /* ---------------- Pages ---------------- */
+  /* ---------------- Meet-ups ---------------- */
 
-  const pageForm = document.getElementById("page-form");
+  const meetupForm = document.getElementById("meetup-form");
+  const meetupList = document.getElementById("meetup-list");
 
-  async function loadPage(key) {
-    const answer = await db.from("club_pages").select("key, title, body").eq("key", key).maybeSingle();
-    if (answer.error) { say("Could not load that page: " + answer.error.message, true); return; }
-    document.getElementById("page-title").value = answer.data ? answer.data.title : "";
-    document.getElementById("page-body").value = answer.data ? answer.data.body : "";
+  function meetupFields() {
+    const get = function (id) { return document.getElementById(id); };
+    return { id: get("meetup-id"), name: get("meetup-name"), date: get("meetup-date"),
+             venue: get("meetup-venue"), city: get("meetup-city"), note: get("meetup-note") };
   }
 
-  if (pageForm) {
-    document.getElementById("page-key").addEventListener("change", function (event) {
-      loadPage(event.target.value);
+  async function loadMeetups() {
+    if (!meetupList) return;
+    const answer = await db.from("club_events")
+      .select("id, name, held_on, venue, city, note, kind")
+      .eq("kind", "meetup")
+      .order("held_on");
+    if (answer.error) { say("Could not load meet-ups: " + answer.error.message, true); return; }
+    meetupList.innerHTML = "";
+    (answer.data || []).forEach(function (row) {
+      meetupList.appendChild(rowCard(
+        row.held_on + " — " + row.name,
+        [row.venue, row.city, row.note].filter(Boolean).join(" · "),
+        function () { fillMeetup(row); },
+        function () { removeRow("club_events", row.id, loadMeetups, row.name); }
+      ));
     });
-    pageForm.addEventListener("submit", async function (event) {
+    if (!answer.data || !answer.data.length) {
+      meetupList.appendChild(emptyNote("No meet-ups arranged. The club page says so plainly."));
+    }
+  }
+
+  function fillMeetup(row) {
+    const f = meetupFields();
+    f.id.value = row.id;
+    f.name.value = row.name || "";
+    f.date.value = row.held_on || "";
+    f.venue.value = row.venue || "";
+    f.city.value = row.city || "";
+    f.note.value = row.note || "";
+    f.name.focus();
+  }
+
+  if (meetupForm) {
+    meetupForm.addEventListener("submit", async function (event) {
       event.preventDefault();
+      const f = meetupFields();
       const record = {
-        key: document.getElementById("page-key").value,
-        title: document.getElementById("page-title").value.trim(),
-        body: document.getElementById("page-body").value,
-        updated_at: new Date().toISOString(),
+        name: f.name.value.trim(),
+        held_on: f.date.value,
+        venue: f.venue.value.trim() || null,
+        city: f.city.value.trim() || null,
+        note: f.note.value.trim() || null,
+        kind: "meetup",
       };
-      const answer = await db.from("club_pages").upsert(record, { onConflict: "key" });
+      const answer = f.id.value
+        ? await db.from("club_events").update(record).eq("id", f.id.value)
+        : await db.from("club_events").insert(record);
       if (answer.error) { say("Not saved: " + answer.error.message, true); return; }
-      say("Saved the " + record.key + " page.");
+      say("Saved " + record.name + ".");
+      meetupForm.reset();
+      f.id.value = "";
+      loadMeetups();
+    });
+    document.getElementById("meetup-clear").addEventListener("click", function () {
+      meetupForm.reset();
+      meetupFields().id.value = "";
+    });
+  }
+
+  /* ---------------- Alerts ---------------- */
+
+  const alertForm = document.getElementById("alert-form");
+  const alertList = document.getElementById("alert-list");
+
+  function alertFields() {
+    const get = function (id) { return document.getElementById(id); };
+    return { id: get("alert-id"), message: get("alert-message"), level: get("alert-level"),
+             starts: get("alert-starts"), ends: get("alert-ends") };
+  }
+
+  /** Says whether an alert is on screen right now, and why not if it is not. */
+  function alertWhen(row) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (row.starts_on && row.starts_on > today) return "starts " + row.starts_on;
+    if (row.ends_on && row.ends_on < today) return "finished " + row.ends_on;
+    return row.ends_on ? "showing until " + row.ends_on : "showing now";
+  }
+
+  async function loadAlerts() {
+    if (!alertList) return;
+    const answer = await db.from("club_alerts")
+      .select("id, message, level, starts_on, ends_on")
+      .order("created_at", { ascending: false });
+    if (answer.error) { say("Could not load alerts: " + answer.error.message, true); return; }
+    alertList.innerHTML = "";
+    (answer.data || []).forEach(function (row) {
+      alertList.appendChild(rowCard(
+        row.message,
+        (row.level === "warning" ? "Important · " : "") + alertWhen(row),
+        function () { fillAlert(row); },
+        function () { removeRow("club_alerts", row.id, loadAlerts, "that alert"); }
+      ));
+    });
+    if (!answer.data || !answer.data.length) {
+      alertList.appendChild(emptyNote("No alerts. The club page shows none."));
+    }
+  }
+
+  function fillAlert(row) {
+    const f = alertFields();
+    f.id.value = row.id;
+    f.message.value = row.message || "";
+    f.level.value = row.level || "info";
+    f.starts.value = row.starts_on || "";
+    f.ends.value = row.ends_on || "";
+    f.message.focus();
+  }
+
+  if (alertForm) {
+    alertForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const f = alertFields();
+      const record = {
+        message: f.message.value.trim(),
+        level: f.level.value,
+        starts_on: f.starts.value || null,
+        ends_on: f.ends.value || null,
+      };
+      if (record.starts_on && record.ends_on && record.ends_on < record.starts_on) {
+        say("That alert would finish before it started.", true);
+        return;
+      }
+      const answer = f.id.value
+        ? await db.from("club_alerts").update(record).eq("id", f.id.value)
+        : await db.from("club_alerts").insert(record);
+      if (answer.error) { say("Not saved: " + answer.error.message, true); return; }
+      say("Alert saved.");
+      alertForm.reset();
+      f.id.value = "";
+      loadAlerts();
+    });
+    document.getElementById("alert-clear").addEventListener("click", function () {
+      alertForm.reset();
+      alertFields().id.value = "";
     });
   }
 
@@ -313,6 +434,7 @@
     wireTabs();
     loadMembers();
     loadEvents();
-    loadPage("welcome");
+    loadMeetups();
+    loadAlerts();
   });
 })();
