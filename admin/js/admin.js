@@ -78,12 +78,13 @@
       wca: get("member-wca"), note: get("member-note"),
       parent: get("member-parent"), parentEmail: get("member-parent-email"),
       parentPhone: get("member-parent-phone"), share: get("member-share"),
+      account: get("member-account"),
     };
   }
 
   async function loadMembers() {
     const answer = await db.from("club_members")
-      .select("id, name, role, wca_id, note, parent_name, share_parent_contact")
+      .select("id, name, role, wca_id, note, parent_name, share_parent_contact, profile_id")
       .order("sort_order").order("name");
     if (answer.error) { say("Could not load members: " + answer.error.message, true); return; }
     const contacts = await db.from("club_member_contacts").select("member_id, email, phone");
@@ -120,6 +121,7 @@
     f.parentEmail.value = (row.contact && row.contact.email) || "";
     f.parentPhone.value = (row.contact && row.contact.phone) || "";
     f.share.checked = Boolean(row.share_parent_contact);
+    if (f.account) f.account.value = row.profile_id || "";
     f.name.focus();
   }
 
@@ -134,6 +136,7 @@
         note: f.note.value.trim() || null,
         parent_name: f.parent.value.trim() || null,
         share_parent_contact: Boolean(f.share.checked),
+        profile_id: (f.account && f.account.value) || null,
       };
       const answer = f.id.value
         ? await db.from("club_members").update(record).eq("id", f.id.value).select("id")
@@ -177,13 +180,14 @@
     return { id: get("event-id"), name: get("event-name"), date: get("event-date"),
              slug: get("event-slug"), venue: get("event-venue"), city: get("event-city"),
              address: get("event-address"), url: get("event-url"),
+             registerBy: get("event-register-by"),
              starts: get("event-starts"), ends: get("event-ends"),
              fee: get("event-fee"), capacity: get("event-capacity"), note: get("event-note") };
   }
 
   async function loadEvents() {
     const answer = await db.from("club_events")
-      .select("id, name, slug, held_on, venue, city, address, url, starts_at, ends_at, fee, capacity, note, kind")
+      .select("id, name, slug, held_on, register_by, venue, city, address, url, starts_at, ends_at, fee, capacity, note, kind")
       .eq("kind", "competition")
       .order("held_on");
     if (answer.error) { say("Could not load competitions: " + answer.error.message, true); return; }
@@ -211,6 +215,7 @@
     f.city.value = row.city || "";
     f.address.value = row.address || "";
     f.url.value = row.url || "";
+    f.registerBy.value = row.register_by || "";
     f.starts.value = row.starts_at || "";
     f.ends.value = row.ends_at || "";
     f.fee.value = row.fee || "";
@@ -231,6 +236,7 @@
         city: f.city.value.trim() || null,
         address: f.address.value.trim() || null,
         url: f.url.value.trim() || null,
+        register_by: f.registerBy.value || null,
         starts_at: f.starts.value || null,
         ends_at: f.ends.value || null,
         fee: f.fee.value.trim() || null,
@@ -408,6 +414,107 @@
     });
   }
 
+  /* ---------------- Who is coming ---------------- */
+
+  const goingForm = document.getElementById("going-form");
+  const goingList = document.getElementById("going-list");
+
+  /** Fills a <select> without losing what was already chosen. */
+  function fillChoices(select, rows, label) {
+    if (!select) return;
+    const had = select.value;
+    select.innerHTML = "";
+    rows.forEach(function (row) {
+      const option = document.createElement("option");
+      option.value = row.id;
+      option.textContent = label(row);
+      select.appendChild(option);
+    });
+    if (had) select.value = had;
+  }
+
+  async function loadChoices() {
+    const events = await db.from("club_events")
+      .select("id, name, held_on, kind").order("held_on");
+    fillChoices(document.getElementById("going-event"), events.data || [], function (row) {
+      return row.held_on + " — " + row.name + (row.kind === "meetup" ? " (meet-up)" : "");
+    });
+
+    const members = await db.from("club_members").select("id, name").order("sort_order");
+    fillChoices(document.getElementById("going-member"), members.data || [], function (row) {
+      return row.name;
+    });
+
+    // Accounts a member record can be linked to, so that family can answer for
+    // themselves. Only an administrator can read this list.
+    const people = await db.from("profiles").select("id, display_name, role").order("display_name");
+    const select = document.getElementById("member-account");
+    if (select) {
+      const had = select.value;
+      select.innerHTML = "";
+      const none = document.createElement("option");
+      none.value = "";
+      none.textContent = "Nobody yet";
+      select.appendChild(none);
+      (people.data || []).forEach(function (row) {
+        const option = document.createElement("option");
+        option.value = row.id;
+        option.textContent = row.display_name + (row.role === "admin" ? " (admin)" : "");
+        select.appendChild(option);
+      });
+      if (had) select.value = had;
+    }
+  }
+
+  async function loadGoing() {
+    if (!goingList) return;
+    const answer = await db.from("club_attendance")
+      .select("id, status, event_id, member_id, club_events (name, held_on, kind), club_members (name)")
+      .order("updated_at", { ascending: false });
+    if (answer.error) { say("Could not load answers: " + answer.error.message, true); return; }
+    goingList.innerHTML = "";
+    const words = { going: "going", maybe: "maybe", not: "not going" };
+    (answer.data || []).forEach(function (row) {
+      const event = row.club_events || {};
+      goingList.appendChild(rowCard(
+        (row.club_members ? row.club_members.name : "Someone") + " — " + (words[row.status] || row.status),
+        (event.held_on || "") + " " + (event.name || ""),
+        function () {
+          document.getElementById("going-event").value = row.event_id;
+          document.getElementById("going-member").value = row.member_id;
+          document.getElementById("going-status").value = row.status;
+        },
+        function () { removeRow("club_attendance", row.id, loadGoing, "that answer"); }
+      ));
+    });
+    if (!answer.data || !answer.data.length) {
+      goingList.appendChild(emptyNote("Nobody has answered for anything yet."));
+    }
+  }
+
+  if (goingForm) {
+    goingForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const record = {
+        event_id: document.getElementById("going-event").value,
+        member_id: document.getElementById("going-member").value,
+        status: document.getElementById("going-status").value,
+        updated_at: new Date().toISOString(),
+      };
+      if (!record.event_id || !record.member_id) {
+        say("Pick an event and a member first.", true);
+        return;
+      }
+      // Answering twice changes the answer rather than adding another, which
+      // is what the unique constraint on the table is for.
+      const answer = await db.from("club_attendance")
+        .upsert(record, { onConflict: "event_id,member_id" });
+      if (answer.error) { say("Not saved: " + answer.error.message, true); return; }
+      say("Answer saved.");
+      loadGoing();
+    });
+  }
+
   /* ---------------- Contact details ---------------- */
 
   const contactForm = document.getElementById("contact-form");
@@ -468,6 +575,8 @@
       contactForm.reset();
       f.id.value = "";
       loadContacts();
+    loadChoices();
+    loadGoing();
     });
     document.getElementById("contact-clear").addEventListener("click", function () {
       contactForm.reset();
@@ -554,5 +663,7 @@
     loadMeetups();
     loadAlerts();
     loadContacts();
+    loadChoices();
+    loadGoing();
   });
 })();

@@ -153,30 +153,86 @@
 
   /* ---------------- Competitions and meet-ups ---------------- */
 
-  async function drawEvents() {
+  /** Which member records this account may answer for. Usually their children. */
+  async function myMembers(userId) {
+    const answer = await db.from("club_members")
+      .select("id, name").eq("profile_id", userId);
+    return answer.data || [];
+  }
+
+  async function drawEvents(userId) {
     const answer = await db.from("club_events")
-      .select("id, name, slug, held_on, venue, city, address, fee, capacity, note, kind, url, starts_at, ends_at")
+      .select("id, name, slug, held_on, register_by, venue, city, address, fee, capacity, note, kind, url, starts_at, ends_at")
       .order("held_on");
     if (answer.error) return;
 
+    // Who is coming, and which of them this reader may answer for.
+    const coming = await db.from("club_attendance")
+      .select("event_id, member_id, status, club_members (name)");
+    const mine = await myMembers(userId);
+    const byEvent = {};
+    (coming.data || []).forEach(function (row) {
+      (byEvent[row.event_id] = byEvent[row.event_id] || []).push({
+        memberId: row.member_id,
+        name: (row.club_members && row.club_members.name) || "Someone",
+        status: row.status,
+      });
+    });
+
     const all = (answer.data || []).map(function (row) {
-      return { name: row.name, slug: row.slug, date: row.held_on, venue: row.venue,
+      const here = byEvent[row.id] || [];
+      return { id: row.id, name: row.name, slug: row.slug, date: row.held_on,
+               registerBy: row.register_by, venue: row.venue,
                city: row.city, address: row.address, fee: row.fee, limit: row.capacity,
                note: row.note, kind: row.kind, url: row.url,
-               startsAt: row.starts_at, endsAt: row.ends_at };
+               startsAt: row.starts_at, endsAt: row.ends_at,
+               attendance: here,
+               mine: mine.map(function (m) {
+                 const said = here.find(function (a) { return a.memberId === m.id; });
+                 return { id: m.id, name: m.name, status: said ? said.status : null };
+               }) };
     });
 
     if (window.ClubEvents) {
       window.ClubEvents.drawInto(
         document.getElementById("events-list"),
         all.filter(function (e) { return e.kind !== "meetup"; }),
-        document.getElementById("next-up"));
+        document.getElementById("next-up"), null, null, answerFor);
       window.ClubEvents.drawInto(
         document.getElementById("meetups-list"),
         all.filter(function (e) { return e.kind === "meetup"; }),
         null,
-        "Nothing arranged yet. When a meet-up is fixed it will appear here, with the date, the place and the time.");
+        "Nothing arranged yet. When a meet-up is fixed it will appear here, with the date, the place and the time.",
+        null, answerFor);
     }
+  }
+
+  /**
+   * Saving an answer. The button is disabled while it is in flight so nobody
+   * taps three times and wonders which one counted, and the whole list is
+   * redrawn afterwards rather than the one button being coloured in -- if the
+   * database refused, the redraw shows the truth instead of a lie.
+   */
+  async function answerFor(event, member, status, button) {
+    if (button) button.disabled = true;
+    const saved = await db.from("club_attendance").upsert({
+      event_id: event.id,
+      member_id: member.id,
+      status: status,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "event_id,member_id" });
+    if (button) button.disabled = false;
+    if (saved.error) {
+      const note = document.getElementById("club-alerts");
+      if (note) {
+        const bad = el("p", "club-alert club-alert--warning",
+          "That did not save: " + saved.error.message);
+        note.appendChild(bad);
+      }
+      return;
+    }
+    const who = auth.who();
+    await drawEvents(who.user ? who.user.id : null);
   }
 
   /* ---------------- Who is here ---------------- */
@@ -202,7 +258,7 @@
     const name = state.profile.display_name || state.user.email;
     const hello = document.getElementById("club-hello");
     if (hello) hello.textContent = "Signed in as " + name + ".";
-    await Promise.all([drawAlerts(), drawMembers(), drawEvents(), drawContact()]);
+    await Promise.all([drawAlerts(), drawMembers(), drawEvents(state.user.id), drawContact()]);
     if (window.ClubTabs) window.ClubTabs.wire(document.getElementById("club-tabs"));
   });
 

@@ -93,7 +93,7 @@
     return "https://www.worldcubeassociation.org/competitions/" + slug;
   }
 
-  function drawEvent(event, today) {
+  function drawEvent(event, today, onAnswer) {
     const days = daysUntil(event.date, today);
     const past = days < 0;
     const soon = !past && days <= 7;
@@ -133,9 +133,45 @@
     if (event.fee) facts.appendChild(el("li", null, event.fee + " to enter"));
     if (event.limit) facts.appendChild(el("li", null, event.limit + " competitors"));
     if (soon) facts.appendChild(el("li", "event-warn", "Very soon"));
+
+    // The deadline matters more than the date itself: miss it and the day is
+    // no use to you. So it is said in the same words, and said louder once it
+    // is close or gone.
+    if (!past && event.registerBy) {
+      const left = daysUntil(event.registerBy, today);
+      if (left < 0) {
+        facts.appendChild(el("li", "event-warn", "Entries closed"));
+      } else {
+        facts.appendChild(el("li", left <= 7 ? "event-warn" : "event-when-chip",
+          "Enter by " + dayOf(event.registerBy) + " " + monthOf(event.registerBy) +
+          " (" + whenWords(left) + ")"));
+      }
+    }
     what.appendChild(facts);
 
     if (event.note) what.appendChild(el("p", "event-note", event.note));
+
+    // Who is coming. Drawn even when nobody is, because "nobody yet" is worth
+    // knowing -- it is the nudge that makes somebody be the first.
+    const going = (event.attendance || []).filter(function (a) { return a.status === "going"; });
+    const maybe = (event.attendance || []).filter(function (a) { return a.status === "maybe"; });
+    const who = el("p", "event-going");
+    if (going.length) {
+      who.appendChild(el("span", "event-going-label",
+        event.kind === "meetup" ? "Coming: " : "Registered: "));
+      who.appendChild(el("span", null, going.map(function (a) { return a.name; }).join(", ")));
+      if (maybe.length) {
+        who.appendChild(el("span", "event-maybe",
+          " · maybe " + maybe.map(function (a) { return a.name; }).join(", ")));
+      }
+    } else if (maybe.length) {
+      who.appendChild(el("span", "event-going-label", "Maybe: "));
+      who.appendChild(el("span", null, maybe.map(function (a) { return a.name; }).join(", ")));
+    } else {
+      who.appendChild(el("span", "event-going-none",
+        event.kind === "meetup" ? "Nobody has said yet." : "No one registered yet."));
+    }
+    what.appendChild(who);
 
     // Somewhere to go, and a way to remember it. Neither is offered for a
     // competition that has already happened.
@@ -159,6 +195,33 @@
           links.appendChild(add);
         }
       }
+      // Answering for your own children. The buttons only exist for members
+      // this reader may speak for; the database would refuse the rest anyway,
+      // so offering them would only be a way of being told no.
+      if (typeof onAnswer === "function" && (event.mine || []).length) {
+        const asking = el("div", "event-rsvp");
+        asking.appendChild(el("span", "event-rsvp-label",
+          event.kind === "meetup" ? "Coming?" : "Entered?"));
+        (event.mine || []).forEach(function (member) {
+          const row = el("div", "event-rsvp-row");
+          row.appendChild(el("span", "event-rsvp-name", member.name));
+          [["going", event.kind === "meetup" ? "Yes" : "Registered"],
+           ["maybe", "Maybe"],
+           ["not", "No"]].forEach(function (pair) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "rsvp" + (member.status === pair[0] ? " is-on" : "");
+            button.textContent = pair[1];
+            button.addEventListener("click", function () {
+              onAnswer(event, member, pair[0], button);
+            });
+            row.appendChild(button);
+          });
+          asking.appendChild(row);
+        });
+        what.appendChild(asking);
+      }
+
       if (links.childNodes.length) what.appendChild(links);
     }
 
@@ -174,11 +237,11 @@
    * none, which differs -- no competitions is unusual, no meet-ups is the
    * normal state of a club that has not started.
    */
-  function drawInto(holder, events, banner, emptyWords, today) {
+  function drawInto(holder, events, banner, emptyWords, today, onAnswer) {
     if (!holder) return null;
     const sorted = order(events || [], today);
     holder.innerHTML = "";
-    sorted.forEach(function (event) { holder.appendChild(drawEvent(event, today)); });
+    sorted.forEach(function (event) { holder.appendChild(drawEvent(event, today, onAnswer)); });
     if (!sorted.length) {
       holder.appendChild(el("p", "club-note", emptyWords || "Nothing on the calendar yet."));
     }

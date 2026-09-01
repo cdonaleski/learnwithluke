@@ -904,3 +904,50 @@ kbd {
 }
 
 .admin-check input { margin-top: 0.2rem; }
+
+/* Who is coming, and answering for your own */
+.event-going { font-size: 0.84rem; color: var(--color-text-muted); margin-top: 0.4rem; }
+.event-going-label { font-family: var(--font-display); font-weight: 600; color: var(--color-text); }
+.event-going-none { font-style: italic; }
+.event-maybe { opacity: 0.8; }
+
+.event-rsvp {
+  margin-top: 0.6rem;
+  padding-top: 0.55rem;
+  border-top: 2px solid #f0ebe2;
+}
+
+.event-rsvp-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.event-rsvp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.event-rsvp-name { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; margin-right: 0.2rem; }
+
+.rsvp {
+  padding: 0.2rem 0.6rem;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.rsvp:hover:not(:disabled) { border-color: var(--color-purple); }
+.rsvp.is-on { background: var(--color-sky); border-color: var(--color-sky); color: #fff; }
+.rsvp:disabled { opacity: 0.5; cursor: wait; }

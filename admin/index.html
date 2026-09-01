@@ -42,6 +42,8 @@
                   aria-controls="panel-meetups" aria-selected="false" tabindex="-1">☕ Meet-ups</button>
           <button type="button" class="tab" role="tab" id="tab-alerts"
                   aria-controls="panel-alerts" aria-selected="false" tabindex="-1">📢 Alerts</button>
+          <button type="button" class="tab" role="tab" id="tab-going"
+                  aria-controls="panel-going" aria-selected="false" tabindex="-1">✅ Who's coming</button>
           <button type="button" class="tab" role="tab" id="tab-contact"
                   aria-controls="panel-contact" aria-selected="false" tabindex="-1">✉️ Contact</button>
         </div>
@@ -66,6 +68,8 @@
             <input type="email" id="member-parent-email">
             <label for="member-parent-phone">Parent's phone</label>
             <input type="text" id="member-parent-phone" placeholder="555-0100">
+            <label for="member-account">Linked account <span class="admin-hint">(lets this family RSVP for themselves)</span></label>
+            <select id="member-account"><option value="">Nobody yet</option></select>
             <label class="admin-check">
               <input type="checkbox" id="member-share">
               <span>Let other signed-in members see this parent's email and phone.
@@ -98,6 +102,8 @@
             <input type="text" id="event-address" placeholder="3001 Kalahari Blvd, Round Rock, TX 78665">
             <label for="event-url">Web page</label>
             <input type="url" id="event-url" placeholder="https://www.worldcubeassociation.org/competitions/...">
+            <label for="event-register-by">Last day to enter</label>
+            <input type="date" id="event-register-by">
             <label for="event-starts">Starts at</label>
             <input type="time" id="event-starts">
             <label for="event-ends">Ends at <span class="admin-hint">(optional)</span></label>
@@ -171,6 +177,28 @@
           <p class="club-note">An alert with an end date takes itself down, so
           nobody reads about a practice that happened last month.</p>
           <div class="admin-list" id="alert-list"></div>
+        </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-going" aria-labelledby="tab-going" hidden>
+          <h2>Who's coming</h2>
+          <p class="club-lead">Families can answer for themselves once their
+          member record is linked to an account. You can answer for anybody.</p>
+          <form class="admin-form" id="going-form">
+            <label for="going-event">Which event</label>
+            <select id="going-event"></select>
+            <label for="going-member">Which member</label>
+            <select id="going-member"></select>
+            <label for="going-status">Answer</label>
+            <select id="going-status">
+              <option value="going">Going / registered</option>
+              <option value="maybe">Maybe</option>
+              <option value="not">Not going</option>
+            </select>
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save answer</button>
+            </div>
+          </form>
+          <div class="admin-list" id="going-list"></div>
         </section>
 
         <section class="game-panel tab-panel" role="tabpanel" id="panel-contact" aria-labelledby="tab-contact" hidden>
