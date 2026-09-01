@@ -231,16 +231,9 @@
     middle.appendChild(mineRow);
     card.appendChild(middle);
 
-    const actions = el("div", "book-actions");
-    const edit = el("button", "btn btn-secondary btn-small", "Edit");
-    edit.type = "button";
-    edit.addEventListener("click", function () { fill(book); });
-    const drop = el("button", "btn btn-secondary btn-small", "Remove");
-    drop.type = "button";
-    drop.addEventListener("click", function () { remove(book); });
-    actions.appendChild(edit);
-    actions.appendChild(drop);
-    card.appendChild(actions);
+    // No Edit or Remove here. Changing the library happens in one place, and
+    // a shelf with delete buttons on every book is a shelf you edit by
+    // accident.
     return card;
   }
 
@@ -317,6 +310,7 @@
 
   function fill(book) {
     const f = fields();
+    if (!f.title) { window.location.href = "../manage/index.html"; return; }
     f.id.value = book.id;
     f.title.value = book.title || "";
     f.author.value = book.author || "";
@@ -337,6 +331,12 @@
     load();
   }
 
+  /*
+   * There is no add form on this page any more. Reading pages are for reading;
+   * everything you can CHANGE lives in one console. What stays here is the one
+   * thing that is not management -- marking what you yourself are reading,
+   * which belongs beside the book rather than three clicks away.
+   */
   const form = document.getElementById("book-form");
   if (form) {
     form.addEventListener("submit", async function (event) {

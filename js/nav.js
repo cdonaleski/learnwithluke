@@ -57,7 +57,7 @@
    * here whether or not they belong in the menu.
    */
   const TOP_LEVEL = SECTIONS.map(function (section) { return section.id; })
-    .concat(["support", "privacy", "signin", "admin", "books"]);
+    .concat(["support", "privacy", "signin", "admin", "books", "manage"]);
   const path = window.location.pathname;
   const segments = path.split("/").filter((segment) => segment && !segment.endsWith(".html"));
 

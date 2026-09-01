@@ -1014,3 +1014,103 @@ kbd {
 }
 
 .person-name:focus-visible { outline: none; border-color: var(--color-purple); }
+
+/* The signed-in strip: who you are, where you may go, and out again. */
+.account-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 60rem;
+  margin: 0 auto 1rem;
+  padding: 0.5rem 0.85rem;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+}
+
+.account-who {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding-right: 0.4rem;
+  border-right: 2px solid #e8e2d8;
+}
+
+.account-places { display: flex; flex-wrap: wrap; gap: 0.3rem; flex: 1; }
+
+.account-link {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.account-link:hover { background: var(--color-bg); color: var(--color-text); }
+.account-link.is-here { background: var(--color-sky); color: #fff; }
+
+.account-out {
+  padding: 0.25rem 0.7rem;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.account-out:hover { border-color: var(--color-coral); color: var(--color-coral); }
+
+@media (max-width: 560px) {
+  .account-bar { border-radius: var(--radius-sm); }
+  .account-who { border-right: none; width: 100%; }
+}
+
+/* The console: areas across the top, one open at a time. */
+.manage-areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.manage-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  min-width: 10rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  cursor: pointer;
+  text-align: left;
+}
+
+.manage-area:hover { border-color: var(--color-purple); }
+.manage-area.is-on { border-color: var(--color-purple); background: #f7f4fd; }
+
+.manage-area-name { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+.manage-area-why { font-size: 0.76rem; color: var(--color-text-muted); }
+
+/* Inside an area, the things you can manage. */
+.manage-jobs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.manage-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 1.5rem 1rem;
+}

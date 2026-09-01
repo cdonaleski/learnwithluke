@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Our Library — the family shelf.">
+  <meta name="description" content="Manage — everything you are allowed to change, in one place.">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <title>Our Library · Learn With Luke</title>
+  <title>Manage · Learn With Luke</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/game.css">
-  <link rel="stylesheet" href="css/books.css">
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
@@ -21,32 +20,26 @@
     <div class="account-bar" id="account-bar" hidden></div>
 
     <header class="game-header">
-      <h1>📚 Our Library</h1>
-      <p class="game-instructions" role="note" id="books-hello">Checking who you are…</p>
+      <h1>⚙️ Manage</h1>
+      <p class="game-instructions" role="note" id="manage-intro">Checking what you can do…</p>
     </header>
 
-    <section class="game-panel" id="books-gate" hidden>
-      <p class="club-lead" id="books-gate-why"></p>
+    <section class="game-panel" id="manage-locked" hidden>
+      <p class="club-lead" id="manage-locked-why"></p>
       <div class="game-actions">
         <a class="btn btn-primary" href="../signin/index.html">Sign in</a>
       </div>
     </section>
 
-    <div id="books-body" hidden>
-      <section class="game-panel" aria-labelledby="shelf-title">
-        <h2 id="shelf-title">The shelf</h2>
-        <div class="chips" id="book-whose" role="group" aria-label="Whose books to show"></div>
-        <div class="chips" id="book-filters" role="group" aria-label="Which books to show"></div>
-        <div class="book-stats" id="book-stats"></div>
-        <div class="book-list" id="book-list"></div>
-        <p class="club-note">
-          Marking what YOU are reading happens right here. Adding books,
-          and saying whose they are, lives in
-          <a href="../manage/index.html">Manage</a>.
-        </p>
-      </section>
+    <div id="manage-body" hidden>
+      <!-- One strip of areas. Only the ones this person may actually use are
+           drawn, so nothing here leads to a refusal. -->
+      <div class="manage-areas" id="manage-areas" role="tablist" aria-label="What to manage"></div>
 
+      <div id="manage-panels"></div>
     </div>
+
+    <p class="admin-message" id="manage-message" role="status" aria-live="polite"></p>
   </main>
 
   <div id="site-footer"></div>
@@ -55,6 +48,6 @@
   <script src="../js/supabase-config.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/account-bar.js"></script>
-  <script src="js/books.js"></script>
+  <script src="js/manage.js"></script>
 </body>
 </html>
