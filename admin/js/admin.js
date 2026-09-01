@@ -577,10 +577,251 @@
       loadContacts();
     loadChoices();
     loadGoing();
+    loadPeople();
+    loadClubs();
     });
     document.getElementById("contact-clear").addEventListener("click", function () {
       contactForm.reset();
       contactFields().id.value = "";
+    });
+  }
+
+  /* ---------------- Families ---------------- */
+
+  const peopleList = document.getElementById("people-list");
+  let everyone = [];
+
+  const ROLES = [
+    ["child", "Child"],
+    ["parent", "Parent"],
+    ["admin", "Runs the site"],
+    ["member", "Member (old)"],
+  ];
+
+  async function loadPeople() {
+    if (!peopleList) return;
+    const answer = await db.from("profiles")
+      .select("id, display_name, role, guardian_id, consent_at")
+      .order("display_name");
+    if (answer.error) { say("Could not load the accounts: " + answer.error.message, true); return; }
+    everyone = answer.data || [];
+
+    peopleList.innerHTML = "";
+    everyone.forEach(function (person) { peopleList.appendChild(drawPerson(person)); });
+    if (!everyone.length) peopleList.appendChild(emptyNote("No accounts yet."));
+    fillJoinChoices();
+  }
+
+  function drawPerson(person) {
+    const card = document.createElement("div");
+    card.className = "person";
+
+    const who = document.createElement("div");
+    const name = document.createElement("p");
+    name.className = "person-who";
+    name.textContent = person.display_name || "(no name)";
+    who.appendChild(name);
+    if (person.guardian_id) {
+      const guardian = everyone.find(function (p) { return p.id === person.guardian_id; });
+      const line = document.createElement("p");
+      line.className = "person-mail";
+      line.textContent = "looked after by " + (guardian ? guardian.display_name : "somebody");
+      who.appendChild(line);
+    }
+    card.appendChild(who);
+
+    /*
+     * Consent is shown, not just stored. A child account without a recorded
+     * "a parent agreed to this" is the one thing on this page worth noticing
+     * at a glance, so it is red until it is dealt with.
+     */
+    const consent = document.createElement("span");
+    if (person.role === "child") {
+      const agreed = Boolean(person.consent_at && person.guardian_id);
+      consent.className = "person-consent" + (agreed ? "" : " is-missing");
+      consent.textContent = agreed
+        ? "consent recorded " + String(person.consent_at).slice(0, 10)
+        : "no consent recorded";
+    }
+    card.appendChild(consent);
+
+    const controls = document.createElement("div");
+    controls.className = "person-controls";
+
+    const roleLabel = document.createElement("span");
+    roleLabel.className = "person-mail";
+    roleLabel.textContent = "May:";
+    controls.appendChild(roleLabel);
+
+    const role = document.createElement("select");
+    ROLES.forEach(function (pair) {
+      const option = document.createElement("option");
+      option.value = pair[0];
+      option.textContent = pair[1];
+      role.appendChild(option);
+    });
+    role.value = person.role;
+    controls.appendChild(role);
+
+    const guardianLabel = document.createElement("span");
+    guardianLabel.className = "person-mail";
+    guardianLabel.textContent = "Grown-up:";
+    controls.appendChild(guardianLabel);
+
+    const guardian = document.createElement("select");
+    const none = document.createElement("option");
+    none.value = "";
+    none.textContent = "Nobody";
+    guardian.appendChild(none);
+    everyone
+      .filter(function (p) { return p.id !== person.id && p.role !== "child"; })
+      .forEach(function (p) {
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.display_name || "(no name)";
+        guardian.appendChild(option);
+      });
+    guardian.value = person.guardian_id || "";
+    controls.appendChild(guardian);
+
+    const save = document.createElement("button");
+    save.type = "button";
+    save.className = "btn btn-secondary btn-small";
+    save.textContent = "Save";
+    save.addEventListener("click", function () {
+      savePerson(person, role.value, guardian.value);
+    });
+    controls.appendChild(save);
+
+    card.appendChild(controls);
+    return card;
+  }
+
+  async function savePerson(person, role, guardianId) {
+    const record = { role: role, guardian_id: guardianId || null };
+
+    /*
+     * Recording consent is the whole point of the guardian link. The moment a
+     * child is given a grown-up, that IS the moment an adult took
+     * responsibility, so it is stamped then -- by whoever is signed in doing
+     * it. It is never cleared afterwards: that a parent once agreed remains
+     * true even if the arrangement changes.
+     */
+    if (role === "child" && guardianId && !person.consent_at) {
+      record.consent_at = new Date().toISOString();
+      const me = auth.who();
+      record.consent_by = me.user ? me.user.id : null;
+    }
+
+    const saved = await db.from("profiles").update(record).eq("id", person.id);
+    if (saved.error) { say("Not saved: " + saved.error.message, true); return; }
+    say("Saved " + (person.display_name || "that account") + ".");
+    loadPeople();
+  }
+
+  /* ---------------- Clubs ---------------- */
+
+  const clubForm = document.getElementById("club-form");
+  const clubList = document.getElementById("club-list");
+  const joiningForm = document.getElementById("joining-form");
+  const joiningList = document.getElementById("joining-list");
+  let clubs = [];
+
+  async function loadClubs() {
+    if (!clubList) return;
+    const answer = await db.from("clubs").select("id, slug, name, blurb").order("name");
+    if (answer.error) { say("Could not load clubs: " + answer.error.message, true); return; }
+    clubs = answer.data || [];
+    clubList.innerHTML = "";
+    clubs.forEach(function (club) {
+      clubList.appendChild(rowCard(club.name, club.slug + (club.blurb ? " · " + club.blurb : ""),
+        function () {
+          document.getElementById("club-id").value = club.id;
+          document.getElementById("club-name").value = club.name;
+          document.getElementById("club-slug").value = club.slug;
+          document.getElementById("club-blurb").value = club.blurb || "";
+        },
+        function () { removeRow("clubs", club.id, loadClubs, club.name); }));
+    });
+    if (!clubs.length) clubList.appendChild(emptyNote("No clubs yet."));
+    fillJoinChoices();
+    loadJoining();
+  }
+
+  function fillJoinChoices() {
+    fillChoices(document.getElementById("joining-club"), clubs, function (c) { return c.name; });
+    fillChoices(document.getElementById("joining-person"), everyone,
+      function (p) { return (p.display_name || "(no name)") + " — " + p.role; });
+  }
+
+  async function loadJoining() {
+    if (!joiningList) return;
+    const answer = await db.from("club_memberships")
+      .select("club_id, profile_id, clubs (name), profiles (display_name)");
+    if (answer.error) { say("Could not load who is in what: " + answer.error.message, true); return; }
+    joiningList.innerHTML = "";
+    (answer.data || []).forEach(function (row) {
+      const person = row.profiles ? row.profiles.display_name : "somebody";
+      const club = row.clubs ? row.clubs.name : "a club";
+      const card = rowCard(person + " — " + club, "", function () {}, async function () {
+        if (!window.confirm("Take " + person + " out of " + club + "?")) return;
+        const gone = await db.from("club_memberships").delete()
+          .eq("club_id", row.club_id).eq("profile_id", row.profile_id);
+        if (gone.error) { say("Not removed: " + gone.error.message, true); return; }
+        say("Removed " + person + " from " + club + ".");
+        loadJoining();
+      });
+      // Nothing to edit about a membership: you are in it or you are not.
+      joiningList.appendChild(card);
+    });
+    if (!answer.data || !answer.data.length) {
+      joiningList.appendChild(emptyNote("Nobody is in a club yet."));
+    }
+  }
+
+  if (clubForm) {
+    clubForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const id = document.getElementById("club-id").value;
+      const record = {
+        name: document.getElementById("club-name").value.trim(),
+        slug: document.getElementById("club-slug").value.trim().toLowerCase()
+                .replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, ""),
+        blurb: document.getElementById("club-blurb").value.trim() || null,
+      };
+      if (!record.slug) { say("That short name has no letters in it.", true); return; }
+      const saved = id
+        ? await db.from("clubs").update(record).eq("id", id)
+        : await db.from("clubs").insert(record);
+      if (saved.error) { say("Not saved: " + saved.error.message, true); return; }
+      say("Saved " + record.name + ".");
+      clubForm.reset();
+      document.getElementById("club-id").value = "";
+      loadClubs();
+    });
+    document.getElementById("club-clear").addEventListener("click", function () {
+      clubForm.reset();
+      document.getElementById("club-id").value = "";
+    });
+  }
+
+  if (joiningForm) {
+    joiningForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const record = {
+        club_id: document.getElementById("joining-club").value,
+        profile_id: document.getElementById("joining-person").value,
+      };
+      if (!record.club_id || !record.profile_id) {
+        say("Pick a club and a person first.", true);
+        return;
+      }
+      // Adding somebody twice should be a shrug, not an error.
+      const joined = await db.from("club_memberships")
+        .upsert(record, { onConflict: "club_id,profile_id" });
+      if (joined.error) { say("Not added: " + joined.error.message, true); return; }
+      say("Added them.");
+      loadJoining();
     });
   }
 
@@ -665,5 +906,7 @@
     loadContacts();
     loadChoices();
     loadGoing();
+    loadPeople();
+    loadClubs();
   });
 })();

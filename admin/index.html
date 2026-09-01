@@ -46,6 +46,10 @@
                   aria-controls="panel-going" aria-selected="false" tabindex="-1">✅ Who's coming</button>
           <button type="button" class="tab" role="tab" id="tab-contact"
                   aria-controls="panel-contact" aria-selected="false" tabindex="-1">✉️ Contact</button>
+          <button type="button" class="tab" role="tab" id="tab-families"
+                  aria-controls="panel-families" aria-selected="false" tabindex="-1">👪 Families</button>
+          <button type="button" class="tab" role="tab" id="tab-clubs"
+                  aria-controls="panel-clubs" aria-selected="false" tabindex="-1">🏛️ Clubs</button>
         </div>
 
         <section class="game-panel tab-panel" role="tabpanel" id="panel-members" aria-labelledby="tab-members">
@@ -224,6 +228,59 @@
             </div>
           </form>
           <div class="admin-list" id="contact-list-admin"></div>
+        </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-families" aria-labelledby="tab-families" hidden>
+          <h2>Families</h2>
+          <p class="club-lead">
+            Every account on the site, what it may do, and which grown-up is
+            responsible for it.
+          </p>
+
+          <div class="admin-callout">
+            <h3>Making a new account</h3>
+            <p>Accounts are created in the Supabase dashboard, under
+            <strong>Authentication → Users → Add user</strong>, with
+            <em>Auto Confirm User</em> ticked. Doing it from here would need a
+            key that bypasses every security rule in the database, and a key
+            like that must never be in a web page.</p>
+            <p>The new account then appears in this list by itself. Set what it
+            may do, and who is responsible for it, here.</p>
+          </div>
+
+          <div class="admin-list" id="people-list"></div>
+        </section>
+
+        <section class="game-panel tab-panel" role="tabpanel" id="panel-clubs" aria-labelledby="tab-clubs" hidden>
+          <h2>Clubs</h2>
+          <p class="club-lead">A person can be in several clubs, one, or none.</p>
+
+          <form class="admin-form" id="club-form">
+            <input type="hidden" id="club-id">
+            <label for="club-name">Name</label>
+            <input type="text" id="club-name" placeholder="Book Club" required>
+            <label for="club-slug">Short name <span class="admin-hint">(used in addresses; letters and dashes)</span></label>
+            <input type="text" id="club-slug" placeholder="books" required>
+            <label for="club-blurb">What it is</label>
+            <input type="text" id="club-blurb">
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Save club</button>
+              <button type="button" class="btn btn-secondary" id="club-clear">Clear</button>
+            </div>
+          </form>
+          <div class="admin-list" id="club-list"></div>
+
+          <h3 class="admin-subhead">Who is in which</h3>
+          <form class="admin-form" id="joining-form">
+            <label for="joining-club">Club</label>
+            <select id="joining-club"></select>
+            <label for="joining-person">Person</label>
+            <select id="joining-person"></select>
+            <div class="game-actions">
+              <button type="submit" class="btn btn-primary">Add them</button>
+            </div>
+          </form>
+          <div class="admin-list" id="joining-list"></div>
         </section>
 
       </div>
