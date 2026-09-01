@@ -73,3 +73,55 @@
   .book { grid-template-columns: auto 1fr; }
   .book-actions { flex-direction: row; grid-column: 1 / -1; }
 }
+
+/* Whose it is, and who is on it */
+.book-owner { background: #efe9f8; border-color: #d6c9f0; color: #6b4fa8; }
+.book-together { background: #fff1cf; border-color: #f0b429; color: #8a5a00; }
+
+.book-readers { list-style: none; padding: 0; margin: 0.45rem 0 0; display: grid; gap: 0.2rem; }
+
+.book-reader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.book-reader-name { font-family: var(--font-display); font-weight: 600; }
+.book-reader-status { color: var(--color-text-muted); }
+.book-nobody { font-size: 0.85rem; color: var(--color-text-muted); font-style: italic; margin-top: 0.4rem; }
+
+.book-mine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 2px solid #f0ebe2;
+}
+
+.book-mine-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.book--none .book-spine { background: #e0d9cd; }
+
+.reader-picks { border: 2px solid #e8e2d8; border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; }
+.reader-picks legend { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; padding: 0 0.3rem; }
+#book-readers-pick { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+
+.reader-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+}

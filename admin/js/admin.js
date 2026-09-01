@@ -617,9 +617,19 @@
     card.className = "person";
 
     const who = document.createElement("div");
-    const name = document.createElement("p");
-    name.className = "person-who";
-    name.textContent = person.display_name || "(no name)";
+
+    /*
+     * A new account's display name is whatever it signed up with, which is an
+     * email address. "ldonaleski@icloud.com's reading" is a miserable thing to
+     * greet a child with, so the name is editable right here rather than being
+     * something you have to go elsewhere to fix.
+     */
+    const name = document.createElement("input");
+    name.type = "text";
+    name.className = "person-name";
+    name.value = person.display_name || "";
+    name.placeholder = "What to call them";
+    name.setAttribute("aria-label", "Display name");
     who.appendChild(name);
     if (person.guardian_id) {
       const guardian = everyone.find(function (p) { return p.id === person.guardian_id; });
@@ -689,7 +699,7 @@
     save.className = "btn btn-secondary btn-small";
     save.textContent = "Save";
     save.addEventListener("click", function () {
-      savePerson(person, role.value, guardian.value);
+      savePerson(person, role.value, guardian.value, name.value);
     });
     controls.appendChild(save);
 
@@ -697,8 +707,10 @@
     return card;
   }
 
-  async function savePerson(person, role, guardianId) {
+  async function savePerson(person, role, guardianId, displayName) {
     const record = { role: role, guardian_id: guardianId || null };
+    const called = String(displayName || "").trim();
+    if (called) record.display_name = called;
 
     /*
      * Recording consent is the whole point of the guardian link. The moment a

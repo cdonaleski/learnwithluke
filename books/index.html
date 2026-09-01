@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="My Books — a reading log for members.">
+  <meta name="description" content="Our Library — the family shelf.">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <title>My Books · Learn With Luke</title>
+  <title>Our Library · Learn With Luke</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 
   <main id="main-content" class="game-page">
     <header class="game-header">
-      <h1>📚 My Books</h1>
+      <h1>📚 Our Library</h1>
       <p class="game-instructions" role="note" id="books-hello">Checking who you are…</p>
     </header>
 
@@ -32,35 +32,26 @@
 
     <div id="books-body" hidden>
       <section class="game-panel" aria-labelledby="add-title">
-        <h2 id="add-title">Add a book</h2>
+        <h2 id="add-title">Add a book to the library</h2>
         <form class="admin-form books-form" id="book-form">
           <input type="hidden" id="book-id">
           <label for="book-title">Title</label>
           <input type="text" id="book-title" required>
           <label for="book-author">Who wrote it</label>
           <input type="text" id="book-author">
-          <label for="book-status">How is it going</label>
-          <select id="book-status">
-            <option value="want">Want to read</option>
-            <option value="reading" selected>Reading now</option>
-            <option value="finished">Finished</option>
-            <option value="stopped">Gave up on it</option>
-          </select>
-          <label for="book-rating">Stars <span class="admin-hint">(only if you finished it)</span></label>
-          <select id="book-rating">
-            <option value="">No stars yet</option>
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★</option>
-            <option value="3">★★★</option>
-            <option value="2">★★</option>
-            <option value="1">★</option>
-          </select>
-          <label for="book-notes">What did you think</label>
-          <textarea id="book-notes" rows="3" placeholder="The best bit, the worst bit, who you would tell about it."></textarea>
+
+          <label for="book-belongs">Whose book is it</label>
+          <select id="book-belongs"></select>
+
+          <fieldset class="reader-picks">
+            <legend>Who is reading it <span class="admin-hint">(tick more than one if you are reading it together)</span></legend>
+            <div id="book-readers-pick"></div>
+          </fieldset>
+
           <label class="admin-check">
             <input type="checkbox" id="book-shared">
-            <span>Let other members of the book club see this one. Left unticked,
-            only you and your grown-up can.</span>
+            <span>Show this one to the book club as well. Everyone in the house
+            can see it either way — this is about people outside it.</span>
           </label>
           <div class="game-actions">
             <button type="submit" class="btn btn-primary">Save book</button>
@@ -71,17 +62,13 @@
       </section>
 
       <section class="game-panel" aria-labelledby="shelf-title">
-        <h2 id="shelf-title">My shelf</h2>
+        <h2 id="shelf-title">The shelf</h2>
+        <div class="chips" id="book-whose" role="group" aria-label="Whose books to show"></div>
         <div class="chips" id="book-filters" role="group" aria-label="Which books to show"></div>
         <div class="book-stats" id="book-stats"></div>
         <div class="book-list" id="book-list"></div>
       </section>
 
-      <section class="game-panel" id="others-panel" aria-labelledby="others-title" hidden>
-        <h2 id="others-title">What everyone else is reading</h2>
-        <p class="club-lead">Only the books people chose to share.</p>
-        <div class="book-list" id="others-list"></div>
-      </section>
     </div>
   </main>
 

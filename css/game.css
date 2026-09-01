@@ -1000,3 +1000,17 @@ kbd {
 
 .person-consent { font-size: 0.75rem; color: #2f9e78; font-family: var(--font-display); font-weight: 600; }
 .person-consent.is-missing { color: var(--color-coral); }
+
+.person-name {
+  width: 100%;
+  max-width: 16rem;
+  padding: 0.3rem 0.55rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.person-name:focus-visible { outline: none; border-color: var(--color-purple); }
