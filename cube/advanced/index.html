@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Advanced CFOP — the techniques that cut a look-ahead pause out of the solve, with every case drawn and every algorithm you can step through move by move. On Learn With Luke">
+  <title>Advanced CFOP · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="../learn/css/cfop.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../learn/index.html" class="game-back">← Back to Learn CFOP</a>
+
+    <header class="game-header">
+      <h1>⚡ Advanced CFOP</h1>
+      <p class="game-instructions" role="note">
+        <strong>For once you already know all of CFOP.</strong>
+        Normal CFOP solves the last slot, then looks at the top and does OLL,
+        then looks again and does PLL — three separate looks. These techniques
+        read the last slot and the top <em>together</em> and solve some of it
+        in one move, so there is less to look at and less to do.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="visually-hidden">The techniques</h2>
+      <div class="chips chips--stages" id="stages" role="group" aria-label="The techniques"></div>
+      <p class="stage-blurb" id="stage-blurb"></p>
+      <p class="progress" id="progress"></p>
+      <input type="search" id="search" class="search" placeholder="Search by name or moves…"
+             aria-label="Search the cases" hidden>
+    </section>
+
+    <section class="game-panel" id="player" aria-labelledby="player-title" hidden>
+      <h2 id="player-title" class="visually-hidden">Stepping through</h2>
+      <h3 class="case-name" id="case-name"></h3>
+      <p class="case-note" id="case-note"></p>
+
+      <div class="player-3d" id="player-3d" aria-label="The cube, turning as the moves play"></div>
+      <div class="player-board" id="player-board"></div>
+
+      <label class="speed-row">
+        <span>Speed</span>
+        <input type="range" id="speed" min="1" max="5" value="3" step="1"
+               aria-label="How fast the turns play, one slowest, five fastest">
+      </label>
+
+      <p class="alg" id="alg-text"></p>
+      <p class="setup">To set it up on a real cube, do: <span id="setup-text"></span></p>
+      <p class="setup">The same case with the left hand: <span id="mirror-text"></span></p>
+
+      <div class="game-actions">
+        <button type="button" class="btn btn-secondary" id="btn-back">◀ Back</button>
+        <button type="button" class="btn btn-secondary" id="btn-next">Next ▶</button>
+        <button type="button" class="btn btn-secondary" id="btn-play">▶ Play</button>
+        <button type="button" class="btn btn-secondary" id="btn-learnt">Mark as learnt</button>
+        <button type="button" class="btn btn-secondary" id="btn-close">✕ Close</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat"><span class="stat-label">Move</span><span class="stat-value" id="player-where">—</span></div>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-labelledby="cases-title">
+      <h2 id="cases-title" class="visually-hidden">The cases</h2>
+      <div class="cases" id="cases"></div>
+      <div class="tips" id="tips"></div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How to Use It</h2>
+      <dl>
+        <dt>Why bother, when normal CFOP already works</dt>
+        <dd>Full CFOP is <strong>Cross, first two layers, orient the top, permute
+        the top</strong> — four looks at the cube. These techniques fold the last
+        F2L pair and the top layer into one look: you glance at the last slot
+        <em>and</em> the top corners at the same time, and one algorithm does
+        both. Fewer pauses is most of how solvers get from thirty seconds to
+        under fifteen.</dd>
+
+        <dt>Learn full CFOP first</dt>
+        <dd>None of this makes sense until F2L, OLL and PLL are second nature —
+        every technique here is a shortcut <em>around</em> a normal OLL step,
+        and you need to recognise a normal OLL to know when the shortcut does
+        not apply. If that is not you yet, <a href="../learn/index.html">Learn
+        CFOP</a> is the place to start.</dd>
+
+        <dt>They only cover some cases</dt>
+        <dd>None of these techniques replace OLL and PLL outright — they catch
+        the last slot in <em>particular</em> states and turn what would have
+        been a separate OLL into nothing extra at all. The rest of the time,
+        you just insert the pair normally and do OLL as usual. That is why
+        each set here is smaller than the 57 of OLL: these are the situations
+        worth a special answer, not a whole new system.</dd>
+
+        <dt>Reading the pictures</dt>
+        <dd>Same as everywhere else on this site: real sticker colours, worked
+        out by running the algorithm backwards from a solved cube, so the
+        picture and the algorithm can never disagree. Two rows are shown
+        rather than one, because the last slot matters here as much as the
+        top does.</dd>
+
+        <dt>Where to start</dt>
+        <dd><strong>Winter Variation</strong> first — it is the smallest set
+        and the most commonly taught next step after plain CFOP. The others
+        are independent of each other, so learn them in whichever order suits
+        what you keep running into.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../../vendor/three.min.js"></script>
+  <script src="../../vendor/OrbitControls.js"></script>
+  <script src="../learn/js/cube.js"></script>
+  <script src="../learn/js/diagram.js"></script>
+  <script src="../learn/js/cfop3d.js"></script>
+  <script src="js/wv.js"></script>
+  <script src="js/coll.js"></script>
+  <script src="js/vls.js"></script>
+  <script src="js/ble.js"></script>
+  <script src="js/cls.js"></script>
+  <script src="js/advanced.js"></script>
+</body>
+</html>
