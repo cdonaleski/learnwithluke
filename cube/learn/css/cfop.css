@@ -193,3 +193,149 @@
 }
 
 .speed-row input { width: min(14rem, 55vw); accent-color: var(--color-purple); }
+
+/* ---------------- The guided path ---------------- */
+
+.path-panel h2 {
+  text-align: center;
+  font-family: var(--font-display);
+  color: var(--color-coral);
+  font-size: 1.4rem;
+  margin-bottom: 0.7rem;
+}
+
+/* The steps */
+.path-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
+
+.path-step {
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  padding: 0.55rem 0.8rem;
+}
+
+.path-step.is-now { border-color: var(--color-purple); background: #f7f4fd; padding-bottom: 0.9rem; }
+.path-step.is-done { opacity: 0.8; }
+.path-step.is-later { opacity: 0.6; }
+
+.path-head { display: flex; align-items: center; gap: 0.65rem; }
+
+.path-mark {
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid #e8e2d8;
+  background: var(--color-bg-alt);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.is-now .path-mark { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+.is-done .path-mark { background: #2f9e78; border-color: #2f9e78; color: #fff; }
+
+.path-titles { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.6rem; }
+.path-title { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; }
+.is-done .path-title { text-decoration: line-through; text-decoration-color: #2f9e78; }
+.path-count { font-size: 0.78rem; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+
+.path-body { margin: 0.6rem 0 0 2.35rem; display: grid; gap: 0.5rem; }
+.path-why { color: var(--color-text); font-size: 0.94rem; max-width: 60ch; }
+.path-how { color: var(--color-text-muted); font-size: 0.88rem; max-width: 60ch; }
+.path-self { font-size: 0.92rem; }
+
+.path-bar { height: 0.5rem; border-radius: 999px; background: #e8e2d8; overflow: hidden; max-width: 22rem; }
+.path-fill { height: 100%; background: var(--color-purple); border-radius: inherit; transition: width 0.3s ease; }
+.path-body .btn { justify-self: start; }
+
+.path-milestone {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: #fff1cf;
+  border: 2px solid #f0b429;
+  color: #6b4a00;
+  font-size: 0.92rem;
+  max-width: 60ch;
+}
+
+.path-finished { text-align: center; font-family: var(--font-display); color: #2f9e78; margin: 0.8rem 0 0.5rem; }
+.path-panel > .btn { display: block; width: fit-content; margin: 0 auto; }
+
+/* The banner above a narrowed wall */
+.only-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: #f7f4fd;
+  border: 2px solid #d6c9f0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-purple);
+}
+
+@media (max-width: 560px) { .path-body { margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { .path-fill { transition: none; } }
+
+/* ---------------- The thirty-second try ---------------- */
+
+.lesson {
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-coral);
+  background: #fff8f5;
+  margin-bottom: 1rem;
+}
+
+.lesson.is-done { border-color: #bfe6d6; background: #f4fbf8; padding: 0.55rem 0.9rem; }
+.lesson-again { margin: 0; font-size: 0.88rem; color: #1c6b4e; }
+
+.lesson-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 4vw, 1.4rem);
+  color: var(--color-coral);
+  margin-bottom: 0.25rem;
+}
+
+.lesson-lead { color: var(--color-text-muted); font-size: 0.95rem; max-width: 60ch; margin-bottom: 0.8rem; }
+
+.lesson-steps { padding-left: 1.4rem; margin: 0 0 0.8rem; display: grid; gap: 0.75rem; }
+.lesson-steps li { font-size: 0.98rem; line-height: 1.55; max-width: 64ch; }
+.lesson-steps li::marker { font-family: var(--font-display); font-weight: 700; color: var(--color-coral); }
+.lesson-steps strong { font-family: var(--font-display); font-weight: 600; }
+.lesson-steps .btn { margin-top: 0.35rem; }
+
+.lesson-moves { display: inline-flex; flex-wrap: wrap; gap: 0.25rem; vertical-align: middle; margin: 0 0.2rem; }
+.lesson-moves .move { font-size: 1.05rem; padding: 0.15rem 0.5rem; color: var(--color-text); background: var(--color-bg-alt); }
+
+.lesson-link {
+  background: none; border: none; padding: 0; font: inherit;
+  font-size: 0.88rem; color: var(--color-purple); text-decoration: underline; cursor: pointer;
+}
+
+.lesson-notation { font-size: 0.82rem; color: var(--color-text-muted); max-width: 64ch; margin-bottom: 0.8rem; }
+
+.lesson-point {
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+  max-width: 64ch;
+  margin-bottom: 0.9rem;
+}
+
+.lesson-point h4 { font-family: var(--font-display); font-size: 0.98rem; color: var(--color-purple); margin-bottom: 0.25rem; }
+.lesson-point p { font-size: 0.92rem; color: var(--color-text); }
+
+/* Before the try, the path is only a map -- quiet, until the kid has done the thing. */
+.path-waiting { font-family: var(--font-display); font-weight: 600; color: var(--color-text-muted); margin: 0 0 0.4rem; }
+.path-steps.is-waiting .path-step { opacity: 0.55; }

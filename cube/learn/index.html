@@ -22,22 +22,22 @@
     <header class="game-header">
       <h1>🧊 Learn CFOP</h1>
       <p class="game-instructions" role="note">
-        <strong>The method speedcubers actually use.</strong>
-        Cross, then the first two layers, then orient the top, then move the top
-        pieces home. Every case is drawn, and you can step through any algorithm
-        one move at a time and watch the cube change.
+        <strong>The way fast people solve it.</strong>
+        The beginner method does seven steps, one layer at a time, and takes
+        about a minute and a half. CFOP does four — and it is the same four
+        steps whether you take thirty seconds or set a world record. This page
+        walks you through it in order, one step at a time.
       </p>
     </header>
 
-    <section class="game-panel" aria-labelledby="stage-title">
-      <h2 id="stage-title" class="visually-hidden">The four steps</h2>
-      <div class="chips chips--stages" id="stages" role="group" aria-label="The four steps"></div>
-      <p class="stage-blurb" id="stage-blurb"></p>
-      <p class="progress" id="progress"></p>
-      <input type="search" id="search" class="search" placeholder="Search by name or moves…"
-             aria-label="Search the cases" hidden>
+    <section class="game-panel path-panel" aria-labelledby="path-title">
+      <h2 id="path-title" class="visually-hidden">Start here</h2>
+      <div id="path"></div>
     </section>
 
+    <!-- The turning cube sits right under the lesson and the path, so "show
+         me on the cube" lands the cube where the eye already is. Hidden until
+         something is opened. -->
     <section class="game-panel" id="player" aria-labelledby="player-title" hidden>
       <h2 id="player-title" class="visually-hidden">Stepping through</h2>
       <h3 class="case-name" id="case-name"></h3>
@@ -69,8 +69,18 @@
       </div>
     </section>
 
+    <section class="game-panel" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="visually-hidden">The four steps</h2>
+      <div class="chips chips--stages" id="stages" role="group" aria-label="The four steps"></div>
+      <p class="stage-blurb" id="stage-blurb"></p>
+      <p class="progress" id="progress"></p>
+      <input type="search" id="search" class="search" placeholder="Search by name or moves…"
+             aria-label="Search the cases" hidden>
+    </section>
+
     <section class="game-panel" aria-labelledby="cases-title">
       <h2 id="cases-title" class="visually-hidden">The cases</h2>
+      <div class="only-banner" id="only-banner" hidden></div>
       <div class="cases" id="cases"></div>
       <div class="tips" id="tips"></div>
     </section>
@@ -196,5 +206,6 @@
   <script src="js/pll.js"></script>
   <script src="js/cfop3d.js"></script>
   <script src="js/cfop.js"></script>
+  <script src="js/path.js"></script>
 </body>
 </html>

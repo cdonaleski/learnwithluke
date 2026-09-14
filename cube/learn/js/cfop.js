@@ -93,7 +93,12 @@
     at: 0,
     from: null,        // the cube as the case starts
     playing: null,
+    only: null,        // {ids, why} when the path narrows the wall to one batch
   };
+
+  // Whoever wants to know when the wall is redrawn -- the guided path listens,
+  // so marking a case learnt lights up the right step without a reload.
+  const listeners = [];
 
   /* ---------------- Cases ---------------- */
 
@@ -130,6 +135,7 @@
       button.setAttribute("aria-pressed", String(state.stage === id));
       button.addEventListener("click", function () {
         state.stage = id;
+        state.only = null;     // picking a stage yourself means the whole wall
         closeCase();
         drawStages();
         drawStage();
@@ -163,9 +169,12 @@
 
     const done = learnt()[state.stage] || {};
     const hunt = (el.search && el.search.value || "").trim().toLowerCase();
+    const only = state.only && state.only.stage === state.stage ? state.only : null;
+    drawOnlyBanner(only, stage);
     stage.cases().forEach(function (item) {
       const id = caseId(item);
       const label = (item.n ? item.n + ". " : "") + (item.name || item.id);
+      if (only && only.ids.indexOf(id) === -1) return;
       if (hunt && label.toLowerCase().indexOf(hunt) === -1 &&
           item.alg.toLowerCase().indexOf(hunt) === -1) return;
 
@@ -180,6 +189,49 @@
       el.cases.appendChild(card);
     });
     drawProgress();
+    listeners.forEach(function (fn) { try { fn(); } catch (err) { /* a listener's problem */ } });
+  }
+
+  /**
+   * When the path has narrowed the wall to one batch, say so above it, and
+   * give the way back -- a kid who cannot see the other 37 cases needs to
+   * know they exist and that this is on purpose.
+   */
+  function drawOnlyBanner(only, stage) {
+    const holder = document.getElementById("only-banner");
+    if (!holder) return;
+    holder.innerHTML = "";
+    holder.hidden = !only;
+    if (!only) return;
+    const total = stage.cases().length;
+    const words = document.createElement("span");
+    words.textContent = "Showing " + only.ids.length + " of " + total +
+      (only.why ? " — " + only.why : "");
+    const all = document.createElement("button");
+    all.type = "button";
+    all.className = "btn btn-secondary btn-small";
+    all.textContent = "Show all " + total;
+    all.addEventListener("click", clearOnly);
+    holder.appendChild(words);
+    holder.appendChild(all);
+  }
+
+  /** Narrow the wall to one batch of cases -- how the path hands over. */
+  function showOnly(stageId, ids, why) {
+    if (!STAGES[stageId]) return;
+    state.stage = stageId;
+    state.only = { stage: stageId, ids: ids.map(String), why: why || "" };
+    closeCase();
+    drawStages();
+    drawStage();
+    const wall = document.getElementById("cases-title");
+    try { if (wall) wall.parentNode.scrollIntoView({ block: "start", behavior: "smooth" }); }
+    catch (err) { /* fine */ }
+  }
+
+  function clearOnly() {
+    state.only = null;
+    drawStage();
   }
 
   function drawProgress() {
@@ -194,25 +246,50 @@
 
   /* ---------------- Stepping through ---------------- */
 
-  function openCase(item) {
+  /**
+   * Put any sequence of moves on the turning cube, from any starting state.
+   * A case is the usual thing to show, but the first lesson wants to show the
+   * set-up moves being made FROM a solved cube -- so the pair is seen coming
+   * out of its slot, which is how "a pair" stops being a word and becomes a
+   * thing -- and that is not a case, it is the road to one.
+   */
+  function openSequence(opts) {
     stopPlaying();
-    state.open = item;
-    state.from = caseState(item);
-    state.moves = C.parse(item.alg).moves || [];
+    state.open = opts.item || null;
+    state.from = opts.from;
+    state.moves = C.parse(opts.alg).moves || [];
     state.at = 0;
     el.player.hidden = false;
-    el.caseName.textContent = (item.n ? item.n + ". " : "") + (item.name || item.id);
-    el.algText.textContent = C.tidy(item.alg);
-    el.setup.textContent = C.setupFor(item.alg);
-    el.note.textContent = item.note || (item.group ? item.group : "");
-    if (el.mirrorText) el.mirrorText.textContent = C.mirror(item.alg);
+    el.caseName.textContent = opts.name || "";
+    el.algText.textContent = C.tidy(opts.alg);
+    el.setup.textContent = opts.setup || "";
+    if (el.setup.parentNode) el.setup.parentNode.hidden = !opts.setup;
+    el.note.textContent = opts.note || "";
+    if (el.mirrorText) {
+      el.mirrorText.textContent = C.mirror(opts.alg);
+      el.mirrorText.parentNode.hidden = !opts.item;
+    }
+    if (el.learnt) el.learnt.hidden = !opts.item;
     wake3d();
-    const done = learnt()[state.stage] || {};
-    setLearntButton(Boolean(done[caseId(item)]));
+    if (opts.item) {
+      const done = learnt()[state.stage] || {};
+      setLearntButton(Boolean(done[caseId(opts.item)]));
+    }
     drawPlayer();
     // Bringing it into view is a nicety, not the point; never let it stop the
     // case from opening.
-    try { el.player.scrollIntoView({ block: "nearest" }); } catch (err) { /* fine */ }
+    try { el.player.scrollIntoView({ block: opts.block || "nearest" }); } catch (err) { /* fine */ }
+  }
+
+  function openCase(item) {
+    openSequence({
+      item: item,
+      from: caseState(item),
+      alg: item.alg,
+      name: (item.n ? item.n + ". " : "") + (item.name || item.id),
+      setup: C.setupFor(item.alg),
+      note: item.note || (item.group ? item.group : ""),
+    });
   }
 
   function closeCase() {
@@ -396,5 +473,7 @@
     move: move, play: play, nowState: nowState, drawStage: drawStage,
     stepAnimated: stepAnimated, swingMs: swingMs,
     caseId: caseId, learnt: learnt, markLearnt: markLearnt,
+    showOnly: showOnly, clearOnly: clearOnly, openSequence: openSequence,
+    onChange: function (fn) { listeners.push(fn); },
   };
 })();
