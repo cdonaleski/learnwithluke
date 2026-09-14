@@ -302,6 +302,12 @@
     el.score.textContent = "0";
     buildBoard();
     buildTray();
+    // The dice were created this very tick, so the browser has no starting
+    // style for them yet -- set their final spin now and the transition has
+    // nothing to run from: the faces just snap. Reading a layout value
+    // forces that starting style to exist first, so the first roll tumbles
+    // like every roll after it.
+    void el.tray.offsetWidth;
     rollDice();
     drawTyped();
     if (state.ticker) window.clearInterval(state.ticker);
