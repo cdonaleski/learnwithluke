@@ -1011,4 +1011,25 @@
   }
   setViewMode(viewMode);
   initSolver();
+
+  /**
+   * The one door in from outside: the camera scanner hands over a whole cube
+   * the same way Scramble does, and the usual live check then says whether it
+   * is a real cube -- a mis-read sticker shows up as an impossibility, and the
+   * kid taps it right, exactly as they would a mis-painted one.
+   */
+  window.CubeHelper = {
+    FACES: FACES,
+    FACE_INFO: FACE_INFO,
+    FACELETTERS: FACELETTERS,
+    check: validateState,
+    applyState: function (state) {
+      FACELETTERS.forEach((face) => { cubeState[face] = state[face].slice(); });
+      updateCubeViews();
+      hideMessage();
+      els.solutionPanel.hidden = true;
+      renderPalette();
+      liveCheck();
+    },
+  };
 })();

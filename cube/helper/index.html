@@ -64,6 +64,10 @@
           <strong>Spin View:</strong> drag to rotate the cube, then click a sticker to paint it with your chosen color.
         </p>
 
+        <div class="rubiks-actions rubiks-actions--scan">
+          <button type="button" class="btn btn-primary btn-small" id="btn-scan">📷 Scan my cube instead</button>
+        </div>
+
         <div class="rubiks-actions rubiks-actions--setup">
           <button type="button" class="btn btn-secondary btn-small" id="btn-blank">🧹 Blank</button>
           <button type="button" class="btn btn-secondary btn-small" id="btn-reset">Reset</button>
@@ -103,6 +107,56 @@
           <span class="spinner" aria-hidden="true"></span>
           <span id="solver-status-text">Getting solver ready…</span>
         </div>
+      </section>
+
+      <!-- The scanner: its own panel, so on a wide screen it sits beside the
+           cube rather than under it. Six faces, each turned into nine
+           colours the instant it is read and the picture thrown away.
+           Nothing here is ever written anywhere. -->
+      <section class="rubiks-panel scan" id="scan" aria-labelledby="scan-title" hidden>
+        <h2 id="scan-title" class="scan-title">📷 Scan my cube</h2>
+        <p class="scan-step" id="scan-step" role="status" aria-live="polite"></p>
+
+        <div class="scan-stage" id="scan-stage">
+          <video class="scan-video" id="scan-video" playsinline muted autoplay aria-label="Your camera"></video>
+          <!-- A photo the kid chose, shown only until its face is read. -->
+          <img class="scan-photo" id="scan-photo" alt="The photo you chose" hidden>
+          <div class="scan-guide" id="scan-guide" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <span></span><span class="scan-guide-centre" id="scan-centre"></span><span></span>
+            <span></span><span></span><span></span>
+            <span class="scan-handle" id="scan-handle" hidden></span>
+            <!-- Which colour belongs at the top edge, sitting on the guide
+                 itself so it follows the square wherever it is dragged. -->
+            <span class="scan-top" id="scan-top"></span>
+          </div>
+        </div>
+
+        <p class="scan-faces-hint">Tap a face to read that one — done or not.</p>
+        <div class="scan-faces" id="scan-faces" aria-label="The six faces"></div>
+
+        <div class="scan-actions">
+          <button type="button" class="btn btn-primary scan-big" id="scan-capture">📷 Capture this face <span class="scan-key">or press Space</span></button>
+          <button type="button" class="btn btn-primary scan-big" id="scan-read" hidden>Read this face <span class="scan-key">or press Space</span></button>
+          <label class="btn btn-secondary btn-small scan-file-label" id="scan-file-label">
+            use a photo
+            <input type="file" id="scan-file" accept="image/*" capture="environment" class="visually-hidden">
+          </label>
+          <button type="button" class="btn btn-primary btn-small" id="scan-use" hidden>Use this cube</button>
+          <button type="button" class="btn btn-secondary btn-small" id="scan-copy" hidden>Copy the numbers</button>
+          <button type="button" class="btn btn-secondary btn-small" id="scan-restart" hidden>Start over</button>
+          <button type="button" class="btn btn-secondary btn-small" id="scan-cancel">Close</button>
+        </div>
+
+        <p class="scan-note" id="scan-note" hidden></p>
+        <textarea class="scan-numbers" id="scan-numbers" rows="3" readonly hidden
+                  aria-label="The colour numbers behind this scan"></textarea>
+        <p class="scan-privacy">
+          Your camera stays on this device. Each picture is turned into nine
+          colours the moment it is read and thrown away — nothing is saved, and
+          nothing is sent anywhere. The faces you have read are kept until you
+          press Start over.
+        </p>
       </section>
 
       <section class="rubiks-panel solution-panel" id="solution-panel" aria-labelledby="solution-title" hidden>
@@ -168,5 +222,6 @@
   <script src="../learn/js/cfop-solver.js"></script>
   <script src="../learn/js/lbl-solver.js"></script>
   <script src="js/rubiks-cube.js"></script>
+  <script src="js/scan.js"></script>
 </body>
 </html>

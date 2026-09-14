@@ -800,3 +800,163 @@
 @media (prefers-reduced-motion: reduce) {
   .move-legend > summary::before { transition: none; }
 }
+
+/* ---------------- Scanning with the camera ---------------- */
+
+.scan {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-purple);
+  background: #f7f4fd;
+}
+
+.scan-title { font-family: var(--font-display); font-size: 1.15rem; color: var(--color-purple); margin-bottom: 0.3rem; }
+.scan-step { font-size: 0.95rem; color: var(--color-text); max-width: 60ch; margin-bottom: 0.7rem; min-height: 2.6em; }
+
+/* The camera with the guide laid over it. Square, because a face is. */
+.scan-stage {
+  position: relative;
+  width: min(22rem, 88vw);
+  aspect-ratio: 1;
+  margin: 0 auto 0.8rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #1f1d1a;
+}
+
+.scan-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scan-video.is-mirrored { transform: scaleX(-1); }
+
+.scan-guide {
+  position: absolute;
+  inset: 15%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  pointer-events: none;
+}
+
+.scan-guide span { border: 3px solid rgba(255, 255, 255, 0.85); border-radius: 6px; box-shadow: 0 0 0 1px rgba(0,0,0,0.4) inset; }
+.scan-guide-centre { border-width: 4px !important; }
+
+/* The six faces, filling in as they are read */
+.scan-faces { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 0.8rem; }
+
+.scan-face { display: grid; justify-items: center; gap: 0.2rem; opacity: 0.55; }
+.scan-face.is-done { opacity: 1; }
+.scan-face.is-now { opacity: 1; }
+.scan-face.is-now .scan-face-grid { outline: 3px solid var(--color-purple); outline-offset: 2px; }
+
+.scan-face-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 0.9rem);
+  gap: 2px;
+  padding: 2px;
+  background: #4a453e;
+  border-radius: 4px;
+}
+
+.scan-face-grid span { width: 0.9rem; height: 0.9rem; border-radius: 2px; background: #6d6860; }
+.scan-face-label { font-family: var(--font-display); font-weight: 600; font-size: 0.7rem; color: var(--color-text-muted); }
+
+.scan-actions { justify-content: center; }
+.scan-file-label { cursor: pointer; }
+.scan-file-label:focus-within { outline: 2px solid var(--color-purple); outline-offset: 2px; }
+
+.scan-note { text-align: center; font-size: 0.9rem; color: var(--color-text); margin: 0.6rem auto 0; max-width: 50ch; }
+.scan-note.is-bad { color: #9b2c2c; }
+
+.scan-privacy { text-align: center; font-size: 0.8rem; color: var(--color-text-muted); margin: 0.8rem auto 0; max-width: 52ch; }
+
+/* ---------------- Scanner, second pass: photos, a movable guide, a tidier row ---------------- */
+
+.rubiks-actions--scan { margin-bottom: 0.4rem; }
+.rubiks-actions--scan .btn { width: 100%; justify-content: center; }
+
+/* As its own panel the scanner no longer needs its own box. */
+.scan { margin-top: 0; border-color: var(--color-purple); }
+.scan-title { font-size: 1.15rem; }
+
+/* A chosen photo is fitted whole, never cropped -- the kid places the guide. */
+.scan-photo { width: 100%; height: 100%; object-fit: contain; display: block; background: #1f1d1a; }
+
+/* The guide becomes something you can hold once a photo is up. */
+.scan-guide.is-movable { pointer-events: auto; cursor: move; touch-action: none; }
+.scan-guide.is-movable span:not(.scan-handle) { border-color: rgba(255, 255, 255, 0.95); }
+
+.scan-handle {
+  position: absolute;
+  right: -0.7rem;
+  bottom: -0.7rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--color-purple);
+  border: 3px solid #fff !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  cursor: nwse-resize;
+  pointer-events: auto;
+}
+
+.scan-faces-hint { text-align: center; font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.4rem; }
+
+/* Every face is a button now; keep the look, add the affordance. */
+.scan-face { border: none; background: none; padding: 0.2rem; cursor: pointer; font: inherit; border-radius: 6px; }
+.scan-face:hover .scan-face-grid, .scan-face:focus-visible .scan-face-grid { outline: 3px solid var(--color-purple); outline-offset: 2px; }
+.scan-face:focus-visible { outline: none; }
+
+/* Small buttons that wrap, instead of a wall of big ones. */
+.scan-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; }
+.scan-actions .btn { padding: 0.4rem 0.75rem; font-size: 0.82rem; }
+
+.scan-numbers {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.5rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  resize: vertical;
+}
+
+/* Which colour belongs at the top edge -- a pill on the guide, so it goes where the guide goes. */
+.scan-top {
+  position: absolute;
+  left: 50%;
+  top: -1.9rem;
+  transform: translateX(-50%);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid #fff !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* The one button that matters while scanning: big, full width, hard to miss with a cube in the other hand. */
+.scan-actions .scan-big {
+  flex-basis: 100%;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  font-size: 1.05rem;
+}
+
+.scan-key {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+}
+
+/* The site's .btn sets display, which quietly beats the browser's [hidden].
+   In the scanner, hidden must mean hidden -- only the buttons for the moment show. */
+.scan [hidden] { display: none !important; }
