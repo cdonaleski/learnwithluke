@@ -137,7 +137,7 @@ body::after {
   align-items: center;
   gap: 0.25rem;
   list-style: none;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
 }
 
@@ -482,7 +482,12 @@ main {
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+/* The burger takes over where the full menu stops fitting. It used to wait
+   until 640px -- but from there up to 860 the groups below already switch to
+   sitting open as stacked sets, so on a tablet, or a phone held sideways, the
+   Play and STEM links spilled out across the page. The two breakpoints are
+   one decision and now live at one width. */
+@media (max-width: 860px) {
   .nav-toggle {
     display: block;
   }
@@ -498,13 +503,21 @@ main {
     padding: 1rem;
     box-shadow: var(--shadow-soft);
     border-top: 1px solid #eee;
+    /* A phone on its side is short: the open menu scrolls rather than running off the screen. */
+    max-height: calc(100vh - var(--nav-height));
+    overflow-y: auto;
   }
 
   .nav-links.is-open {
     display: flex;
   }
 
+  .nav-links > li {
+    width: 100%;
+  }
+
   .nav-links a {
+    display: block;
     width: 100%;
     text-align: center;
     padding: 0.75rem 1rem;
@@ -513,7 +526,9 @@ main {
   .site-header {
     position: relative;
   }
+}
 
+@media (max-width: 640px) {
   .hero {
     padding: 1rem 0 2rem;
   }
@@ -574,7 +589,7 @@ main {
 @media (max-width: 860px) {
   /* Stacked menu: a drop-down that overlays would cover the links under it,
      so inside the burger the groups simply sit open as labelled sets. */
-  .nav-group-btn { width: 100%; justify-content: space-between; }
+  .nav-group-btn { width: 100%; justify-content: center; }
   .nav-submenu {
     position: static;
     display: block;
@@ -630,3 +645,48 @@ main {
 .footer-quiet { margin-top: 0.35rem; font-size: 0.78rem; opacity: 0.72; }
 .footer-quiet a { color: var(--color-text-muted); }
 .footer-quiet a:hover { color: var(--color-text); }
+
+/* ---------------- Phones ---------------- */
+
+/* The footer links were 18px tall -- text, not targets. */
+@media (pointer: coarse) {
+  .site-footer a { display: inline-block; padding: 0.55rem 0.2rem; }
+  input[type="checkbox"], input[type="radio"] { width: 1.3rem; height: 1.3rem; }
+}
+
+/* Side gutters on a phone: a game's grid gets the width, not the margin. */
+@media (max-width: 480px) {
+  main { padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+
+/* A page that is at its best on a bigger screen says so -- once, and it can be hidden. */
+.big-screen-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-sun);
+  background: #fffbe8;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+.big-screen-note span { flex: 1; }
+
+.big-screen-note-close {
+  flex-shrink: 0;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.big-screen-note-close:hover,
+.big-screen-note-close:focus-visible { background: #fff1bf; color: var(--color-text); outline: none; }

@@ -98,3 +98,8 @@
 @media (max-width: 700px) {
   .bs-board-wrap { flex: 1 1 100%; }
 }
+
+/* Phones: ten cells across; the gaps and padding were costing each cell 3px. */
+@media (max-width: 480px) {
+  .bs-grid { gap: 1px; padding: 2px; }
+}

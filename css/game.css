@@ -1114,3 +1114,19 @@ kbd {
   color: var(--color-text-muted);
   padding: 1.5rem 1rem;
 }
+
+/* ---------------- Phones ----------------
+   Measured at 375px wide: every game already fitted with no sideways
+   scrolling, but the things you tap were built for a mouse. A fingertip
+   needs about 40px; chips were 30, the back link 29, grid cells 25-29. */
+
+@media (pointer: coarse) {
+  .chip { min-height: 2.5rem; }
+  .game-back { min-height: 2.75rem; }
+  .btn-small { min-height: 2.5rem; }
+}
+
+@media (max-width: 480px) {
+  /* Every pixel of panel padding comes out of a grid's cells. */
+  .game-panel { padding: 0.8rem; }
+}

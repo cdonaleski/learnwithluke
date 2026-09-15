@@ -132,3 +132,8 @@
 @media (prefers-reduced-motion: reduce) {
   .entry, .key { transition: none; }
 }
+
+/* Phones: the thirteen-by-thirteen grid's numbers fell to 6.7px. "144" still fits a cell at 9px. */
+@media (max-width: 640px) {
+  .gcell { font-size: clamp(0.58rem, 2.5vw, 0.72rem); }
+}

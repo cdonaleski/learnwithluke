@@ -135,6 +135,43 @@
     footerPlaceholder.outerHTML = footerHTML;
   }
 
+  /**
+   * A page that works on a phone but is at its best with more room says so,
+   * once and gently. It opts in with data-best-on="big-screen" on <body>, and
+   * may say why in data-best-on-why. Never a wall: every page on this site
+   * can be used by touch; this is only honesty about the few where a real
+   * keyboard or a wide screen makes it better. Hiding it is remembered for
+   * that page on that device.
+   */
+  const body = document.body;
+  if (body && body.getAttribute("data-best-on") === "big-screen") {
+    const key = "lwl-big-screen-note:" + window.location.pathname;
+    let dismissed = false;
+    try { dismissed = window.localStorage.getItem(key) === "1"; } catch (err) { /* private mode: just show it */ }
+    const narrow = window.matchMedia && window.matchMedia("(max-width: 700px)").matches;
+    const main = document.querySelector("main");
+    if (narrow && !dismissed && main) {
+      const note = document.createElement("div");
+      note.className = "big-screen-note";
+      note.setAttribute("role", "note");
+      const words = document.createElement("span");
+      words.textContent = body.getAttribute("data-best-on-why") ||
+        "This one is at its best on a computer or tablet — but you can still use it here.";
+      const hide = document.createElement("button");
+      hide.type = "button";
+      hide.className = "big-screen-note-close";
+      hide.setAttribute("aria-label", "Hide this note");
+      hide.textContent = "✕";
+      hide.addEventListener("click", () => {
+        note.remove();
+        try { window.localStorage.setItem(key, "1"); } catch (err) { /* fine */ }
+      });
+      note.appendChild(words);
+      note.appendChild(hide);
+      main.insertBefore(note, main.firstChild);
+    }
+  }
+
   const toggle = document.querySelector(".nav-toggle");
   const links = document.querySelector(".nav-links");
 

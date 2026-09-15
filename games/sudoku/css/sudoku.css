@@ -93,3 +93,9 @@
 @media (max-width: 480px) {
   .su-pad { gap: 0.2rem; }
 }
+
+/* Phones: ten number keys in one row came out at 25px. Two rows of five are finger-sized. */
+@media (max-width: 480px) {
+  .su-pad { grid-template-columns: repeat(5, 1fr); gap: 0.4rem; }
+  .su-key { aspect-ratio: auto; min-height: 2.9rem; font-size: 1.2rem; }
+}

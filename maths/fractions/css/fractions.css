@@ -111,3 +111,12 @@
 .chip.is-on { background: var(--color-orange); border-color: var(--color-orange); color: #fff; }
 
 @media (prefers-reduced-motion: reduce) { .part { transition: none; } }
+
+/* Phones: the bars were 24px tall. Width is the fraction and cannot change; height can. */
+@media (pointer: coarse) {
+  .part { height: 2.4rem; }
+}
+
+@media (max-width: 480px) {
+  .wall-row { grid-template-columns: 2.1rem 1fr 2.5rem; gap: 0.35rem; }
+}

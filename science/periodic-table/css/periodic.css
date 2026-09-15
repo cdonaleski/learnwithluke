@@ -163,3 +163,22 @@
 @media (prefers-reduced-motion: reduce) {
   .pt-el, .pt-choice { transition: none; }
 }
+
+/* Phones: the table keeps its shape and scrolls sideways in its own box.
+   The element names shrank to 6.7px -- unreadable, so they go (tap an
+   element for its name), and the box says it scrolls. */
+@media (max-width: 640px) {
+  .pt-name { display: none; }
+  .pt-z { font-size: 0.6rem; }
+  .pt-table-wrap::before {
+    content: "Swipe sideways to see the whole table →";
+    display: block;
+    position: sticky;
+    left: 0;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+}
