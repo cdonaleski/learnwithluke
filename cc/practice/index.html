@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Practice the Classical Conversations memory work — cards, matching, and reciting, one strand and one section at a time. On Learn With Luke">
+  <title>Practice Memory Work · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="../css/cc.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page">
+    <a href="../index.html" class="game-back">← Back to Memory Work</a>
+
+    <header class="game-header">
+      <h1>🧠 Practice</h1>
+      <p class="game-instructions" role="note">
+        <strong>Pick a strand, pick the sections, pick how to practice.</strong>
+        Cards to learn them, Match to test yourself, Recite for the real thing —
+        prompt only, said out loud, the way it goes on proof day.
+      </p>
+    </header>
+
+    <section class="game-panel" aria-labelledby="pick-title" id="cc-app">
+      <h2 id="pick-title" class="visually-hidden">What to practice</h2>
+
+      <div class="chips chips--stages" id="pick-cycle" role="group" aria-label="Which cycle"></div>
+      <div class="chips chips--stages" id="pick-strand" role="group" aria-label="Which strand"></div>
+      <div class="chips chips--stages chips--sections" id="pick-section" role="group" aria-label="Which sections"></div>
+      <div class="chips chips--stages" id="pick-mode" role="group" aria-label="How to practice"></div>
+
+      <p class="cc-mode-why" id="cc-mode-why"></p>
+      <p class="progress" id="cc-count" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="game-panel" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="visually-hidden">Practicing</h2>
+      <p class="cc-empty" id="cc-empty" hidden></p>
+      <div id="cc-stage"></div>
+    </section>
+
+    <section class="game-panel game-help" aria-labelledby="help-title">
+      <h2 id="help-title">How It Works</h2>
+      <dl>
+        <dt>What counts as learned</dt>
+        <dd>A card counts as learned once you have said it right <strong>three
+        times in Recite</strong>. Cards and Match are practice and do not count
+        — picking the right answer out of five is easier than saying the whole
+        thing from nothing, and proof day is the second one.</dd>
+
+        <dt>Why the same cards keep coming back</dt>
+        <dd>Whatever you missed comes first next time, then the ones you have
+        never seen, and the ones you already know come last. Time spent on
+        what you know is time not spent on what you do not.</dd>
+
+        <dt>Sections, not weeks</dt>
+        <dd>The numbers are the gray boxes on the proof sheets, because that is
+        how the proof is given: a tutor says <em>"section seven, thirteens"</em>
+        and you recite the whole box. Tap several to revise a run of them.</dd>
+
+        <dt>Recite — the real one</dt>
+        <dd>You see the prompt and nothing else. Say the <em>whole</em> answer
+        out loud, then mark yourself honestly. Pressing "I said it all" when you
+        only got half is the one way to make this useless.</dd>
+
+        <dt>Where history is</dt>
+        <dd>The history sentences are Classical Conversations' own writing, out
+        of the Guide they sell, so they are not published here. They live in the
+        family's own copy of this page at home, word for word — which is what
+        proof day needs.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../js/cycle3.js"></script>
+  <script src="../js/cycle3-math.js"></script>
+  <script src="../js/cycle3-latin.js"></script>
+  <script src="../js/cycle3-science.js"></script>
+  <script src="../js/cycle3-english.js"></script>
+  <script src="../js/cycle3-geography.js"></script>
+  <script src="../js/cycle3-timeline.js"></script>
+  <!-- Family-only, git-ignored, and absent from the published site. The
+       trainer treats a missing file as a strand with no cards. -->
+  <script src="../js/cycle3-history.local.js" onerror="this.dataset.missing='yes'"></script>
+  <script src="../js/cc.js"></script>
+  <script src="js/practice.js"></script>
+</body>
+</html>

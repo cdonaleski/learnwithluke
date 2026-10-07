@@ -1,2 +1,6 @@
 .DS_Store
 node_modules/
+
+# Family-only memory work: Classical Conversations own the wording of the
+# history sentences, so that file stays on the machine it was typed on.
+*.local.js

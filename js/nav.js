@@ -9,6 +9,7 @@
    */
   const SECTIONS = [
     { id: "cube", label: "The Cube" },
+    { id: "cc", label: "Memory Work" },
     { id: "puzzles", label: "Puzzles" },
     { id: "games", label: "Games" },
     { id: "tools", label: "Tools" },
@@ -33,6 +34,7 @@
    */
   const MENU = [
     { id: "cube", label: "The Cube" },
+    { id: "cc", label: "Memory Work" },
     { label: "Play", sections: ["puzzles", "games"] },
     { label: "STEM", sections: ["maths", "science", "code", "ai"] },
     { id: "tools", label: "Tools" },

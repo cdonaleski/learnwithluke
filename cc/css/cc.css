@@ -1,0 +1,139 @@
+/* Memory Work — page-specific styles */
+
+.cc-mode-why {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  max-width: 52ch;
+  margin: 0.6rem auto 0;
+}
+
+.cc-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  max-width: 54ch;
+  margin: 1.5rem auto;
+}
+
+/* Twenty-four section numbers need to be small and square, not word-sized. */
+.chips--sections .chip {
+  min-width: 2.4rem;
+  padding: 0.4rem 0.5rem;
+  justify-content: center;
+}
+
+/* ---------------- One card at a time ---------------- */
+
+.cc-card {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.4rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 3px solid #e8e2d8;
+  background: var(--color-bg);
+  text-align: center;
+}
+
+.cc-card.is-open { border-color: var(--color-purple); background: #f7f4fd; }
+.cc-card.is-done { border-color: #bfe6d6; background: #f4fbf8; }
+
+.cc-card-where {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.cc-q {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.15rem, 3.4vw, 1.6rem);
+  line-height: 1.3;
+  color: var(--color-text);
+}
+
+.cc-a {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 2px dashed #ddd4c4;
+  font-size: clamp(1rem, 2.8vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--color-purple);
+}
+
+.cc-note { margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-muted); font-style: italic; }
+.cc-say { margin-top: 0.8rem; color: var(--color-text-muted); font-size: 0.95rem; }
+.cc-card .game-actions { margin-top: 1.1rem; }
+.cc-where { text-align: center; margin-top: 0.8rem; font-size: 0.85rem; color: var(--color-text-muted); }
+
+/* ---------------- Match ---------------- */
+
+.cc-match {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.cc-match-side { display: grid; gap: 0.5rem; align-content: start; }
+
+.cc-pair {
+  min-height: 3.2rem;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: left;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+}
+
+.cc-pair--a { font-family: var(--font-display); font-weight: 600; }
+.cc-pair:hover:not(:disabled) { border-color: var(--color-purple); }
+.cc-pair.is-picked { border-color: var(--color-purple); background: #efe9f8; }
+.cc-pair.is-done { opacity: 0.4; border-style: dashed; cursor: default; }
+.cc-pair.is-wrong { border-color: var(--color-coral); background: #ffeaea; }
+.cc-pair.is-nudge { border-color: var(--color-sun); background: #fffbe8; }
+.cc-pair:focus-visible { outline: 3px solid var(--color-purple); outline-offset: 2px; }
+
+/* ---------------- The hub ---------------- */
+
+.cc-explainer { margin-top: 2.5rem; }
+
+.cc-dl {
+  max-width: 48rem;
+  margin: 0 auto;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.cc-dl dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-purple);
+  margin-top: 1rem;
+}
+
+.cc-dl dt:first-child { margin-top: 0; }
+.cc-dl dd { color: var(--color-text-muted); margin-top: 0.25rem; }
+
+@media (max-width: 560px) {
+  /* Two columns of long answers is unreadable on a phone; stack them and
+     let the pairing be top-to-bottom instead of side-to-side. */
+  .cc-match { grid-template-columns: 1fr; }
+  .cc-match-side:first-child { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-pair { transition: none; }
+}
