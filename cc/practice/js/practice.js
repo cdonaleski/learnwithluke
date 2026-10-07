@@ -88,6 +88,18 @@
     drill: null,
   };
 
+  // The Year at a Glance links straight in: ?strand=science&weeks=7, or
+  // ?today=1 for the day's slice.
+  (function fromLink() {
+    const params = new URLSearchParams(window.location.search);
+    const strand = params.get("strand");
+    if (strand && CC.strandOf(strand)) state.strand = strand;
+    const weeks = (params.get("weeks") || "").split(",")
+      .map(Number).filter(function (n) { return n >= 1 && n <= WEEKS_IN_CYCLE; });
+    if (weeks.length) state.sections = weeks;
+    if (params.get("today") === "1") { state.today = true; state.sections = []; }
+  })();
+
   if (!state.cycle) {
     const first = CC.cycles()[0];
     state.cycle = first ? first.cycle : 3;
