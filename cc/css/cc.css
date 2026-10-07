@@ -751,3 +751,13 @@
 
 /* Back is there when you need it and quiet when you don't. */
 .cc-back:disabled { opacity: 0.35; cursor: default; }
+
+/* The credit for the history sentences. Quiet, but always there with them. */
+.cc-credit {
+  max-width: 44rem;
+  margin: 1rem auto 0;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}

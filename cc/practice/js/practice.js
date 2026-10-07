@@ -364,10 +364,7 @@
       el.empty.textContent = sundayPlan && sundayPlan.kind === "catchup"
         ? "Nothing to catch up on — there is no card you have missed and not since learned. "
           + "Pick a week, or come back tomorrow for the next slice."
-        : strand && strand.id === "history"
-          ? "The history sentences are Classical Conversations’ own writing, so they are not on the "
-            + "website. They are in the family’s copy of this page at home."
-          : (cycle ? cycle.label : "That cycle") + " has nothing in it yet.";
+        : (cycle ? cycle.label : "That cycle") + " has nothing in it yet.";
       return;
     }
 
@@ -375,6 +372,14 @@
     if (state.mode === "match") drawMatch();
     else if (state.mode === "recite") drawRecite();
     else drawCard();
+
+    // Whenever history sentences are part of what is being practiced, the
+    // credit is on screen with them -- that was the condition of publishing.
+    const cycle = CC.cycleOf(state.cycle);
+    const credit = cycle && cycle.credits && cycle.credits.history;
+    if (credit && all.some(function (card) { return card.strand === "history"; })) {
+      el.stage.appendChild(make("p", "cc-credit", credit));
+    }
   }
 
   /**

@@ -26,8 +26,9 @@
  *   Public-domain text: the Vulgate, the Preamble, Psalm 19:1. Likewise.
  *
  *   Their own prose: the history sentences, which somebody at CC sat down
- *   and wrote. Those are in a separate file that is NOT part of the public
- *   site, and the loader below treats their absence as normal.
+ *   and wrote. Those are in cycle3-history.js, published with a credit line
+ *   that is shown wherever they appear -- see the note at the top of that
+ *   file. A cycle whose history file is missing simply has no history cards.
  */
 (function () {
   "use strict";
