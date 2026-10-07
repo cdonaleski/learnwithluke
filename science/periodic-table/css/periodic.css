@@ -182,3 +182,143 @@
     color: var(--color-text-muted);
   }
 }
+
+/* ---------------- One place to look ----------------
+   Controls in one row, then a strip with the question, the result, the score
+   and Next -- kept on screen while you scroll -- then the table. Before,
+   the question sat above the table and the result, the details, Skip and
+   New Round sat below it, about 1000px apart. */
+
+.pt-panel { padding-top: 1rem; }
+
+.pt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.pt-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 0.22rem;
+  border-radius: 999px;
+  background: #ece6dc;
+}
+.pt-seg[hidden] { display: none; }
+
+.pt-seg-btn {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.pt-seg--small .pt-seg-btn { padding: 0.38rem 0.8rem; font-size: 0.82rem; }
+.pt-seg-btn.is-active {
+  background: var(--color-bg-alt);
+  color: var(--color-coral);
+  box-shadow: 0 1px 4px rgba(60, 40, 90, 0.18);
+}
+.pt-seg-btn:focus-visible { outline: 3px solid var(--color-coral); outline-offset: 1px; }
+
+.pt-controls-end { display: flex; gap: 0.4rem; margin-left: auto; }
+
+.pt-small-btn {
+  min-height: 2.4rem;
+  padding: 0 0.85rem;
+  border: 2px solid #e6dfd3;
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.pt-small-btn:hover { border-color: var(--color-coral); }
+
+.pt-focus {
+  position: sticky;
+  top: 5rem;                 /* just under the site's own sticky header */
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 5.5rem;
+  margin-bottom: 0.9rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  border: 2px solid #e8e2d8;
+  box-shadow: 0 6px 18px rgba(40, 25, 70, 0.08);
+}
+
+.pt-focus-main { flex: 1; min-width: 0; }
+.pt-focus-side { display: flex; align-items: center; gap: 0.9rem; flex-shrink: 0; }
+.pt-focus-side[hidden] { display: none; }
+
+/* The quiz no longer needs its own box: the strip is the box. */
+.pt-quiz { background: none; border: 0; padding: 0; margin: 0; }
+.pt-prompt { margin-bottom: 0.5rem; text-align: left; }
+.pt-choices, .pt-entry { justify-content: flex-start; }
+.pt-choice { padding: 0.55rem 1.2rem; }
+
+.pt-status {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--color-text);
+}
+.pt-status[hidden] { display: none; }
+
+/* Explore: the details of whatever you tapped, in the same strip. */
+.pt-detail { border: 0; padding: 0; min-height: 0; background: none; }
+.pt-detail[hidden] { display: none; }
+.pt-badge { width: 3.8rem; height: 3.8rem; }
+
+.pt-score {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 0 0.8rem;
+  margin: 0;
+  text-align: center;
+}
+.pt-score dt { font-size: 0.7rem; font-weight: 600; color: var(--color-text-muted); }
+.pt-score dd { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--color-coral); }
+
+.pt-go { display: flex; gap: 0.4rem; }
+.pt-go .btn { white-space: nowrap; }
+
+.pt-legend { margin: 0.6rem 0 0; }
+
+@media (max-width: 760px) {
+  .pt-focus { flex-direction: column; align-items: stretch; top: 4.8rem; }
+  .pt-focus-side { justify-content: space-between; }
+  .pt-controls-end { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-seg-btn { transition: none; }
+}
+
+/* display:flex and the button styles beat the [hidden] attribute, so these
+   have to say it outright -- otherwise Easy shows a typing box, and Next
+   shows before there is anything to go on to. */
+.pt-entry[hidden], .pt-choices[hidden], .pt-quiz[hidden], .pt-go [hidden] { display: none; }
+.pt-status:empty { display: none; }
+
+@media (max-width: 560px) {
+  /* Four modes on one line at phone width, instead of wrapping to two. */
+  .pt-seg { flex-wrap: nowrap; }
+  .pt-seg-btn { padding: 0.45rem 0.55rem; font-size: 0.8rem; }
+  .pt-seg--small .pt-seg-btn { padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+  .pt-controls { gap: 0.45rem; }
+}

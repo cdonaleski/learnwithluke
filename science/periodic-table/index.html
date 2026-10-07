@@ -28,62 +28,67 @@
     </header>
     <p class="tool-lead" role="note">All 118 elements — everything the universe is made of.</p>
 
-    <section class="game-panel" aria-labelledby="pt-title">
+    <section class="game-panel pt-panel" aria-labelledby="pt-title">
       <h2 id="pt-title" class="visually-hidden">Periodic table</h2>
 
-      <div class="game-options pt-modes">
-        <div class="option-group" role="group" aria-labelledby="mode-label">
-          <span class="option-label" id="mode-label">What are we doing?</span>
-          <div class="option-buttons">
-            <button type="button" class="option-btn is-active" data-mode="explore" aria-pressed="true">🔍 Explore</button>
-            <button type="button" class="option-btn" data-mode="easy" aria-pressed="false">🐣 Easy — pick from 3</button>
-            <button type="button" class="option-btn" data-mode="medium" aria-pressed="false">🐤 Medium — type it</button>
-            <button type="button" class="option-btn" data-mode="hard" aria-pressed="false">🦅 Hard — type &amp; place</button>
+      <!-- Everything you choose, on one row: what to do, which elements,
+           and the two buttons you need now and then. -->
+      <div class="pt-controls">
+        <div class="pt-seg" role="group" aria-label="What are we doing?">
+          <button type="button" class="pt-seg-btn is-active" data-mode="explore" aria-pressed="true">🔍 Explore</button>
+          <button type="button" class="pt-seg-btn" data-mode="easy" aria-pressed="false">🐣 Easy</button>
+          <button type="button" class="pt-seg-btn" data-mode="medium" aria-pressed="false">🐤 Medium</button>
+          <button type="button" class="pt-seg-btn" data-mode="hard" aria-pressed="false">🦅 Hard</button>
+        </div>
+        <div class="pt-seg pt-seg--small" id="scope-group" role="group" aria-label="Which elements?" hidden>
+          <button type="button" class="pt-seg-btn is-active" data-scope="common" aria-pressed="true">Common 20</button>
+          <button type="button" class="pt-seg-btn" data-scope="first" aria-pressed="false">First 36</button>
+          <button type="button" class="pt-seg-btn" data-scope="all" aria-pressed="false">All 118</button>
+        </div>
+        <div class="pt-controls-end">
+          <button type="button" class="pt-small-btn" id="btn-restart">↺ New round</button>
+          <button type="button" class="pt-small-btn" id="btn-sound" aria-pressed="true">🔊 Sound on</button>
+        </div>
+      </div>
+
+      <!-- The question, what happened, the score and the way on -- in one
+           strip that stays at the top while you look at the table. They used
+           to be split above and far below the table, so every question meant
+           scrolling down to see how you did and back up for the next one. -->
+      <div class="pt-focus" id="pt-focus">
+        <div class="pt-focus-main">
+          <div class="pt-quiz" id="pt-quiz" hidden>
+            <p class="pt-prompt" id="pt-prompt" aria-live="polite"></p>
+            <div class="pt-choices" id="pt-choices"></div>
+            <div class="pt-entry" id="pt-entry" hidden>
+              <label class="visually-hidden" for="pt-input">Your answer</label>
+              <input type="text" id="pt-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+              <button type="button" class="btn btn-primary" id="pt-submit">Check</button>
+            </div>
+          </div>
+          <p class="pt-status" id="pt-status" role="status" aria-live="polite">Tap any element to find out about it.</p>
+          <div class="pt-detail" id="pt-detail" aria-live="polite"></div>
+        </div>
+
+        <div class="pt-focus-side" id="pt-focus-side" hidden>
+          <dl class="pt-score">
+            <div><dt>Question</dt><dd id="pt-asked">—</dd></div>
+            <div><dt>Right</dt><dd id="pt-right">—</dd></div>
+            <div><dt>Streak</dt><dd id="pt-streak">—</dd></div>
+            <div><dt>Best</dt><dd id="pt-best">—</dd></div>
+          </dl>
+          <div class="pt-go">
+            <button type="button" class="btn btn-secondary" id="btn-skip" hidden>🤷 Skip</button>
+            <button type="button" class="btn btn-primary" id="pt-next" hidden>Next →</button>
           </div>
         </div>
-
-        <div class="option-group" id="scope-group" role="group" aria-labelledby="scope-label" hidden>
-          <span class="option-label" id="scope-label">Which elements?</span>
-          <div class="option-buttons">
-            <button type="button" class="option-btn is-active" data-scope="common" aria-pressed="true">⭐ Common 20</button>
-            <button type="button" class="option-btn" data-scope="first" aria-pressed="false">🔢 First 36</button>
-            <button type="button" class="option-btn" data-scope="all" aria-pressed="false">🌍 All 118</button>
-          </div>
-        </div>
       </div>
-
-      <div class="pt-quiz" id="pt-quiz" hidden>
-        <p class="pt-prompt" id="pt-prompt"></p>
-        <div class="pt-choices" id="pt-choices"></div>
-        <div class="pt-entry" id="pt-entry" hidden>
-          <label class="visually-hidden" for="pt-input">Your answer</label>
-          <input type="text" id="pt-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-          <button type="button" class="btn btn-primary" id="pt-submit">Check</button>
-        </div>
-      </div>
-
-      <div class="game-stats">
-        <div class="stat"><span class="stat-label">Question</span><span class="stat-value" id="pt-asked">—</span></div>
-        <div class="stat stat--alt"><span class="stat-label">Right</span><span class="stat-value" id="pt-right">—</span></div>
-        <div class="stat stat--alt"><span class="stat-label">Streak</span><span class="stat-value" id="pt-streak">—</span></div>
-        <div class="stat stat--alt"><span class="stat-label">Best</span><span class="stat-value" id="pt-best">—</span></div>
-      </div>
-
-      <p class="game-status" id="pt-status" role="status" aria-live="polite">Tap any element to find out about it.</p>
 
       <div class="pt-table-wrap">
         <div class="pt-table" id="pt-table" aria-label="Periodic table of the elements"></div>
       </div>
 
       <ul class="pt-legend" id="pt-legend" aria-label="What the colors mean"></ul>
-
-      <div class="pt-detail" id="pt-detail" aria-live="polite"></div>
-
-      <div class="game-actions">
-        <button type="button" class="btn btn-primary" id="btn-restart">↺ New Round</button>
-        <button type="button" class="btn btn-secondary" id="btn-skip" hidden>🤷 Skip</button>
-        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
-      </div>
     </section>
 
     <section class="game-panel" id="leaderboard-panel" aria-label="Leaderboard"></section>

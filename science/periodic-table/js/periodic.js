@@ -26,6 +26,11 @@
   const MODE_KEY = "pt-mode";
   const SCOPE_KEY = "pt-scope";
   const ROUND = 10;                 // questions per round
+  // How long a result stays up before the next question comes on its own.
+  // Long enough to read a correction ("Mg is Magnesium, group 2, period 3"),
+  // short enough that a right answer keeps the pace up. Next skips the wait.
+  const NEXT_AFTER_RIGHT = 1300;
+  const NEXT_AFTER_WRONG = 3200;
 
   /** Which elements a round draws from, so a beginner is not asked about Seaborgium. */
   const SCOPES = {
@@ -47,7 +52,10 @@
     bestStreak: 0,
     wrongOnThis: false,
     finished: false,
+    waiting: false,        // answered; the next question is on its way
   };
+
+  let advanceTimer = null;
 
   let soundOn = true;
   let audioCtx = null;
@@ -68,6 +76,8 @@
     streak: document.getElementById("pt-streak"),
     best: document.getElementById("pt-best"),
     skip: document.getElementById("btn-skip"),
+    next: document.getElementById("pt-next"),
+    side: document.getElementById("pt-focus-side"),
     restart: document.getElementById("btn-restart"),
     sound: document.getElementById("btn-sound"),
     scopeGroup: document.getElementById("scope-group"),
@@ -147,9 +157,12 @@
     state.answeredName = false;
     state.answeredPlace = !question.needsPlacement;
     state.wrongOnThis = false;
+    state.waiting = false;
     state.selected = null;
     render();
-    setStatus(promptFor(question));
+    // The question is already on screen right above; the status line is for
+    // what happens next -- the result, or Hard's "now tap the square".
+    setStatus("");
   }
 
   function promptFor(question) {
@@ -225,6 +238,12 @@
       : "✅ Correct! " + e.symbol + " is " + e.name + ".");
     state.selected = e;
 
+    if (state.asked < ROUND) {
+      state.waiting = true;
+      window.clearTimeout(advanceTimer);
+      advanceTimer = window.setTimeout(nextQuestion, state.wrongOnThis ? NEXT_AFTER_WRONG : NEXT_AFTER_RIGHT);
+    }
+
     if (state.asked >= ROUND) {
       state.finished = true;
       if (board) board.offer(state.right, state.mode + "-" + state.scopeId);
@@ -241,8 +260,18 @@
     return "group " + e.group + ", period " + e.period;
   }
 
+  /** Straight on to the next question, without waiting. */
+  function nextQuestion() {
+    window.clearTimeout(advanceTimer);
+    advanceTimer = null;
+    if (!quizzing()) return;
+    if (state.finished) { newRound(); return; }
+    if (!state.waiting) return;
+    newQuestion();
+  }
+
   function skip() {
-    if (!quizzing() || !state.question || state.finished) return;
+    if (!quizzing() || !state.question || state.finished || state.waiting) return;
     state.wrongOnThis = true;
     state.answeredName = true;
     state.answeredPlace = true;
@@ -250,6 +279,9 @@
   }
 
   function newRound() {
+    window.clearTimeout(advanceTimer);
+    advanceTimer = null;
+    state.waiting = false;
     state.asked = 0;
     state.right = 0;
     state.streak = 0;
@@ -360,6 +392,8 @@
 
   function renderDetail() {
     el.detail.innerHTML = "";
+    el.detail.hidden = quizzing();
+    el.status.hidden = !quizzing();
     const e = state.selected;
     if (!e) {
       const hint = document.createElement("p");
@@ -405,6 +439,9 @@
 
   function renderQuiz() {
     el.quiz.hidden = !quizzing();
+    // Before the early return below, or Explore keeps a score panel it has
+    // no use for.
+    el.side.hidden = !quizzing();
     if (!quizzing() || !state.question) { el.choices.innerHTML = ""; return; }
 
     el.prompt.textContent = state.finished ? "Round finished." : promptFor(state.question);
@@ -432,7 +469,9 @@
       window.setTimeout(() => { try { el.input.focus(); } catch (err) { /* ok */ } }, 30);
     }
 
-    el.skip.hidden = state.finished || !state.question;
+    el.skip.hidden = state.finished || !state.question || state.waiting;
+    el.next.hidden = !(state.waiting || state.finished);
+    el.next.textContent = state.finished ? "↺ New round" : "Next →";
   }
 
   function renderStats() {
@@ -464,10 +503,20 @@
     if (event.key === "Enter") { event.preventDefault(); answerTyped(); }
   });
   el.skip.addEventListener("click", skip);
+  el.next.addEventListener("click", nextQuestion);
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (!quizzing() || !(state.waiting || state.finished)) return;
+    const on = event.target;
+    // The Enter that submitted a typed answer must not also skip its result.
+    if (on === el.input || (on && (on.tagName === "BUTTON" || on.tagName === "INPUT"))) return;
+    event.preventDefault();
+    nextQuestion();
+  });
   el.restart.addEventListener("click", newRound);
   el.sound.addEventListener("click", () => {
     soundOn = !soundOn;
-    el.sound.textContent = soundOn ? "🔊 Sound On" : "🔇 Sound Off";
+    el.sound.textContent = soundOn ? "🔊 Sound on" : "🔇 Sound off";
     el.sound.setAttribute("aria-pressed", String(soundOn));
   });
 
@@ -522,6 +571,7 @@
 
   window.PeriodicTable = {
     state, ELEMENTS, SCOPES, ROUND, scope, pool, distractors, newQuestion, checkTyped,
-    answerChoice, answerTyped, answerPlacement, skip, newRound, promptFor, tileLabel,
+    answerChoice, answerTyped, answerPlacement, skip, newRound, nextQuestion, promptFor, tileLabel,
+    NEXT_AFTER_RIGHT, NEXT_AFTER_WRONG,
   };
 })();
