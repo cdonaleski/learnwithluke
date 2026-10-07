@@ -17,15 +17,16 @@
   <div id="site-header"></div>
 
   <main id="main-content" class="game-page">
-    <a href="../index.html" class="game-back">← Back to Maths</a>
-
-    <header class="game-header">
-      <h1>✖️ Times Tables</h1>
-      <p class="game-instructions" role="note">
-        <strong>It watches which ones you get wrong and asks those more often.</strong>
-        The squares in the grid fill in as you learn them.
-      </p>
+    <!-- One row: back, title, and the full explanation one tap away. -->
+    <header class="tool-bar">
+      <a href="../../stem/index.html#math" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">✖️ Times Tables</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body"><p>It watches which ones you get wrong and asks those more often. The squares in the grid fill in as you learn them.</p></div>
+      </details>
     </header>
+    <p class="tool-lead" role="note">Press Start and type each answer — the ones you miss come back more often.</p>
 
     <section class="game-panel" id="round-panel" aria-labelledby="round-title">
       <h2 id="round-title" class="visually-hidden">Practice</h2>
@@ -52,9 +53,9 @@
     </section>
 
     <section class="game-panel" aria-labelledby="choose-title">
-      <h2 id="choose-title">What to practise</h2>
+      <h2 id="choose-title">What to practice</h2>
       <p class="choose-label">Which tables</p>
-      <div class="chips" id="tables" role="group" aria-label="Which tables to practise"></div>
+      <div class="chips" id="tables" role="group" aria-label="Which tables to practice"></div>
       <p class="choose-label">What kind of question</p>
       <div class="chips" id="modes" role="group" aria-label="Kind of question"></div>
     </section>

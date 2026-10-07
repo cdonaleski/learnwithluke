@@ -17,16 +17,16 @@
   <div id="site-header"></div>
 
   <main id="main-content" class="game-page ai-page">
-    <a href="../index.html" class="game-back">← Back to AI</a>
-
-    <header class="game-header">
-      <h1>🤖 AI Lab</h1>
-      <p class="game-instructions" role="note">
-        <strong>Five machines you can take apart.</strong> Every one of these
-        runs right here in the page — nothing is sent anywhere, and there is no
-        chatbot hiding behind them. What you see is the whole machine.
-      </p>
+    <!-- One row: back, title, and the full explanation one tap away. -->
+    <header class="tool-bar">
+      <a href="../../stem/index.html#ai" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">🤖 AI Lab</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body"><p>Every one of these runs right here in the page — nothing is sent anywhere, and there is no chatbot hiding behind them. What you see is the whole machine.</p></div>
+      </details>
     </header>
+    <p class="tool-lead" role="note">Five machines you can take apart.</p>
 
     <div class="ai-tabs" role="tablist" aria-label="Choose a demo">
       <button type="button" class="ai-tab" role="tab" data-d="teach" id="tab-teach" aria-controls="d-teach" aria-selected="true">Teach the Machine</button>

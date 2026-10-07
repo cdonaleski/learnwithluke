@@ -41,7 +41,7 @@
     solve:[ {for:"v",needs:["d","t"],fn:function(x){return x.d/x.t}},
             {for:"d",needs:["v","t"],fn:function(x){return x.v*x.t}},
             {for:"t",needs:["d","v"],fn:function(x){return x.d/x.v}} ],
-    ex:{ for:"v", vals:{d:100,t:12.5}, says:"A cheetah covers 100 metres in 12.5 seconds." },
+    ex:{ for:"v", vals:{d:100,t:12.5}, says:"A cheetah covers 100 meters in 12.5 seconds." },
     why:"Every speed limit sign, every race result, and every \"are we there yet?\" is this one formula.",
     tags:"velocity distance time how fast" },
 
@@ -113,7 +113,7 @@
     vars:{ W:["work","J"], F:["force","N"], d:["distance moved","m"] },
     solve:[ {for:"W",needs:["F","d"],fn:function(x){return x.F*x.d}},
             {for:"F",needs:["W","d"],fn:function(x){return x.W/x.d}} ],
-    ex:{ for:"W", vals:{F:150,d:4}, says:"Pushing a heavy box with 150 N of force across 4 metres of floor." },
+    ex:{ for:"W", vals:{F:150,d:4}, says:"Pushing a heavy box with 150 N of force across 4 meters of floor." },
     why:"Holding a heavy bag still does zero work in physics, even though your arms strongly disagree.",
     tags:"energy push force distance joules" },
 
@@ -237,7 +237,7 @@
     m:"The upward push of a fluid equals the weight of the fluid the object shoved out of the way.",
     vars:{ F:["buoyant force","N"], rho:["fluid density","kg/m³"], V:["volume displaced","m³"], g:["gravity strength","m/s²"] },
     solve:[ {for:"F",needs:["rho","V","g"],fn:function(x){return x.rho*x.V*x.g}} ],
-    ex:{ for:"F", vals:{rho:1000,V:0.05,g:9.8}, says:"An object pushing 0.05 m³ (50 litres) of water out of the way." },
+    ex:{ for:"F", vals:{rho:1000,V:0.05,g:9.8}, says:"An object pushing 0.05 m³ (50 liters) of water out of the way." },
     why:"Archimedes worked this out in a bathtub. A steel ship floats because its hull displaces a huge volume of water.",
     tags:"float ship archimedes water displacement submarine" },
 
@@ -277,7 +277,7 @@
     solve:[ {for:"c",needs:["n","V"],fn:function(x){return x.n/x.V}},
             {for:"n",needs:["c","V"],fn:function(x){return x.c*x.V}},
             {for:"V",needs:["n","c"],fn:function(x){return x.n/x.c}} ],
-    ex:{ for:"c", vals:{n:0.5,V:2}, says:"Half a mole of salt dissolved in 2 litres of water." },
+    ex:{ for:"c", vals:{n:0.5,V:2}, says:"Half a mole of salt dissolved in 2 liters of water." },
     why:"Strong or weak is not a vibe in chemistry. It is a number, and this is it.",
     tags:"concentration solution dissolved strength molar" },
 
@@ -297,7 +297,7 @@
     solve:[ {for:"P",needs:["n","T","V"],fn:function(x){return x.n*8.314*x.T/x.V}},
             {for:"V",needs:["n","T","P"],fn:function(x){return x.n*8.314*x.T/x.P}},
             {for:"n",needs:["P","V","T"],fn:function(x){return x.P*x.V/(8.314*x.T)}} ],
-    ex:{ for:"P", vals:{n:1,T:273.15,V:22.4}, says:"One mole of gas at 0 °C in 22.4 litres. Uses R = 8.314 L·kPa/(mol·K)." },
+    ex:{ for:"P", vals:{n:1,T:273.15,V:22.4}, says:"One mole of gas at 0 °C in 22.4 liters. Uses R = 8.314 L·kPa/(mol·K)." },
     why:"Temperature here must be in kelvin, always. Using celsius is the single most common mistake in chemistry class.",
     tags:"gas pressure volume temperature kelvin balloon" },
 
@@ -306,7 +306,7 @@
     vars:{ P1:["starting pressure","kPa"], V1:["starting volume","L"], P2:["final pressure","kPa"], V2:["final volume","L"] },
     solve:[ {for:"V2",needs:["P1","V1","P2"],fn:function(x){return x.P1*x.V1/x.P2}},
             {for:"P2",needs:["P1","V1","V2"],fn:function(x){return x.P1*x.V1/x.V2}} ],
-    ex:{ for:"P2", vals:{P1:101,V1:2,V2:0.5}, says:"Squashing 2 litres of air at normal pressure down into 0.5 litres." },
+    ex:{ for:"P2", vals:{P1:101,V1:2,V2:0.5}, says:"Squashing 2 liters of air at normal pressure down into 0.5 liters." },
     why:"This is what your ears feel on a plane and what makes a syringe work.",
     tags:"squeeze gas pressure volume syringe ears plane" },
 
@@ -373,7 +373,7 @@
     tags:"composition element mass fraction water" },
 
   { id:"molarvolume", sub:"chemistry", t:"Molar Volume at STP", f:"V = n × 22.4", age:"14+",
-    m:"At standard temperature and pressure, one mole of any gas fills 22.4 litres.",
+    m:"At standard temperature and pressure, one mole of any gas fills 22.4 liters.",
     vars:{ V:["volume","L"], n:["moles of gas","mol"] },
     solve:[ {for:"V",needs:["n"],fn:function(x){return x.n*22.4}},
             {for:"n",needs:["V"],fn:function(x){return x.V/22.4}} ],
@@ -527,7 +527,7 @@
     solve:[ {for:"mean",needs:["total","count"],fn:function(x){return x.total/x.count}},
             {for:"total",needs:["mean","count"],fn:function(x){return x.mean*x.count}} ],
     ex:{ for:"mean", vals:{total:441,count:5}, says:"Five test scores adding up to 441." },
-    why:"One huge value drags a mean badly off centre, which is why house prices are usually reported as a median instead.",
+    why:"One huge value drags a mean badly off center, which is why house prices are usually reported as a median instead.",
     tags:"average mean statistics scores" },
 
   { id:"probability", sub:"math", t:"Simple Probability", f:"P = ways it can happen ÷ total ways", age:"10+",
@@ -558,7 +558,7 @@
     m:"A short way to write very big or very small numbers.",
     vars:{ out:["the full number",""], a:["the digits (1 to 10)",""], n:["power of ten",""] },
     solve:[ {for:"out",needs:["a","n"],fn:function(x){return x.a*Math.pow(10,x.n)}} ],
-    ex:{ for:"out", vals:{a:3,n:8}, says:"The speed of light, 3 × 10⁸ metres per second." },
+    ex:{ for:"out", vals:{a:3,n:8}, says:"The speed of light, 3 × 10⁸ meters per second." },
     why:"A positive power moves the decimal point right and a negative one moves it left. That is the whole trick.",
     tags:"powers of ten big numbers small exponent" },
 
@@ -592,7 +592,7 @@
     tags:"machine force multiplier lever pulley ramp" },
 
   { id:"torque", sub:"engineering", t:"Torque", f:"τ = F × r", age:"12+",
-    m:"Turning force. The same push further out from the centre turns much harder.",
+    m:"Turning force. The same push further out from the center turns much harder.",
     vars:{ tau:["torque","N·m"], F:["force","N"], r:["distance from the pivot","m"] },
     solve:[ {for:"tau",needs:["F","r"],fn:function(x){return x.F*x.r}},
             {for:"F",needs:["tau","r"],fn:function(x){return x.tau/x.r}} ],
@@ -668,7 +668,7 @@
     why:"Lifts are typically built with a factor of about 10. Engineers assume the worst day, not the average one.",
     tags:"safety margin design failure elevator cable" },
 
-  { id:"beam-moment", sub:"engineering", t:"Bending Moment (centre load)", f:"M = F × L ÷ 4", age:"15+",
+  { id:"beam-moment", sub:"engineering", t:"Bending Moment (center load)", f:"M = F × L ÷ 4", age:"15+",
     m:"The worst bending force in a simply supported beam with the weight in the middle.",
     vars:{ M:["maximum bending moment","N·m"], F:["load force","N"], L:["span between supports","m"] },
     solve:[ {for:"M",needs:["F","L"],fn:function(x){return x.F*x.L/4}} ],
@@ -753,11 +753,11 @@
 
   cards = cards.concat([
   { id:"light-time", sub:"space", t:"Light Travel Time", f:"t = d ÷ c", age:"11+",
-    m:"How long light takes to cross a distance, at 300 million metres per second.",
+    m:"How long light takes to cross a distance, at 300 million meters per second.",
     vars:{ t:["time","s"], d:["distance","m"] },
     solve:[ {for:"t",needs:["d"],fn:function(x){return x.d/3.0e8}},
             {for:"d",needs:["t"],fn:function(x){return x.t*3.0e8}} ],
-    ex:{ for:"t", vals:{d:1.496e11}, says:"From the Sun to the Earth, about 1.496 × 10¹¹ metres." },
+    ex:{ for:"t", vals:{d:1.496e11}, says:"From the Sun to the Earth, about 1.496 × 10¹¹ meters." },
     why:"That comes out around 500 seconds, so sunlight is over eight minutes old by the time it hits your face.",
     tags:"light speed sun distance space delay" },
 

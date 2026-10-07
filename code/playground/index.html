@@ -17,16 +17,16 @@
   <div id="site-header"></div>
 
   <main id="main-content" class="game-page pg-page">
-    <a href="../index.html" class="game-back">← Back to Code</a>
-
-    <header class="game-header">
-      <h1>&lt;/&gt; Code Playground</h1>
-      <p class="game-instructions" role="note">
-        <strong>Write code on the left, watch it happen on the right.</strong>
-        Pick a project to start from, then change things and see what breaks. You
-        cannot hurt anything — Start Over always brings the original back.
-      </p>
+    <!-- One row: back, title, and the full explanation one tap away. -->
+    <header class="tool-bar">
+      <a href="../../stem/index.html#code" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">&lt;/&gt; Code Playground</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body"><p>Pick a project to start from, then change things and see what breaks. You cannot hurt anything — Start Over always brings the original back.</p></div>
+      </details>
     </header>
+    <p class="tool-lead" role="note">Write code on the left, watch it happen on the right.</p>
 
     <nav class="pg-rail" id="pg-rail" aria-label="Starter projects"></nav>
 

@@ -17,16 +17,16 @@
   <div id="site-header"></div>
 
   <main id="main-content" class="game-page pt-page">
-    <a href="../index.html" class="game-back">← Back to Science</a>
-
-    <header class="game-header">
-      <h1>⚛️ Periodic Table</h1>
-      <p class="game-instructions" role="note">
-        <strong>All 118 elements — everything the universe is made of.</strong>
-        Look around it first, then test yourself: match symbols to names, type them
-        from memory, or find where each one belongs.
-      </p>
+    <!-- One row: back, title, and the full explanation one tap away. -->
+    <header class="tool-bar">
+      <a href="../../stem/index.html#science" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">⚛️ Periodic Table</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body"><p>Look around it first, then test yourself: match symbols to names, type them from memory, or find where each one belongs.</p></div>
+      </details>
     </header>
+    <p class="tool-lead" role="note">All 118 elements — everything the universe is made of.</p>
 
     <section class="game-panel" aria-labelledby="pt-title">
       <h2 id="pt-title" class="visually-hidden">Periodic table</h2>
@@ -75,7 +75,7 @@
         <div class="pt-table" id="pt-table" aria-label="Periodic table of the elements"></div>
       </div>
 
-      <ul class="pt-legend" id="pt-legend" aria-label="What the colours mean"></ul>
+      <ul class="pt-legend" id="pt-legend" aria-label="What the colors mean"></ul>
 
       <div class="pt-detail" id="pt-detail" aria-live="polite"></div>
 

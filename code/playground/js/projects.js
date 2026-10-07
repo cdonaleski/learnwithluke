@@ -27,7 +27,7 @@
       blurb: "Every coder starts here. This page has a heading, a sentence, and a button that changes the page when you click it.",
       tries: [
         "Change the name in the heading to yours.",
-        "Change the heading colour to purple.",
+        "Change the heading color to purple.",
         "Change what the button says after you click it."
       ],
       html: [
@@ -119,9 +119,9 @@
     {
       id: "buttons",
       name: "Button Factory",
-      blurb: "No JavaScript at all here. This is pure CSS: colour, shape, and what happens when the mouse hovers over something.",
+      blurb: "No JavaScript at all here. This is pure CSS: color, shape, and what happens when the mouse hovers over something.",
       tries: [
-        "Change the candy button to your favourite colour.",
+        "Change the candy button to your favorite color.",
         "Make the wiggle button wiggle faster (try 0.2s).",
         "Copy one of the buttons and make a fourth style of your own."
       ],
@@ -349,8 +349,8 @@
       blurb: "A canvas is a blank rectangle you paint on with code. This one follows the mouse and draws a line behind it.",
       tries: [
         "Make the brush thicker by changing lineWidth.",
-        "Add a fourth colour button.",
-        "Make the brush pick a random colour on every click."
+        "Add a fourth color button.",
+        "Make the brush pick a random color on every click."
       ],
       html: [
         '<h1>Drawing Pad</h1>',
@@ -394,8 +394,8 @@
         'pen.lineCap = "round";',
         'pen.strokeStyle = "crimson";',
         '',
-        'function setColor(colour) {',
-        '  pen.strokeStyle = colour;',
+        'function setColor(color) {',
+        '  pen.strokeStyle = color;',
         '}',
         '',
         'function clearPad() {',

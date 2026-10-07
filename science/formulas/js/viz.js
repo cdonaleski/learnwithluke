@@ -270,7 +270,7 @@ window.FormulaViz = (function () {
     } else {
       var conc = g("c", g("C1", g("n", 1)));
       fill = clamp(0.3 + norm(conc, 1) * 0.25, 0.25, 0.9);
-      note = "more dissolved = deeper colour";
+      note = "more dissolved = deeper color";
     }
     c.strokeStyle = k.line; c.lineWidth = 3;
     c.beginPath(); c.moveTo(bx, by); c.lineTo(bx, by + bh); c.lineTo(bx + bw, by + bh); c.lineTo(bx + bw, by); c.stroke();

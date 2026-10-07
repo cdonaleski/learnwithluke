@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Show Your Working — long multiplication, borrowing and the bus stop, laid out a step at a time. On Learn With Luke">
-  <title>Show Your Working · Learn With Luke</title>
+  <meta name="description" content="Show Your Work — long multiplication, borrowing and the bus stop, laid out a step at a time. On Learn With Luke">
+  <title>Show Your Work · Learn With Luke</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,17 +17,16 @@
   <div id="site-header"></div>
 
   <main id="main-content" class="game-page">
-    <a href="../index.html" class="game-back">← Back to Maths</a>
-
-    <header class="game-header">
-      <h1>📝 Show Your Working</h1>
-      <p class="game-instructions" role="note">
-        <strong>Not a calculator.</strong>
-        A calculator gives you the answer, which is the least interesting part.
-        This shows you how to get there — the carrying, the borrowing and the
-        remainders, written out the way you would write them.
-      </p>
+    <!-- One row: back, title, and the full explanation one tap away. -->
+    <header class="tool-bar">
+      <a href="../../stem/index.html#math" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">📝 Show Your Work</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body"><p>Not a calculator. A calculator gives you the answer, which is the least interesting part. This shows you how to get there — the carrying, the borrowing and the remainders, written out the way you would write them.</p></div>
+      </details>
     </header>
+    <p class="tool-lead" role="note">Type two numbers, press Work it out, then step through it like you would on paper.</p>
 
     <section class="game-panel" aria-labelledby="sum-title">
       <h2 id="sum-title" class="visually-hidden">The sum</h2>
@@ -79,7 +78,7 @@
 
         <dt>Borrowing</dt>
         <dd>When you cannot take the bottom digit from the top one, you take ten
-        from next door: the 6 becomes 16 and the neighbour drops by one. Nothing
+        from next door: the 6 becomes 16 and the neighbor drops by one. Nothing
         is created or destroyed — the top line is still worth exactly what it was
         before, which is the whole reason the trick is allowed.</dd>
 

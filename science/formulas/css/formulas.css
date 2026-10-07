@@ -331,7 +331,7 @@
 }
 
 @media print {
-  .fx-search, .fx-list, .fx-back, .fx-calc-head, .fx-constants, .game-back { display: none !important; }
+  .fx-search, .fx-list, .fx-back, .fx-calc-head, .fx-constants, .game-back, .tool-bar, .tool-lead { display: none !important; }
   .fx-layout { display: block; }
 }
 

@@ -17,18 +17,18 @@
   <div id="site-header"></div>
 
   <main id="main-content" class="game-page">
-    <a href="../index.html" class="game-back">← Back to Code</a>
-
-    <header class="game-header">
-      <h1>🤖 Robot Blocks</h1>
-      <p class="game-instructions" role="note">
-        <strong>Tap blocks to tell the robot what to do, then press Run.</strong>
-        Get it to the 💎 using as few blocks as you can. There are eight puzzles,
-        and each one teaches one new idea.
-      </p>
+    <!-- One row: back, title, and the full explanation one tap away. -->
+    <header class="tool-bar">
+      <a href="../../stem/index.html#code" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">🤖 Robot Blocks</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body"><p>Get it to the 💎 using as few blocks as you can. There are eight puzzles, and each one teaches one new idea.</p></div>
+      </details>
     </header>
+    <p class="tool-lead" role="note">Tap blocks to tell the robot what to do, then press Run.</p>
 
-    <section class="game-panel" aria-labelledby="rb-title">
+    <section class="game-panel rb-panel" aria-labelledby="rb-title">
       <h2 id="rb-title" class="visually-hidden">Robot Blocks puzzle</h2>
 
       <p class="rb-level-name" id="rb-level-name">1. Straight On</p>

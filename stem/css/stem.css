@@ -1,0 +1,120 @@
+/* STEM — every tool on one page.
+   Rows, not cards: an icon, a name and one line each. Fifteen of them in two
+   columns fit on a laptop screen; as cards they took four pages. */
+
+.stem {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.stem-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  margin: 0.4rem 0 1.1rem;
+}
+
+.stem-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  color: var(--color-coral);
+}
+
+.stem-head p { margin: 0; flex: 1; min-width: 14rem; color: var(--color-text-muted); }
+
+/* Phone only: four jump links, since there the groups stack. */
+.stem-jump { display: none; }
+
+/* Two columns that fill top-to-bottom, so the reading order is the
+   subject order and the columns come out nearly the same height. */
+.stem-groups {
+  columns: 2 26rem;
+  column-gap: 1.2rem;
+}
+
+.stem-group {
+  break-inside: avoid;
+  margin: 0 0 1.2rem;
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  scroll-margin-top: 5.5rem;     /* clear of the sticky site header */
+}
+
+.stem-group h2 {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--color-text);
+  border-bottom: 3px solid var(--stem-tint);
+}
+
+.stem-group h2 small { font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); }
+
+.stem-group--math    { --stem-tint: var(--color-orange); --stem-wash: #fff3e6; }
+.stem-group--science { --stem-tint: var(--color-sun);    --stem-wash: #fffbe3; }
+.stem-group--code    { --stem-tint: var(--color-sky);    --stem-wash: #e8faf8; }
+.stem-group--ai      { --stem-tint: var(--color-purple); --stem-wash: #f3effe; }
+
+.stem-group ul { margin: 0; padding: 0.3rem; list-style: none; }
+
+.stem-group li a {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 3.4rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.stem-group li a:hover,
+.stem-group li a:focus-visible { background: var(--stem-wash); outline: none; }
+.stem-group li a:focus-visible { box-shadow: inset 0 0 0 2px var(--stem-tint); }
+
+.stem-icon {
+  flex: 0 0 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--stem-wash);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.stem-text { display: grid; gap: 0.05rem; min-width: 0; }
+.stem-text strong { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; }
+.stem-text span { font-size: 0.86rem; line-height: 1.35; color: var(--color-text-muted); }
+
+@media (max-width: 640px) {
+  .stem-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    width: 100%;
+    margin-top: 0.4rem;
+  }
+  .stem-jump a {
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: var(--color-bg-alt);
+    box-shadow: var(--shadow-soft);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stem-group li a { transition: none; }
+}

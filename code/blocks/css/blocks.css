@@ -155,3 +155,34 @@
   .rb-cell.is-bumped { animation: none; }
   .rb-palette-btn { transition: none; }
 }
+
+/* ---------------- Wide screens: the world beside the controls ----------------
+   Stacked, the program, the blocks and Run sat under the board -- Run ended
+   up around 900px down, below a laptop screen, so a child could never see
+   the robot, the program and the Run button at the same time. Side by side
+   they all fit: the board and its score on the left, and on the right the
+   blocks to tap, the program they build, and Run. */
+@media (min-width: 900px) {
+  .rb-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    column-gap: 1.75rem;
+    align-items: start;
+  }
+  .rb-panel > .rb-level-name { grid-column: 1; grid-row: 1; }
+  .rb-panel > .rb-teaches    { grid-column: 1; grid-row: 2; }
+  .rb-panel > .rb-board      { grid-column: 1; grid-row: 3; }
+  .rb-panel > .game-stats    { grid-column: 1; grid-row: 4; }
+  .rb-panel > .game-status   { grid-column: 1; grid-row: 5; }
+  /* Blocks and program beside the board; Run straight under the program,
+     level with the score -- not down beside the status line. */
+  .rb-panel > .rb-columns    { grid-column: 2; grid-row: 1 / 4; margin-top: 0; }
+  .rb-panel > .game-actions  { grid-column: 2; grid-row: 4; align-self: center; justify-content: flex-start; margin: 0; }
+  .rb-panel > .game-options  { grid-column: 1 / -1; grid-row: 6; }
+
+  /* In a column half as wide, the blocks to tap go on top and the program
+     they build underneath, which is the order you use them in. */
+  .rb-panel .rb-columns { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+  .rb-panel .rb-columns > .rb-side:last-child { order: -1; }
+  .rb-panel .rb-palette { flex-direction: row; flex-wrap: wrap; }
+}

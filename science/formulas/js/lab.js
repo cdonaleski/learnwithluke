@@ -8,7 +8,7 @@
     { id: "all", label: "Everything" },
     { id: "physics", label: "Physics" },
     { id: "chemistry", label: "Chemistry" },
-    { id: "math", label: "Maths" },
+    { id: "math", label: "Math" },
     { id: "engineering", label: "Engineering" },
     { id: "space", label: "Space" }
   ];

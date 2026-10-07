@@ -13,11 +13,12 @@
     { id: "puzzles", label: "Puzzles" },
     { id: "games", label: "Games" },
     { id: "tools", label: "Tools" },
-    { id: "maths", label: "Maths" },
+    { id: "maths", label: "Math" },
     { id: "scores", label: "Scores" },
     { id: "code", label: "Code" },
     { id: "science", label: "Science" },
     { id: "ai", label: "AI" },
+    { id: "stem", label: "STEM" },
   ];
 
   /**
@@ -36,7 +37,9 @@
     { id: "cube", label: "The Cube" },
     { id: "cc", label: "Memory Work" },
     { label: "Play", sections: ["puzzles", "games"] },
-    { label: "STEM", sections: ["maths", "science", "code", "ai"] },
+    // One page lists every STEM tool, so STEM is a link, not a drop-down
+    // of four thinner pages. It still lights up anywhere inside them.
+    { id: "stem", label: "STEM", also: ["maths", "science", "code", "ai"] },
     { id: "tools", label: "Tools" },
     { id: "scores", label: "Scores" },
   ];
@@ -98,7 +101,10 @@
           <li><a href="${root}index.html"${isHome ? ' class="active" aria-current="page"' : ""}>Home</a></li>
           ${MENU.map((item, index) => {
             if (!item.sections) {
-              const active = item.id === activeSection ? ' class="active" aria-current="page"' : "";
+              const here = item.id === activeSection;
+              const inside = !here && (item.also || []).indexOf(activeSection) !== -1;
+              const active = here ? ' class="active" aria-current="page"'
+                : inside ? ' class="active"' : "";
               return `<li><a href="${root}${item.id}/index.html"${active}>${item.label}</a></li>`;
             }
             const holdsActive = item.sections.indexOf(activeSection) !== -1;
@@ -231,4 +237,21 @@
       });
     });
   }
+
+  /**
+   * A tool page's "How it works" opens as a panel over the page. A tap
+   * anywhere else, or Escape, puts it away -- the way the menus behave --
+   * rather than leaving it open until the button is found again.
+   */
+  const closeHelp = function (except) {
+    document.querySelectorAll("details.tool-more[open]").forEach((d) => {
+      if (d !== except) d.open = false;
+    });
+  };
+  document.addEventListener("click", (event) => {
+    closeHelp(event.target.closest && event.target.closest("details.tool-more"));
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeHelp(null);
+  });
 })();
