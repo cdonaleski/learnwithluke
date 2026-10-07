@@ -32,6 +32,13 @@
   padding: 0;
 }
 
+/* Hidden means hidden. The browser's own rule is weak enough that any
+   display: set by a class wins over it -- .btn is inline-flex -- so every
+   button the code had hidden was showing anyway: Circuits' Next before the
+   puzzle was solved, the Clock's Check in Explore, the Timer's Lap, Scores'
+   Clear every board, and the Manage link on the sign-in page. */
+[hidden] { display: none !important; }
+
 html {
   scroll-behavior: smooth;
 }

@@ -55,13 +55,16 @@
           <h3 class="rb-heading">Blocks you can use</h3>
           <div class="rb-palette" id="rb-palette" role="group" aria-label="Blocks"></div>
         </div>
+
+        <!-- Run goes with the program it runs, however tall the board is. -->
+        <div class="game-actions">
+          <button type="button" class="btn btn-primary" id="btn-run">▶ Run</button>
+          <button type="button" class="btn btn-primary rb-next" id="btn-next" hidden>Next puzzle →</button>
+          <button type="button" class="btn btn-secondary" id="btn-reset">🧹 Clear</button>
+          <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
+        </div>
       </div>
 
-      <div class="game-actions">
-        <button type="button" class="btn btn-primary" id="btn-run">▶ Run</button>
-        <button type="button" class="btn btn-secondary" id="btn-reset">🧹 Clear</button>
-        <button type="button" class="btn btn-secondary" id="btn-sound" aria-pressed="true">🔊 Sound On</button>
-      </div>
 
       <div class="game-options">
         <div class="option-group" role="group" aria-labelledby="rb-levels-label">

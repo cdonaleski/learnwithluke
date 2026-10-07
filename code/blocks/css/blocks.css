@@ -174,10 +174,8 @@
   .rb-panel > .rb-board      { grid-column: 1; grid-row: 3; }
   .rb-panel > .game-stats    { grid-column: 1; grid-row: 4; }
   .rb-panel > .game-status   { grid-column: 1; grid-row: 5; }
-  /* Blocks and program beside the board; Run straight under the program,
-     level with the score -- not down beside the status line. */
-  .rb-panel > .rb-columns    { grid-column: 2; grid-row: 1 / 4; margin-top: 0; }
-  .rb-panel > .game-actions  { grid-column: 2; grid-row: 4; align-self: center; justify-content: flex-start; margin: 0; }
+  /* Blocks, program and Run beside the board, in one column of their own. */
+  .rb-panel > .rb-columns    { grid-column: 2; grid-row: 1 / 6; margin-top: 0; align-self: start; }
   .rb-panel > .game-options  { grid-column: 1 / -1; grid-row: 6; }
 
   /* In a column half as wide, the blocks to tap go on top and the program
@@ -186,3 +184,6 @@
   .rb-panel .rb-columns > .rb-side:last-child { order: -1; }
   .rb-panel .rb-palette { flex-direction: row; flex-wrap: wrap; }
 }
+
+/* Run sits inside the program column now, across its full width. */
+.rb-columns > .game-actions { grid-column: 1 / -1; margin: 0; justify-content: flex-start; }

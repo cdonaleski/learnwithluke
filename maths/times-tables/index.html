@@ -16,7 +16,7 @@
   <a href="#main-content" class="skip-link">Skip to content</a>
   <div id="site-header"></div>
 
-  <main id="main-content" class="game-page">
+  <main id="main-content" class="game-page tt-page">
     <!-- One row: back, title, and the full explanation one tap away. -->
     <header class="tool-bar">
       <a href="../../stem/index.html#math" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
@@ -28,7 +28,11 @@
     </header>
     <p class="tool-lead" role="note">Press Start and type each answer — the ones you miss come back more often.</p>
 
-    <section class="game-panel" id="round-panel" aria-labelledby="round-title">
+    <!-- The round on the left; what to practice and how you are doing on
+         the right. Stacked, the choice of tables sat under the round -- scroll
+         down to pick, back up to press Start -- and the grid 1100px down. -->
+    <div class="tt-bench">
+      <section class="game-panel" id="round-panel" aria-labelledby="round-title">
       <h2 id="round-title" class="visually-hidden">Practice</h2>
 
       <p class="question" id="question" role="status" aria-live="polite">—</p>
@@ -51,16 +55,15 @@
         <div class="stat stat--alt"><span class="stat-label">Facts solid</span><span class="stat-value" id="solid">—</span></div>
       </div>
     </section>
-
-    <section class="game-panel" aria-labelledby="choose-title">
+      <div class="tt-side">
+        <section class="game-panel" aria-labelledby="choose-title">
       <h2 id="choose-title">What to practice</h2>
       <p class="choose-label">Which tables</p>
       <div class="chips" id="tables" role="group" aria-label="Which tables to practice"></div>
       <p class="choose-label">What kind of question</p>
       <div class="chips" id="modes" role="group" aria-label="Kind of question"></div>
     </section>
-
-    <section class="game-panel" aria-labelledby="grid-title">
+        <section class="game-panel" aria-labelledby="grid-title">
       <h2 id="grid-title">Your grid</h2>
       <p class="lb-note">
         Pale means you have not met it yet. It fills in as you get it right —
@@ -71,6 +74,8 @@
       <h3 class="tricky-title">Ones to watch</h3>
       <div class="tricky" id="tricky"></div>
     </section>
+      </div>
+    </div>
 
     <section class="game-panel" id="leaderboard-panel"></section>
 

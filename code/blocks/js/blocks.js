@@ -289,6 +289,7 @@
       const best = state.done[level().id] || 0;
       if (stars > best) { state.done[level().id] = stars; saveProgress(); }
       fanfare();
+      showNext(true);
       setStatus(stars === 3
         ? "⭐⭐⭐ Perfect! You did it in " + used + " block" + (used === 1 ? "" : "s") + "."
         : "🎉 You got the treasure with " + used + " blocks. It can be done in " + level().par + " — try again for three stars!");
@@ -462,8 +463,22 @@
 
   function setStatus(text) { el.status.textContent = text; }
 
+  /**
+   * After a solve, the way on is right beside Run. There was none: the stars
+   * appeared and the next puzzle was in the list at the bottom of the page.
+   * It is not automatic -- you want to look at your stars, or try again for
+   * three -- but it is one tap, where your finger already is.
+   */
+  const nextBtn = document.getElementById("btn-next");
+  function showNext(solved) {
+    if (!nextBtn) return;
+    const following = state.levelIndex + 1;
+    nextBtn.hidden = !(solved && following < LEVELS.length && isUnlocked(following));
+  }
+
   function loadLevel(index) {
     if (!isUnlocked(index)) return;
+    showNext(false);
     resetRun();
     state.levelIndex = index;
     state.program = [];
@@ -477,6 +492,7 @@
 
   /* ---------- Wiring ---------- */
   el.run.addEventListener("click", runProgram);
+  if (nextBtn) nextBtn.addEventListener("click", () => loadLevel(state.levelIndex + 1));
   el.reset.addEventListener("click", clearProgram);
   el.out.addEventListener("click", stepOut);
   el.sound.addEventListener("click", () => {

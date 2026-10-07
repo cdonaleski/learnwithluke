@@ -127,9 +127,14 @@
     drawStats();
     drawGrid();
 
-    window.setTimeout(function () {
+    // Kept, so Give up can call it off: it used to bring the next question
+    // up on a stopped round, and Give up then Start quickly skipped one.
+    window.clearTimeout(state.pending);
+    state.pending = window.setTimeout(function () {
+      state.pending = null;
       el.entry.classList.remove("is-right", "is-wrong");
       state.marking = false;
+      if (!state.running) return;
       if (state.asked >= ROUND) finishRound();
       else nextQuestion();
     }, right ? 550 : 1900);
@@ -145,6 +150,9 @@
   /* ---------------- Rounds ---------------- */
 
   function startRound() {
+    window.clearTimeout(state.pending);
+    state.pending = null;
+    el.entry.classList.remove("is-right", "is-wrong");
     state.asked = 0;
     state.right = 0;
     state.streak = 0;
@@ -176,6 +184,10 @@
   }
 
   function stopRound() {
+    window.clearTimeout(state.pending);
+    state.pending = null;
+    state.marking = false;
+    el.entry.classList.remove("is-right", "is-wrong");
     state.running = false;
     el.start.textContent = "Start";
     el.ask.textContent = "—";

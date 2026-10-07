@@ -240,7 +240,12 @@
 
     say(right ? "Yes. " + explain(q) : "Not quite. " + explain(q));
     drawStats();
-    window.setTimeout(function () {
+    // Kept, so Stop can call it off -- it used to arrive anyway, and Stop
+    // then Start quickly would skip a question.
+    window.clearTimeout(state.pending);
+    state.pending = window.setTimeout(function () {
+      state.pending = null;
+      if (!state.running) return;
       if (state.asked >= ROUND) finishRound();
       else nextQuestion();
     }, right ? 1500 : 2800);
@@ -263,6 +268,8 @@
 
   function startRound() {
     stopGoingOn();
+    window.clearTimeout(state.pending);
+    state.pending = null;
     state.asked = 0;
     state.right = 0;
     state.running = true;
@@ -369,6 +376,8 @@
     }
     if (state.running) {
       stopGoingOn();
+      window.clearTimeout(state.pending);
+      state.pending = null;
       state.running = false;
       el.start.textContent = "Start";
       el.choices.innerHTML = "";

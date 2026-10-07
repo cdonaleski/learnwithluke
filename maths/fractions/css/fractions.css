@@ -120,3 +120,20 @@
 @media (max-width: 480px) {
   .wall-row { grid-template-columns: 2.1rem 1fr 2.5rem; gap: 0.35rem; }
 }
+
+/* ---------------- The question beside the wall ---------------- */
+.fr-quiz .chips { margin-bottom: 0.8rem; }
+
+@media (min-width: 900px) {
+  .fr-bench {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+  .fr-bench > .game-panel { margin-bottom: 0; }
+  /* The question stays in view while you work on the wall. */
+  .fr-quiz { position: sticky; top: 5rem; }
+}
+.fr-bench { margin-bottom: 1.5rem; }
+.fr-page { max-width: 1140px; }

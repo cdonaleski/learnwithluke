@@ -372,3 +372,12 @@
   .bd-feat td:last-child, .bd-feat th:last-child { width: 4.5rem; }
 }
 .bd-test.is-tie { border-color: var(--color-sun); background: #fffbe9; border-style: dashed; }
+
+/* ---------------- A shorter way into each machine ----------------
+   The heading and three-line introduction above every machine pushed its
+   controls -- the Zib and Zog buttons -- below a laptop screen. The words
+   are all still there, just set tighter. */
+.ai-demo { padding-top: 1rem; }
+.ai-demo .ai-kicker { margin-bottom: 0.15rem; }
+.ai-demo h2 { font-size: 1.3rem; margin-bottom: 0.2rem; }
+.ai-lede { font-size: 0.93rem; line-height: 1.45; margin-bottom: 0.8rem; max-width: none; }

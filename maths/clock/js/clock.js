@@ -166,11 +166,17 @@
 
   function say(text) { el.status.textContent = text; }
 
+  // The question waiting to come on. Kept so stopping, or changing mode,
+  // can call it off -- otherwise it arrived anyway, on a stopped clock.
+  let pending = null;
+  function cancelPending() { window.clearTimeout(pending); pending = null; }
+
   function startRound() {
     if (!MODES[state.mode].asks) {
       say("This is the playing-about mode. Pick 'Read the clock' or 'Set the clock' for questions.");
       return;
     }
+    cancelPending();
     state.asked = 0;
     state.right = 0;
     state.running = true;
@@ -182,6 +188,7 @@
   function nextQuestion() {
     state.target = T.pickTime(state.step);
     state.locked = false;
+    state.answered = false;
     if (state.mode === "read") {
       state.time = state.target;
       state.locked = true;              // the clock is the question, not a toy
@@ -218,18 +225,22 @@
   }
 
   function answerWith(time, button) {
-    if (!state.running) return;
+    if (!state.running || state.answered) return;
     const right = T.wrap(time) === T.wrap(state.target);
     mark(right, button);
   }
 
   function checkSetting() {
-    if (!state.running || state.mode !== "set") return;
+    // Check stayed pressable during the pause after an answer, and a second
+    // press marked the same question again and queued a second next one.
+    if (!state.running || state.mode !== "set" || state.answered) return;
     const right = T.wrap(state.time) === T.wrap(state.target);
     mark(right, null);
   }
 
   function mark(right, button) {
+    state.answered = true;
+    el.check.disabled = true;
     state.asked += 1;
     if (right) state.right += 1;
     state.locked = true;
@@ -249,7 +260,11 @@
     }
     drawStats();
 
-    window.setTimeout(function () {
+    cancelPending();
+    pending = window.setTimeout(function () {
+      pending = null;
+      if (!state.running) return;
+      el.check.disabled = false;
       if (state.asked >= ROUND) finishRound();
       else nextQuestion();
     }, right ? 900 : 2400);
@@ -286,6 +301,8 @@
       button.textContent = MODES[id].label;
       button.setAttribute("aria-pressed", String(state.mode === id));
       button.addEventListener("click", function () {
+        cancelPending();
+        el.check.disabled = false;
         state.mode = id;
         state.running = false;
         state.locked = false;
@@ -339,6 +356,8 @@
 
   el.start.addEventListener("click", function () {
     if (state.running) {
+      cancelPending();
+      el.check.disabled = false;
       state.running = false;
       state.locked = false;
       el.start.textContent = "Start";

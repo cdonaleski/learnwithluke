@@ -30,6 +30,21 @@
 
     <nav class="pg-rail" id="pg-rail" aria-label="Starter projects"></nav>
 
+    <!-- The project, as one strip above both columns. Inside the code column
+         it pushed the editor down to 600px, level with the bottom half of
+         the page it makes. -->
+    <section class="game-panel pg-brief">
+      <div class="pg-brief-main">
+        <p class="pg-kicker" id="pg-kicker">Project 1</p>
+        <h2 id="pg-title">Hello, World</h2>
+        <p id="pg-blurb"></p>
+      </div>
+      <div class="pg-brief-tries">
+        <p class="pg-kicker">Try this</p>
+        <ul class="pg-tries" id="pg-tries"></ul>
+      </div>
+    </section>
+
     <div class="pg-viewswitch" role="group" aria-label="Show code or result">
       <button type="button" class="option-btn is-active" data-view="code" aria-pressed="true">✏️ Code</button>
       <button type="button" class="option-btn" data-view="result" aria-pressed="false">▶️ Result</button>
@@ -37,19 +52,19 @@
 
     <div class="pg-bench show-code" id="pg-bench">
       <div class="pg-col pg-col--code">
-        <section class="game-panel pg-brief">
-          <p class="pg-kicker" id="pg-kicker">Project 1</p>
-          <h2 id="pg-title">Hello, World</h2>
-          <p id="pg-blurb"></p>
-          <p class="pg-kicker">Try this</p>
-          <ul class="pg-tries" id="pg-tries"></ul>
-        </section>
 
         <section class="game-panel pg-editor">
-          <div class="pg-tabs" role="tablist" aria-label="Files">
-            <button type="button" class="pg-tab is-active" data-file="html" role="tab" aria-selected="true">index.html</button>
-            <button type="button" class="pg-tab" data-file="css" role="tab" aria-selected="false">style.css</button>
-            <button type="button" class="pg-tab" data-file="js" role="tab" aria-selected="false">script.js</button>
+          <!-- Run belongs with the code it runs, not under the whole page. -->
+          <div class="pg-editor-head">
+            <div class="pg-tabs" role="tablist" aria-label="Files">
+              <button type="button" class="pg-tab is-active" data-file="html" role="tab" aria-selected="true">index.html</button>
+              <button type="button" class="pg-tab" data-file="css" role="tab" aria-selected="false">style.css</button>
+              <button type="button" class="pg-tab" data-file="js" role="tab" aria-selected="false">script.js</button>
+            </div>
+            <div class="pg-run">
+              <button type="button" class="pg-run-btn" id="btn-run">▶ Run</button>
+              <button type="button" class="pg-run-btn pg-run-btn--stop" id="btn-stop">⏹ Stop</button>
+            </div>
           </div>
           <div class="pg-editor-wrap">
             <div class="pg-gutter" id="pg-gutter" aria-hidden="true">1</div>
@@ -80,8 +95,6 @@
     <p class="game-status" id="pg-status" role="status" aria-live="polite">Pick a project and start changing things!</p>
 
     <div class="game-actions">
-      <button type="button" class="btn btn-primary" id="btn-run">▶ Run</button>
-      <button type="button" class="btn btn-secondary" id="btn-stop">⏹ Stop</button>
       <button type="button" class="btn btn-secondary" id="btn-share">🔗 Copy Link</button>
       <button type="button" class="btn btn-secondary" id="btn-reset">↺ Start Over</button>
       <label class="pg-switch"><input type="checkbox" id="pg-autorun" checked> Run as I type</label>
