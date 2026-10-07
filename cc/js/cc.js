@@ -247,7 +247,7 @@
       if (/[A-Za-z0-9]/.test(ch)) {
         // Digits are masked like letters: showing "104" in full would be the
         // whole answer for most of the math strand.
-        out += seenFirst ? "·" : ch;
+        out += seenFirst ? "_" : ch;
         seenFirst = true;
       } else {
         out += ch;
@@ -286,6 +286,29 @@
     return words.slice(0, lead).join(" ") + " … (" + rest + " more word" + (rest === 1 ? "" : "s") + ")";
   }
 
+  /**
+   * Recite help is different in kind from Cards help. In Cards the student is
+   * looking at the screen, so a first-letter skeleton works -- you read it
+   * with your eyes. In Recite the CHECKER is holding the screen and speaking,
+   * and nobody can say "c_______, e_______" out loud. So what they get is a
+   * sayable prompt: the opening word, or just how many parts there are.
+   */
+  function nudgeFor(card, level) {
+    if (!card || !card.a || !level || level === "hard") return "";
+    const words = String(card.a).split(/\s+/).filter(Boolean);
+    if (words.length < 2) return "";
+
+    if (level !== "easy") return words.length + " words in all";
+
+    // A long sentence usually opens on an article, and "The..." is no help to
+    // anybody. Give a phrase, enough to start the tongue moving; a short list
+    // only needs its first item.
+    const lead = words.length > 8 ? 3 : 1;
+    const rest = words.length - lead;
+    return "\u201c" + words.slice(0, lead).join(" ") + "\u2026\u201d  then " +
+      rest + " more word" + (rest === 1 ? "" : "s");
+  }
+
   function levelOf(id) {
     return LEVELS.filter(function (l) { return l.id === id; })[0] || LEVELS[2];
   }
@@ -303,6 +326,7 @@
     LEVELS: LEVELS,
     levelOf: levelOf,
     hintFor: hintFor,
+    nudgeFor: nudgeFor,
     skeleton: skeleton,
     hasPair: hasPair,
     askedAs: askedAs,

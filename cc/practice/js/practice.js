@@ -38,6 +38,13 @@
       why: "With a parent or a friend. They read the prompt and check you — this is proof day." },
   ];
 
+  /** Recite help is spoken, so the levels mean something different there. */
+  const RECITE_WHY = {
+    easy: "If they stall, you can give them the opening words.",
+    medium: "If they stall, all you can tell them is how many words.",
+    hard: "Nothing to give them. This is proof day.",
+  };
+
   const state = {
     cycle: Number(new URLSearchParams(window.location.search).get("cycle")) || 0,
     strand: "all",
@@ -53,11 +60,27 @@
     round: null,
     picked: null,
     done: {},
+    // What happened in THIS sitting. The progress store knows the long run;
+    // this is so a parent can see, at the end, what to work on tonight.
+    missed: [],
+    drill: null,
   };
 
   if (!state.cycle) {
     const first = CC.cycles()[0];
     state.cycle = first ? first.cycle : 3;
+  }
+
+  /**
+   * Keyboard advice, but only where there is a keyboard. A phone has no
+   * space bar and telling it to press one is noise.
+   */
+  function hasKeyboard() {
+    return Boolean(window.matchMedia && window.matchMedia("(pointer: fine)").matches);
+  }
+
+  function keys(text) {
+    return hasKeyboard() ? " · " + text : "";
   }
 
   function make(tag, className, text) {
@@ -166,7 +189,8 @@
     const dir = CC.DIRECTIONS.filter(function (d) { return d.id === state.direction; })[0];
     const level = CC.levelOf(state.level);
     if (el.why && mode) {
-      el.why.textContent = mode.why + " · " + level.why +
+      const levelWhy = state.mode === "recite" ? RECITE_WHY[level.id] : level.why;
+      el.why.textContent = mode.why + " · " + levelWhy +
         (twoSided && dir && dir.id !== "taught" ? " · " + dir.why : "");
     }
 
@@ -186,15 +210,24 @@
   /* ---------------- Running ---------------- */
 
   function cards() {
+    if (state.drill) return state.drill;
     return CC.pick(state.cycle, state.strand, state.sections, state.direction);
   }
 
+  /** Start over on whatever is chosen. Any change to the pickers lands here. */
   function restart() {
+    state.drill = null;
+    begin();
+  }
+
+  /** Lay out a run. `state.drill`, when set, narrows it to a chosen few. */
+  function begin() {
     state.queue = CC.forPractice(cards());
     state.at = 0;
     state.shown = false;
     state.picked = null;
     state.done = {};
+    state.missed = [];
     state.round = state.mode === "match"
       ? CC.matchRound(state.queue, CC.levelOf(state.level).pairs)
       : null;
@@ -203,6 +236,10 @@
   }
 
   function draw() {
+    // Every draw replaces the stage, so keys bound to the screen being thrown
+    // away go with it -- or space would fire a verdict on a card that is gone.
+    state.space = null;
+    state.nope = null;
     const all = cards();
     const sum = CC.tally(all);
     el.count.textContent = all.length ? sum.learned + " of " + sum.total + " learned" : "";
@@ -227,35 +264,70 @@
     else drawCard();
   }
 
-  /** Cards: on your own, flip it over. */
+  /**
+   * Cards: a real card with two sides, which turns over.
+   *
+   * The flip is a CSS transition, so the card must NOT be rebuilt when it is
+   * turned -- a node created and transformed in the same tick has no starting
+   * style to animate from and simply snaps. Both faces are therefore built up
+   * front and turning over only toggles a class on what is already there.
+   */
   function drawCard() {
     if (state.at >= state.queue.length) { drawFinished(); return; }
     const card = state.queue[state.at];
 
-    const box = make("div", "cc-card" + (state.shown ? " is-open" : ""));
-    box.appendChild(whereLine(card));
-    box.appendChild(make("p", "cc-q", card.q));
+    const flip = make("div", "cc-flip");
+    const inner = make("div", "cc-flip-inner");
+
+    const front = make("div", "cc-face cc-face--front");
+    front.appendChild(whereLine(card));
+    front.appendChild(make("p", "cc-q", card.q));
+    const hint = CC.hintFor(card, state.level);
+    if (hint) front.appendChild(make("p", "cc-hint", hint));
+    front.appendChild(make("p", "cc-face-foot",
+      "Say it out loud, then " + (hasKeyboard() ? "press space" : "tap the card")));
+
+    const back = make("div", "cc-face cc-face--back");
+    back.appendChild(make("p", "cc-aside", "The answer"));
+    back.appendChild(make("p", "cc-a", card.a));
+    if (card.note) back.appendChild(make("p", "cc-note", card.note));
+    // The point of the exercise is that the answer is not there yet, so it is
+    // hidden from a screen reader too, not just from the eye.
+    back.setAttribute("aria-hidden", "true");
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    flip.appendChild(inner);
+
+    const turn = make("button", "btn btn-secondary", "Turn it over");
+    turn.type = "button";
+
+    function turnOver() {
+      if (state.shown) return;
+      state.shown = true;
+      flip.classList.add("is-flipped");
+      front.setAttribute("aria-hidden", "true");
+      back.setAttribute("aria-hidden", "false");
+      turn.textContent = "Next →";
+      turn.className = "btn btn-primary";
+    }
+
+    turn.addEventListener("click", function () {
+      if (state.shown) step(); else turnOver();
+    });
+    flip.addEventListener("click", turnOver);
+
+    // Space is the one key the hands are already on. In Cards it means
+    // "carry on": turn this card over, and once it is over, deal the next.
+    state.space = function () { if (state.shown) step(); else turnOver(); };
 
     const row = make("div", "game-actions");
-    if (state.shown) {
-      box.appendChild(make("p", "cc-a", card.a));
-      if (card.note) box.appendChild(make("p", "cc-note", card.note));
-      const next = make("button", "btn btn-primary", "Next →");
-      next.type = "button";
-      next.addEventListener("click", function () { step(); });
-      row.appendChild(next);
-    } else {
-      const hint = CC.hintFor(card, state.level);
-      if (hint) box.appendChild(make("p", "cc-hint", hint));
-      const peek = make("button", "btn btn-secondary", "Turn it over");
-      peek.type = "button";
-      peek.addEventListener("click", function () { state.shown = true; draw(); });
-      row.appendChild(peek);
-    }
-    box.appendChild(row);
+    row.appendChild(turn);
 
-    el.stage.appendChild(box);
-    el.stage.appendChild(make("p", "cc-where", (state.at + 1) + " of " + state.queue.length));
+    el.stage.appendChild(flip);
+    el.stage.appendChild(row);
+    el.stage.appendChild(make("p", "cc-where",
+      (state.at + 1) + " of " + state.queue.length + keys("space turns it over")));
   }
 
   /**
@@ -283,27 +355,48 @@
     // card would be help nobody can use -- they can already see the whole
     // answer. It belongs down here, as something to feed the student when
     // they stall. At Hard there is nothing to feed them, which is the point.
-    const hint = CC.hintFor(card, state.level);
-    if (hint) {
-      checker.appendChild(make("p", "cc-aside cc-aside--nudge", "If they stall, read them this:"));
-      checker.appendChild(make("p", "cc-hint", hint));
+    // Spoken help, because the checker is speaking. A first-letter skeleton
+    // is something you read with your eyes; nobody can say it out loud.
+    const nudge = CC.nudgeFor(card, state.level);
+    if (nudge) {
+      checker.appendChild(make("p", "cc-aside cc-aside--nudge", "If they stall, you can give them:"));
+      checker.appendChild(make("p", "cc-nudge", nudge));
     }
     box.appendChild(checker);
 
     const row = make("div", "game-actions");
     const got = make("button", "btn btn-primary", "✓ Said it all");
     got.type = "button";
-    got.addEventListener("click", function () { CC.saidIt(card, true); step(); });
+    got.addEventListener("click", function () { judge(card, true); });
     const missed = make("button", "btn btn-secondary", "Not yet");
     missed.type = "button";
-    missed.addEventListener("click", function () { CC.saidIt(card, false); step(); });
+    missed.addEventListener("click", function () { judge(card, false); });
     row.appendChild(got);
     row.appendChild(missed);
     box.appendChild(row);
 
+    // Space is the common case -- it went fine, carry on. A miss is the
+    // judgment worth making deliberately, so it keeps a key of its own.
+    state.space = function () { judge(card, true); };
+    state.nope = function () { judge(card, false); };
+
     el.stage.appendChild(box);
     el.stage.appendChild(make("p", "cc-where",
-      (state.at + 1) + " of " + state.queue.length + " · every word counts"));
+      (state.at + 1) + " of " + state.queue.length + " · every word counts" +
+      keys("space if they got it, N if not")));
+  }
+
+  /**
+   * A verdict in Recite. It goes two places: the long-run progress store,
+   * and this sitting's own list, so the end of the session can say what to
+   * work on rather than just how many were right.
+   */
+  function judge(card, right) {
+    CC.saidIt(card, right);
+    if (!right && !state.missed.some(function (m) { return CC.idOf(m) === CC.idOf(card); })) {
+      state.missed.push(card);
+    }
+    step();
   }
 
   function whereLine(card) {
@@ -320,19 +413,72 @@
     draw();
   }
 
+  /**
+   * The end of a sitting. The count is the least useful thing here: what a
+   * parent needs is the list of what did not come out, with the answers, so
+   * the next ten minutes have somewhere to go.
+   */
   function drawFinished() {
     const box = make("div", "cc-card is-done");
-    box.appendChild(make("p", "cc-q", "That is the whole set."));
+    box.appendChild(make("p", "cc-q", state.drill ? "That is the lot." : "That is the whole set."));
     const sum = CC.tally(cards());
     box.appendChild(make("p", "cc-a", sum.learned + " of " + sum.total + " learned" +
       (sum.left ? " — " + sum.left + " to go." : " — every one of them.")));
+
+    const row = make("div", "game-actions");
     const again = make("button", "btn btn-primary", "Go again");
     again.type = "button";
-    again.addEventListener("click", restart);
-    const row = make("div", "game-actions");
+    again.addEventListener("click", function () { restart(); });
     row.appendChild(again);
+
+    if (state.missed.length) {
+      const drill = make("button", "btn btn-secondary",
+        "Work on these " + state.missed.length);
+      drill.type = "button";
+      drill.addEventListener("click", function () {
+        state.drill = state.missed.slice();
+        begin();
+      });
+      row.appendChild(drill);
+    }
     box.appendChild(row);
     el.stage.appendChild(box);
+
+    if (state.missed.length) el.stage.appendChild(report());
+    else if (state.mode === "recite") {
+      el.stage.appendChild(make("p", "cc-where", "Nothing missed this time."));
+    }
+
+    state.space = function () { restart(); };
+  }
+
+  /** What did not come out this sitting, grouped the way the proof asks. */
+  function report() {
+    const panel = make("div", "cc-report");
+    panel.appendChild(make("h3", "cc-report-title",
+      "To work on — " + state.missed.length +
+      (state.missed.length === 1 ? " card" : " cards") + " missed"));
+
+    const byWhere = {};
+    state.missed.forEach(function (card) {
+      const strand = CC.strandOf(card.strand);
+      const key = (strand ? strand.icon + " " + strand.label : card.strand) +
+        " · " + card.section + ". " + card.label;
+      if (!byWhere[key]) byWhere[key] = [];
+      byWhere[key].push(card);
+    });
+
+    Object.keys(byWhere).forEach(function (key) {
+      panel.appendChild(make("p", "cc-report-where", key));
+      const list = make("dl", "cc-report-list");
+      byWhere[key].forEach(function (card) {
+        list.appendChild(make("dt", null, card.q));
+        list.appendChild(make("dd", null, card.a));
+      });
+      panel.appendChild(list);
+    });
+
+    return panel;
   }
 
   /* ---------------- Match ---------------- */
@@ -414,6 +560,32 @@
   }
 
   /* ---------------- Wiring ---------------- */
+
+  /**
+   * Space carries on. It is bound per screen rather than globally, because
+   * what "carry on" means changes: turn the card over, deal the next one,
+   * record that it was said. A screen with nothing to carry on to -- Match,
+   * where the work is the tapping -- binds nothing.
+   *
+   * A key press that belongs to a focused control is left alone, or space on
+   * a focused button would fire twice.
+   */
+  document.addEventListener("keydown", function (event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const on = event.target;
+    if (on && (on.tagName === "INPUT" || on.tagName === "TEXTAREA" ||
+               on.tagName === "SELECT" || on.tagName === "BUTTON" ||
+               on.isContentEditable)) return;
+
+    if (event.key === " " || event.key === "Spacebar") {
+      if (!state.space) return;
+      event.preventDefault();      // or the page scrolls out from under you
+      state.space();
+    } else if ((event.key === "n" || event.key === "N") && state.nope) {
+      event.preventDefault();
+      state.nope();
+    }
+  });
 
   el.sectionToggle.addEventListener("click", function () {
     state.sectionsOpen = !state.sectionsOpen;

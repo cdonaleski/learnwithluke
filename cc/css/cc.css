@@ -108,6 +108,66 @@
   margin: 1.5rem auto;
 }
 
+/* ---------------- A card with two sides ----------------
+   Both faces live in the same grid cell, so the card is as tall as the
+   taller of them and nothing has to be positioned absolutely or measured in
+   JS. The back is turned away until the whole inner block rotates. */
+
+.cc-flip {
+  perspective: 1400px;
+  max-width: 44rem;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.cc-flip-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.2, 0.75, 0.3, 1);
+}
+
+.cc-flip.is-flipped .cc-flip-inner { transform: rotateY(180deg); }
+
+.cc-face {
+  grid-area: 1 / 1;
+  min-height: 12rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  border: 3px solid #e8e2d8;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cc-face > * { margin: 0; }
+.cc-face > * + * { margin-top: 0.7rem; }
+
+.cc-face--back {
+  transform: rotateY(180deg);
+  border-color: var(--color-purple);
+  background: #f7f4fd;
+}
+
+.cc-flip:hover .cc-face--front { border-color: var(--color-purple); }
+
+/* The one line that says the card does something when you touch it. */
+.cc-face-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-flip-inner { transition: none; }
+}
+
 /* ---------------- One card at a time ---------------- */
 
 .cc-card {
@@ -187,6 +247,16 @@
 .cc-aside--nudge { margin-top: 0.9rem; padding-top: 0.7rem; border-top: 2px dashed #e8dcae; }
 .cc-checker .cc-hint { margin-top: 0.2rem; }
 
+/* The checker's spoken prompt. Not monospace: it is meant to be said, and
+   the scaffold typeface would make it look like something to decode. */
+.cc-nudge {
+  margin-top: 0.2rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-orange);
+}
+
 .cc-note { margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-muted); font-style: italic; }
 .cc-card .game-actions { margin-top: 1.1rem; }
 .cc-where { text-align: center; margin-top: 0.8rem; font-size: 0.85rem; color: var(--color-text-muted); }
@@ -225,6 +295,39 @@
 .cc-pair.is-wrong { border-color: var(--color-coral); background: #ffeaea; }
 .cc-pair.is-nudge { border-color: var(--color-sun); background: #fffbe8; }
 .cc-pair:focus-visible { outline: 3px solid var(--color-purple); outline-offset: 2px; }
+
+/* ---------------- What to work on ----------------
+   Printed after a sitting, so the next ten minutes have somewhere to go. */
+
+.cc-report {
+  max-width: 44rem;
+  margin: 1.5rem auto 0;
+  padding: 1.2rem 1.4rem;
+  border-radius: var(--radius-md);
+  border: 2px solid #f0d8c8;
+  background: #fff8f3;
+}
+
+.cc-report-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-orange);
+  margin: 0 0 0.8rem;
+}
+
+.cc-report-where {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: 1rem 0 0.3rem;
+}
+
+.cc-report-list { margin: 0; }
+.cc-report-list dt { font-weight: 700; color: var(--color-text); margin-top: 0.5rem; }
+.cc-report-list dd { margin: 0.1rem 0 0; color: var(--color-purple); }
 
 /* ---------------- The hub ---------------- */
 
