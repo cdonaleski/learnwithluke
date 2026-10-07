@@ -16,74 +16,44 @@
   <a href="#main-content" class="skip-link">Skip to content</a>
   <div id="site-header"></div>
 
-  <main id="main-content" class="game-page">
-    <a href="../index.html" class="game-back">← Back to Memory Work</a>
+  <main id="main-content" class="game-page cc-practice">
+    <h1 class="visually-hidden">Practice Memory Work</h1>
 
-    <header class="game-header">
-      <h1>🧠 Practice</h1>
-      <p class="game-instructions" role="note">
-        <strong>Cards and Match you can do on your own. Recite needs someone else</strong> —
-        a parent or a friend reads the prompt and checks you, the way it goes on proof day.
-        Easy leans on you least — it shows the shape of the answer; Hard gives you nothing.
-        Space turns a card over and moves you on.
-      </p>
+    <!-- The one thing that stays at the top: where you are, and the way to
+         change it. Everything about WHAT to practice lives behind Change,
+         because it is chosen once a sitting, not once a card. -->
+    <header class="cc-bar">
+      <a href="../index.html" class="cc-bar-back" title="Back to the Year at a Glance">
+        <span aria-hidden="true">←</span><span class="cc-bar-back-label">Year</span>
+      </a>
+      <button type="button" class="cc-bar-what" id="cc-what"
+              aria-haspopup="dialog" aria-controls="cc-sheet">
+        <span class="cc-bar-title" id="cc-what-title"></span>
+        <span class="cc-bar-sub" id="cc-count" role="status" aria-live="polite"></span>
+      </button>
+      <button type="button" class="cc-bar-change" id="cc-change"
+              aria-haspopup="dialog" aria-controls="cc-sheet">Change</button>
     </header>
 
-    <!-- Everything you choose, in one bar that stays put while you work. -->
-    <div class="cc-tools" id="cc-app">
-      <!-- On a phone the full bar is half the screen, so there it collapses to
-           this one line and the card keeps the room. Desktop never sees it. -->
-      <button type="button" class="cc-summary" id="cc-summary"
-              aria-expanded="false" aria-controls="cc-app"></button>
-
-      <div class="cc-row" id="pick-cycle" role="group" aria-label="Which cycle"></div>
-
-      <div class="cc-row">
-        <span class="cc-row-label">Strand</span>
-        <span class="cc-row" id="pick-strand" role="group" aria-label="Which strand"></span>
+    <!-- HOW to practice: one switch for the mode, a smaller one for help. -->
+    <div class="cc-how">
+      <div class="cc-seg cc-seg--mode" id="pick-mode" role="group" aria-label="How to practice"></div>
+      <div class="cc-how-sub">
+        <div class="cc-seg cc-seg--small" id="pick-level" role="group" aria-label="How much help"></div>
+        <div class="cc-seg cc-seg--small" id="pick-direction" role="group" aria-label="Which language to answer in" hidden></div>
       </div>
-
-      <div class="cc-row" id="section-bar" hidden>
-        <span class="cc-row-label">Weeks</span>
-        <button type="button" class="cc-section-toggle" id="section-toggle"
-                aria-expanded="false" aria-controls="pick-section"></button>
-        <button type="button" class="chip chip--today" id="pick-today"
-                aria-pressed="false">★ Today</button>
-        <div class="cc-row chips--sections" id="pick-section" role="group" aria-label="Which weeks" hidden>
-          <div class="cc-row" id="pick-range" role="group" aria-label="A block of weeks"></div>
-          <div class="cc-row" id="pick-week" role="group" aria-label="One week at a time"></div>
-          <label class="cc-reached" for="pick-reached">
-            We are on week
-            <select id="pick-reached"></select>
-            <span class="cc-reached-why">Today only ever asks for weeks you have been taught.</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="cc-row">
-        <span class="cc-row-label">How</span>
-        <span class="cc-row" id="pick-mode" role="group" aria-label="How to practice"></span>
-        <span class="cc-row" id="pick-level" role="group" aria-label="How much help"></span>
-        <span class="cc-row" id="pick-direction" role="group" aria-label="Which language to answer in" hidden></span>
-      </div>
-
-      <div class="cc-row">
-        <p class="cc-mode-why" id="cc-mode-why"></p>
-      </div>
-
-      <div class="cc-row">
-        <span class="cc-count" id="cc-count" role="status" aria-live="polite"></span>
-      </div>
+      <p class="cc-mode-why" id="cc-mode-why"></p>
     </div>
 
-    <section class="game-panel" aria-labelledby="stage-title">
+    <!-- The card. The rest of the page is here to serve it. -->
+    <section class="cc-stage-wrap" aria-labelledby="stage-title">
       <h2 id="stage-title" class="visually-hidden">Practicing</h2>
       <p class="cc-empty" id="cc-empty" hidden></p>
       <div id="cc-stage"></div>
     </section>
 
-    <section class="game-panel game-help" aria-labelledby="help-title">
-      <h2 id="help-title">How It Works</h2>
+    <details class="cc-help">
+      <summary>How it works</summary>
       <dl>
         <dt>On your own: Cards and Match</dt>
         <dd><strong>Cards</strong> shows one prompt, you say it, then turn it
@@ -149,7 +119,44 @@
         family's own copy of this page at home, word for word — which is what
         proof day needs.</dd>
       </dl>
-    </section>
+    </details>
+
+    <!-- WHAT to practice. A real dialog, so it traps focus, closes on Escape,
+         and sits over the card rather than pushing it down the page. -->
+    <dialog class="cc-sheet" id="cc-sheet" aria-labelledby="sheet-title">
+      <div class="cc-sheet-head">
+        <h2 id="sheet-title">What to practice</h2>
+        <button type="button" class="cc-sheet-done" id="cc-sheet-done">Done</button>
+      </div>
+
+      <div class="cc-sheet-group" id="pick-cycle-group">
+        <h3 class="cc-sheet-label">Cycle</h3>
+        <div class="cc-row" id="pick-cycle" role="group" aria-label="Which cycle"></div>
+      </div>
+
+      <div class="cc-sheet-group">
+        <h3 class="cc-sheet-label">Strand</h3>
+        <div class="cc-row" id="pick-strand" role="group" aria-label="Which strand"></div>
+      </div>
+
+      <div class="cc-sheet-group" id="section-bar" hidden>
+        <h3 class="cc-sheet-label">Weeks</h3>
+        <button type="button" class="cc-today" id="pick-today" aria-pressed="false">
+          <span class="cc-today-star" aria-hidden="true">★</span>
+          <span class="cc-today-text">
+            <strong>Today’s review</strong>
+            <span id="cc-today-why"></span>
+          </span>
+        </button>
+        <div class="cc-row" id="pick-range" role="group" aria-label="A block of weeks"></div>
+        <div class="cc-weeks" id="pick-week" role="group" aria-label="One week at a time"></div>
+        <label class="cc-reached" for="pick-reached">
+          We are on week
+          <select id="pick-reached"></select>
+          <span class="cc-reached-why">Today only ever asks for weeks you have been taught.</span>
+        </label>
+      </div>
+    </dialog>
   </main>
 
   <div id="site-footer"></div>

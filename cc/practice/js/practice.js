@@ -9,17 +9,20 @@
   "use strict";
 
   const CC = window.CC;
-  const root = document.getElementById("cc-app");
+  const root = document.getElementById("cc-stage");
   if (!CC || !root) return;
 
   const el = {
     cycles: document.getElementById("pick-cycle"),
     strands: document.getElementById("pick-strand"),
     sectionBar: document.getElementById("section-bar"),
-    tools: document.getElementById("cc-app"),
-    summary: document.getElementById("cc-summary"),
-    sectionToggle: document.getElementById("section-toggle"),
-    sections: document.getElementById("pick-section"),
+    cycleGroup: document.getElementById("pick-cycle-group"),
+    what: document.getElementById("cc-what"),
+    whatTitle: document.getElementById("cc-what-title"),
+    change: document.getElementById("cc-change"),
+    sheet: document.getElementById("cc-sheet"),
+    sheetDone: document.getElementById("cc-sheet-done"),
+    todayWhy: document.getElementById("cc-today-why"),
     today: document.getElementById("pick-today"),
     ranges: document.getElementById("pick-range"),
     weeks: document.getElementById("pick-week"),
@@ -70,8 +73,6 @@
     direction: "taught",
     level: "medium",
     mode: "cards",
-    sectionsOpen: false,
-    toolsOpen: false,
     today: false,
     // Where the community actually is in the year. Remembered, because it is
     // a fact about the family, not about this sitting.
@@ -212,13 +213,12 @@
         restart();
       }));
     });
-    el.cycles.hidden = CC.cycles().length < 2;
+    el.cycleGroup.hidden = CC.cycles().length < 2;
 
     el.strands.innerHTML = "";
     el.strands.appendChild(chip("All", state.strand === "all", function () {
       state.strand = "all";
       state.sections = [];
-      state.sectionsOpen = false;
       restart();
     }));
     CC.strandsWithCards(state.cycle).forEach(function (strand) {
@@ -236,13 +236,10 @@
     const weeks = CC.sectionsWithCards(state.cycle, state.strand);
     el.sectionBar.hidden = weeks.length < 2;
     if (weeks.length > 1) {
-      el.sectionToggle.textContent = summaryOfWeeks(weeks) + (state.sectionsOpen ? " ▴" : " ▾");
-      el.sectionToggle.setAttribute("aria-expanded", String(state.sectionsOpen));
-
       el.today.classList.toggle("is-on", state.today);
       el.today.setAttribute("aria-pressed", String(state.today));
+      el.todayWhy.textContent = CC.reviewWhy(CC.reviewDay(new Date(), state.reached));
 
-      el.sections.hidden = !state.sectionsOpen;
       drawRanges(weeks);
       drawWeeks(weeks);
       drawReached();
@@ -265,7 +262,10 @@
     });
 
     // Only Latin has two-sided cards, so the choice only appears there.
-    const twoSided = CC.canChooseDirection(state.cycle, state.strand, state.sections);
+    // Only when Latin is the strand chosen. Across every strand it was a
+    // third control on screen for the sake of one strand in seven.
+    const twoSided = state.strand === "latin" &&
+      CC.canChooseDirection(state.cycle, state.strand, state.sections);
     el.directions.hidden = !twoSided;
     el.directions.innerHTML = "";
     if (twoSided) {
@@ -281,34 +281,36 @@
     const dir = CC.DIRECTIONS.filter(function (d) { return d.id === state.direction; })[0];
     const level = CC.levelOf(state.level);
     if (el.why && mode) {
-      const levelWhy = state.mode === "recite" ? RECITE_WHY[level.id] : level.why;
+      // The level means a different thing in each mode, so it is described
+      // in that mode's terms.
+      const levelWhy = state.mode === "recite" ? RECITE_WHY[level.id]
+        : state.mode === "match" ? level.pairs + " pairs on screen at a time."
+        : level.why;
       el.why.textContent = (state.today ? CC.reviewWhy(CC.reviewDay(new Date(), state.reached)) + " " : "") +
         mode.why + " · " + levelWhy +
         (twoSided && dir && dir.id !== "taught" ? " · " + dir.why : "");
     }
 
-    if (el.summary) {
-      const strand = state.strand === "all" ? null : CC.strandOf(state.strand);
-      const where = strand ? strand.icon + " " + strand.label : "Everything";
-      const which = state.sections.length
-        ? " " + state.sections.slice().sort(function (a, b) { return a - b; }).join(", ")
-        : "";
-      el.summary.textContent = (mode ? mode.icon + " " + mode.label : "") +
-        " · " + where + which + " · " + level.label +
-        (state.toolsOpen ? "  ▴" : "  ▾");
-      el.summary.setAttribute("aria-expanded", String(state.toolsOpen));
-    }
+    const strand = state.strand === "all" ? null : CC.strandOf(state.strand);
+    const where = state.drill ? "The ones you missed"
+      : strand ? strand.icon + " " + strand.label : "Every strand";
+    const weeksPart = summaryOfWeeks(CC.sectionsWithCards(state.cycle, state.strand));
+    el.whatTitle.textContent = !state.drill && !strand && !state.today && !state.sections.length
+      ? "Everything"
+      : where + " · " + weeksPart;
   }
 
   /* ---------------- Running ---------------- */
 
   function cards() {
     if (state.drill) return state.drill;
+    // The direction only ever applies where its control is visible.
+    const direction = state.strand === "latin" ? state.direction : "taught";
     if (!state.today) {
-      return CC.pick(state.cycle, state.strand, state.sections, state.direction);
+      return CC.pick(state.cycle, state.strand, state.sections, direction);
     }
 
-    const everything = CC.pick(state.cycle, state.strand, [], state.direction);
+    const everything = CC.pick(state.cycle, state.strand, [], direction);
     const plan = CC.reviewDay(new Date(), state.reached);
     // Sunday asks for what has gone wrong rather than a slice of the calendar.
     if (plan.kind === "catchup") return CC.stillShaky(everything);
@@ -679,6 +681,7 @@
    */
   document.addEventListener("keydown", function (event) {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
+    if (el.sheet.open) return;
     const on = event.target;
     if (on && (on.tagName === "INPUT" || on.tagName === "TEXTAREA" ||
                on.tagName === "SELECT" || on.tagName === "BUTTON" ||
@@ -706,18 +709,27 @@
     restart();
   });
 
-  el.sectionToggle.addEventListener("click", function () {
-    state.sectionsOpen = !state.sectionsOpen;
-    drawPickers();
-  });
+  /* ---------------- The sheet ---------------- */
 
-  if (el.summary) {
-    el.summary.addEventListener("click", function () {
-      state.toolsOpen = !state.toolsOpen;
-      el.tools.classList.toggle("is-open", state.toolsOpen);
-      drawPickers();
-    });
+  function openSheet() {
+    if (typeof el.sheet.showModal === "function") el.sheet.showModal();
+    else el.sheet.setAttribute("open", "");
   }
+
+  function closeSheet() {
+    if (typeof el.sheet.close === "function") el.sheet.close();
+    else el.sheet.removeAttribute("open");
+  }
+
+  el.what.addEventListener("click", openSheet);
+  el.change.addEventListener("click", openSheet);
+  el.sheetDone.addEventListener("click", closeSheet);
+
+  // A tap on the dimmed backdrop is a tap on the dialog element itself, not
+  // on anything inside it -- that is the cue to close.
+  el.sheet.addEventListener("click", function (event) {
+    if (event.target === el.sheet) closeSheet();
+  });
 
   restart();
 

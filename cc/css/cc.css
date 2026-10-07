@@ -1,143 +1,362 @@
 /* Memory Work — page-specific styles */
 
-/* ---------------- The toolbar ----------------
-   Four things to choose and twenty-four sections to choose between. Laid out
-   as plain rows it pushed the card itself off the bottom of a phone, so you
-   scrolled down to read, up to change, down again. It is one compact bar now,
-   stuck to the top: the card is always in view and so are the controls. */
+/* ---------------- The practice screen ----------------
+   Three layers, in order of how often they change:
 
-.cc-tools {
+     the bar     WHAT you are on. Chosen once a sitting, so it is one line,
+                 and the choosing happens in a sheet that opens over the card.
+     the switch  HOW you are practicing. Changed now and then, so it is on
+                 the page, but as one control rather than a row of chips.
+     the card    changes every few seconds, so it gets the room.
+
+   The old toolbar gave all three the same chips at the same size, which is
+   why nothing on it looked more important than anything else. */
+
+.cc-practice { max-width: 52rem; }
+
+/* ---- The bar ---- */
+
+.cc-bar {
   position: sticky;
   top: 0;
   z-index: 20;
-  margin-bottom: 1rem;
-  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.2rem;
+  padding: 0.45rem 0.5rem;
   border-radius: var(--radius-sm);
-  border: 2px solid #e8e2d8;
-  background: color-mix(in srgb, var(--color-bg-alt) 94%, transparent);
+  background: color-mix(in srgb, var(--color-bg-alt) 92%, transparent);
   backdrop-filter: blur(8px);
-  display: grid;
-  gap: 0.4rem;
+  box-shadow: var(--shadow-soft);
 }
 
-/* display:flex beats the [hidden] attribute, so a row JS has hidden -- the
-   cycle chips when there is only one cycle, the sections when no strand is
-   chosen -- would otherwise sit there empty. */
-.cc-row[hidden] { display: none; }
-
-.cc-row {
-  display: flex;
-  flex-wrap: wrap;
+.cc-bar-back {
+  display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-}
-
-.cc-row-label {
+  min-height: 2.6rem;
+  padding: 0 0.7rem;
+  border-radius: var(--radius-sm);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.9rem;
   color: var(--color-text-muted);
-  min-width: 3.4rem;
+  text-decoration: none;
 }
 
-/* Chips in the toolbar are smaller than the site's standard chip: there are
-   a lot of them and they must not become the page. */
-.cc-tools .chip {
+.cc-bar-back:hover { color: var(--color-purple); background: var(--color-bg); }
+
+.cc-bar-what {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 0.3rem 0.6rem;
-  font-size: 0.8rem;
-  border-width: 2px;
-}
-
-.cc-tools .chip.is-on { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
-
-/* Twenty-four section numbers stay folded away behind their own summary. */
-.cc-section-toggle {
-  padding: 0.3rem 0.7rem;
-  border: 2px solid #e8e2d8;
-  border-radius: 999px;
-  background: var(--color-bg);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: var(--color-text);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  text-align: left;
   cursor: pointer;
 }
 
-.cc-section-toggle:hover { border-color: var(--color-purple); }
+.cc-bar-what:hover { background: var(--color-bg); }
 
-.chips--sections { width: 100%; margin-top: 0.3rem; display: grid; gap: 0.4rem; }
-.chips--sections .chip { min-width: 2.2rem; justify-content: center; padding: 0.3rem 0.4rem; }
-
-/* Today is the one chip most people want, so it reads as the shortcut it is
-   rather than as one more filter. */
-/* Specific enough to beat the toolbar's own .chip.is-on purple. */
-.cc-tools .chip--today { border-color: var(--color-sun); }
-.cc-tools .chip--today.is-on {
-  background: var(--color-sun);
-  border-color: var(--color-sun);
-  color: #4a3a12;
-}
-
-.cc-reached {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-}
-
-.cc-reached select {
-  padding: 0.25rem 0.4rem;
-  border: 2px solid #e8e2d8;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg);
+.cc-bar-title {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.82rem;
+  font-weight: 700;
+  font-size: 1rem;
   color: var(--color-text);
 }
 
-.cc-reached-why { flex-basis: 100%; font-size: 0.76rem; }
-
-/* The one-line collapsed form, phones only. */
-.cc-summary { display: none; }
-
-@media (max-width: 640px) {
-  .cc-summary {
-    display: block;
-    width: 100%;
-    padding: 0.45rem 0.6rem;
-    border: 2px solid #e8e2d8;
-    border-radius: var(--radius-sm);
-    background: var(--color-bg);
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-align: left;
-    color: var(--color-text);
-    cursor: pointer;
-  }
-
-  .cc-tools:not(.is-open) > .cc-row { display: none; }
+.cc-bar-sub,
+.cc-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-purple);
 }
+
+.cc-bar-change {
+  min-height: 2.6rem;
+  padding: 0 1rem;
+  border: 2px solid var(--color-purple);
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--color-purple);
+  cursor: pointer;
+}
+
+.cc-bar-change:hover { background: var(--color-purple); color: #fff; }
+
+/* ---- The switch ---- */
+
+.cc-how {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.4rem;
+}
+
+.cc-how-sub {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* A segmented control: one pill holding its options, the chosen one raised.
+   The chips the JS draws are restyled here rather than re-coded, so the
+   behavior that is already tested stays exactly as it was. */
+.cc-seg {
+  display: inline-flex;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: #ece6dc;
+}
+
+.cc-seg[hidden] { display: none; }
+
+.cc-seg .chip {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.cc-seg .chip.is-on {
+  background: var(--color-bg);
+  color: var(--color-purple);
+  box-shadow: 0 1px 4px rgba(60, 40, 90, 0.18);
+}
+
+.cc-seg--mode .chip { padding: 0.6rem 1.3rem; font-size: 1rem; }
+.cc-seg--small .chip { padding: 0.35rem 0.85rem; font-size: 0.82rem; }
 
 .cc-mode-why {
-  font-size: 0.82rem;
+  max-width: 40rem;
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.45;
   color: var(--color-text-muted);
-  margin: 0.1rem 0 0;
-  line-height: 1.4;
 }
-
-.cc-count { font-family: var(--font-display); font-weight: 600; font-size: 0.8rem; color: var(--color-purple); }
 
 .cc-empty {
   text-align: center;
   color: var(--color-text-muted);
   max-width: 54ch;
   margin: 1.5rem auto;
+}
+
+.cc-stage-wrap { margin-bottom: 2rem; }
+
+/* ---- The sheet: what to practice ---- */
+
+.cc-sheet {
+  /* The site resets margin on everything, which also kills the browser's own
+     margin:auto that centers a modal dialog. Put it back. */
+  margin: auto;
+  width: min(40rem, calc(100vw - 2rem));
+  max-height: min(42rem, calc(100vh - 3rem));
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  box-shadow: 0 20px 60px rgba(40, 25, 70, 0.3);
+  color: var(--color-text);
+  overflow: auto;
+}
+
+.cc-sheet::backdrop { background: rgba(40, 25, 70, 0.35); }
+
+.cc-sheet-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem 0.8rem;
+  background: var(--color-bg-alt);
+  border-bottom: 2px solid #ece6dc;
+}
+
+.cc-sheet-head h2 { margin: 0; font-size: 1.15rem; }
+
+.cc-sheet-done {
+  min-height: 2.5rem;
+  padding: 0 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-purple);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cc-sheet-group { padding: 1rem 1.2rem 0.4rem; }
+.cc-sheet-group[hidden] { display: none; }
+.cc-sheet-group:last-child { padding-bottom: 1.4rem; }
+
+.cc-sheet-label {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.cc-row[hidden] { display: none; }
+
+.cc-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* .chip has no style anywhere else on the site -- these were bare browser
+   buttons until now -- so the sheet gives them one. */
+.cc-sheet .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 2px solid #e6dfd3;
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.cc-sheet .chip:hover { border-color: var(--color-purple); }
+.cc-sheet .chip:focus-visible { outline: 3px solid var(--color-purple); outline-offset: 2px; }
+.cc-sheet .chip.is-on { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+.cc-weeks .chip { border-radius: var(--radius-sm); }
+
+/* Today is what most sittings want, so it is a big obvious button with its
+   reason written on it, not one more chip among the weeks. */
+.cc-today {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  margin-bottom: 0.8rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-sun);
+  border-radius: var(--radius-sm);
+  background: #fffbea;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cc-today.is-on { background: var(--color-sun); }
+.cc-today-star { font-size: 1.4rem; color: #c99a00; }
+.cc-today.is-on .cc-today-star { color: #6b5200; }
+.cc-today-text { display: grid; gap: 0.1rem; font-size: 0.82rem; color: #6b5a2a; }
+.cc-today-text strong { font-family: var(--font-display); font-size: 1rem; color: #4a3a12; }
+
+#pick-range { margin-bottom: 0.6rem; }
+
+.cc-weeks {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.cc-weeks .chip { justify-content: center; min-height: 2.6rem; padding: 0; }
+
+.cc-reached {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.cc-reached select {
+  min-height: 2.4rem;
+  padding: 0.25rem 0.5rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.cc-reached-why { flex-basis: 100%; font-size: 0.76rem; }
+
+/* ---- How it works, folded ---- */
+
+.cc-help {
+  max-width: 44rem;
+  margin: 0 auto 2rem;
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  box-shadow: var(--shadow-soft);
+}
+
+.cc-help > summary {
+  padding: 1rem 1.3rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-purple);
+  cursor: pointer;
+  list-style: none;
+}
+
+.cc-help > summary::-webkit-details-marker { display: none; }
+.cc-help > summary::after { content: " ▾"; }
+.cc-help[open] > summary::after { content: " ▴"; }
+
+.cc-help dl { margin: 0; padding: 0 1.3rem 1.3rem; }
+.cc-help dt { font-family: var(--font-display); font-weight: 600; color: var(--color-purple); margin-top: 1rem; }
+.cc-help dt:first-child { margin-top: 0; }
+.cc-help dd { margin: 0.25rem 0 0; color: var(--color-text-muted); }
+
+@media (max-width: 560px) {
+  .cc-bar-back-label { display: none; }
+  .cc-bar-change { padding: 0 0.8rem; }
+  .cc-seg--mode { width: 100%; }
+  .cc-seg--mode .chip { flex: 1; justify-content: center; padding: 0.65rem 0.4rem; font-size: 0.92rem; }
+  .cc-weeks { grid-template-columns: repeat(6, 1fr); }
+
+  /* On a phone the sheet comes up from the bottom, where a thumb is. */
+  .cc-sheet {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 85vh;
+    margin: auto 0 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-seg .chip { transition: none; }
 }
 
 /* ---------------- A card with two sides ----------------
@@ -147,7 +366,7 @@
 
 .cc-flip {
   perspective: 1400px;
-  max-width: 44rem;
+  max-width: 46rem;
   margin: 0 auto;
   cursor: pointer;
 }
@@ -162,8 +381,8 @@
 
 .cc-face {
   grid-area: 1 / 1;
-  min-height: 12rem;
-  padding: 1.5rem;
+  min-height: 17rem;
+  padding: 2rem 1.75rem 1.5rem;
   border-radius: var(--radius-md);
   border: 3px solid #e8e2d8;
   background: var(--color-bg);
@@ -229,13 +448,13 @@
 .cc-q {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.15rem, 3.4vw, 1.6rem);
+  font-size: clamp(1.4rem, 4.2vw, 2.2rem);
   line-height: 1.3;
   color: var(--color-text);
 }
 
 .cc-a {
-  font-size: clamp(1rem, 2.8vw, 1.25rem);
+  font-size: clamp(1.1rem, 3vw, 1.45rem);
   line-height: 1.5;
   color: var(--color-purple);
 }
@@ -388,7 +607,6 @@
   /* Two columns of long answers is unreadable on a phone; stack them so the
      pairing runs top to bottom instead of side to side. */
   .cc-match { grid-template-columns: 1fr; }
-  .cc-row-label { min-width: 0; }
   .cc-card { padding: 1.1rem 1rem; }
 }
 
