@@ -20,6 +20,10 @@
     summary: document.getElementById("cc-summary"),
     sectionToggle: document.getElementById("section-toggle"),
     sections: document.getElementById("pick-section"),
+    today: document.getElementById("pick-today"),
+    ranges: document.getElementById("pick-range"),
+    weeks: document.getElementById("pick-week"),
+    reached: document.getElementById("pick-reached"),
     modes: document.getElementById("pick-mode"),
     levels: document.getElementById("pick-level"),
     directions: document.getElementById("pick-direction"),
@@ -45,6 +49,20 @@
     hard: "Nothing to give them. This is proof day.",
   };
 
+  const WEEKS_IN_CYCLE = 24;
+  const REACHED_STORE = "cc-week-reached";
+
+  function readReached() {
+    let saved = 0;
+    try { saved = Number(window.localStorage.getItem(REACHED_STORE)); } catch (err) { saved = 0; }
+    if (!saved || saved < 1 || saved > WEEKS_IN_CYCLE) return WEEKS_IN_CYCLE;
+    return saved;
+  }
+
+  function saveReached(week) {
+    try { window.localStorage.setItem(REACHED_STORE, String(week)); } catch (err) { /* fine */ }
+  }
+
   const state = {
     cycle: Number(new URLSearchParams(window.location.search).get("cycle")) || 0,
     strand: "all",
@@ -54,6 +72,10 @@
     mode: "cards",
     sectionsOpen: false,
     toolsOpen: false,
+    today: false,
+    // Where the community actually is in the year. Remembered, because it is
+    // a fact about the family, not about this sitting.
+    reached: readReached(),
     queue: [],
     at: 0,
     shown: false,
@@ -101,6 +123,73 @@
 
   /* ---------------- The pickers ---------------- */
 
+  /** What the folded-up week button says it is showing. */
+  function summaryOfWeeks(weeks) {
+    if (state.today) {
+      const plan = CC.reviewDay(new Date(), state.reached);
+      if (plan.kind === "catchup") return "★ Today — catch-up";
+      return "★ Today — week" + (plan.weeks.length === 1 ? " " : "s ") + plan.weeks.join(", ");
+    }
+    if (!state.sections.length) return "All " + weeks.length + " weeks";
+    const order = state.sections.slice().sort(function (a, b) { return a - b; });
+    return (order.length === 1 ? "Week " : "Weeks ") + order.join(", ");
+  }
+
+  /** Six-week blocks, because that is how a term is actually reviewed. */
+  function drawRanges(weeks) {
+    const last = weeks[weeks.length - 1].section;
+    el.ranges.innerHTML = "";
+    el.ranges.appendChild(chip("All", !state.today && !state.sections.length, function () {
+      state.today = false;
+      state.sections = [];
+      restart();
+    }));
+    for (let from = 1; from <= last; from += 6) {
+      const to = Math.min(from + 5, last);
+      const span = [];
+      for (let w = from; w <= to; w++) span.push(w);
+      const on = !state.today && span.length === state.sections.length &&
+        span.every(function (w) { return state.sections.indexOf(w) !== -1; });
+      el.ranges.appendChild(chip(from + "–" + to, on, function () {
+        state.today = false;
+        state.sections = span;
+        restart();
+      }, "Weeks " + from + " to " + to));
+    }
+  }
+
+  function drawWeeks(weeks) {
+    el.weeks.innerHTML = "";
+    weeks.forEach(function (row) {
+      const on = !state.today && state.sections.indexOf(row.section) !== -1;
+      // With one strand the label is worth showing; across all of them the
+      // same number means a different thing in each, so it is just the week.
+      const title = state.strand === "all"
+        ? "Week " + row.section
+        : "Week " + row.section + " · " + row.label;
+      el.weeks.appendChild(chip(String(row.section), on, function () {
+        state.today = false;
+        // Weeks add up: revising 1 to 6 means tapping six of them.
+        const where = state.sections.indexOf(row.section);
+        if (where === -1) state.sections.push(row.section); else state.sections.splice(where, 1);
+        restart();
+      }, title));
+    });
+  }
+
+  function drawReached() {
+    if (el.reached.options.length !== WEEKS_IN_CYCLE) {
+      el.reached.innerHTML = "";
+      for (let w = 1; w <= WEEKS_IN_CYCLE; w++) {
+        const option = document.createElement("option");
+        option.value = String(w);
+        option.textContent = String(w);
+        el.reached.appendChild(option);
+      }
+    }
+    el.reached.value = String(state.reached);
+  }
+
   function drawPickers() {
     el.cycles.innerHTML = "";
     CC.cycles().forEach(function (cycle) {
@@ -128,32 +217,23 @@
       }));
     });
 
-    // Sections only mean something inside one strand: section 7 of math and
-    // section 7 of Latin have nothing to do with each other. They are also
-    // twenty-four buttons, so they stay folded away until asked for.
-    const sections = state.strand === "all" ? [] : CC.sectionsWithCards(state.cycle, state.strand);
-    el.sectionBar.hidden = sections.length < 2;
-    if (sections.length > 1) {
-      el.sectionToggle.textContent = (state.sections.length
-        ? "Sections " + state.sections.slice().sort(function (a, b) { return a - b; }).join(", ")
-        : "All " + sections.length + " sections") + (state.sectionsOpen ? " ▴" : " ▾");
+    // The week is the one thing every strand shares: week 7 is "thirteens" in
+    // math and the axial skeleton in science, because they are the same week
+    // of the year. So the picker works whether one strand is chosen or all of
+    // them. Twenty-four buttons stay folded away until asked for.
+    const weeks = CC.sectionsWithCards(state.cycle, state.strand);
+    el.sectionBar.hidden = weeks.length < 2;
+    if (weeks.length > 1) {
+      el.sectionToggle.textContent = summaryOfWeeks(weeks) + (state.sectionsOpen ? " ▴" : " ▾");
       el.sectionToggle.setAttribute("aria-expanded", String(state.sectionsOpen));
 
-      el.sections.innerHTML = "";
+      el.today.classList.toggle("is-on", state.today);
+      el.today.setAttribute("aria-pressed", String(state.today));
+
       el.sections.hidden = !state.sectionsOpen;
-      el.sections.appendChild(chip("All", state.sections.length === 0, function () {
-        state.sections = [];
-        restart();
-      }));
-      sections.forEach(function (row) {
-        const on = state.sections.indexOf(row.section) !== -1;
-        el.sections.appendChild(chip(String(row.section), on, function () {
-          // Sections add up: revising 1 to 6 means tapping six of them.
-          const where = state.sections.indexOf(row.section);
-          if (where === -1) state.sections.push(row.section); else state.sections.splice(where, 1);
-          restart();
-        }, row.section + ". " + row.label));
-      });
+      drawRanges(weeks);
+      drawWeeks(weeks);
+      drawReached();
     }
 
     el.modes.innerHTML = "";
@@ -190,7 +270,8 @@
     const level = CC.levelOf(state.level);
     if (el.why && mode) {
       const levelWhy = state.mode === "recite" ? RECITE_WHY[level.id] : level.why;
-      el.why.textContent = mode.why + " · " + levelWhy +
+      el.why.textContent = (state.today ? CC.reviewWhy(CC.reviewDay(new Date(), state.reached)) + " " : "") +
+        mode.why + " · " + levelWhy +
         (twoSided && dir && dir.id !== "taught" ? " · " + dir.why : "");
     }
 
@@ -211,7 +292,17 @@
 
   function cards() {
     if (state.drill) return state.drill;
-    return CC.pick(state.cycle, state.strand, state.sections, state.direction);
+    if (!state.today) {
+      return CC.pick(state.cycle, state.strand, state.sections, state.direction);
+    }
+
+    const everything = CC.pick(state.cycle, state.strand, [], state.direction);
+    const plan = CC.reviewDay(new Date(), state.reached);
+    // Sunday asks for what has gone wrong rather than a slice of the calendar.
+    if (plan.kind === "catchup") return CC.stillShaky(everything);
+    return everything.filter(function (card) {
+      return plan.weeks.indexOf(card.section) !== -1;
+    });
   }
 
   /** Start over on whatever is chosen. Any change to the pickers lands here. */
@@ -251,10 +342,14 @@
       const strand = CC.strandOf(state.strand);
       // History is deliberately absent from the published site, so say that
       // rather than letting it look broken.
-      el.empty.textContent = strand && strand.id === "history"
-        ? "The history sentences are Classical Conversations’ own writing, so they are not on the "
-          + "website. They are in the family’s copy of this page at home."
-        : (cycle ? cycle.label : "That cycle") + " has nothing in it yet.";
+      const sundayPlan = state.today ? CC.reviewDay(new Date(), state.reached) : null;
+      el.empty.textContent = sundayPlan && sundayPlan.kind === "catchup"
+        ? "Nothing to catch up on — there is no card you have missed and not since learned. "
+          + "Pick a week, or come back tomorrow for the next slice."
+        : strand && strand.id === "history"
+          ? "The history sentences are Classical Conversations’ own writing, so they are not on the "
+            + "website. They are in the family’s copy of this page at home."
+          : (cycle ? cycle.label : "That cycle") + " has nothing in it yet.";
       return;
     }
 
@@ -403,7 +498,7 @@
     const strand = CC.strandOf(card.strand);
     return make("p", "cc-card-where",
       (strand ? strand.icon + " " + strand.label : card.strand) +
-      " · " + card.section + ". " + card.label +
+      " · week " + card.section + " · " + card.label +
       (CC.isLearned(card) ? " · learned" : ""));
   }
 
@@ -463,7 +558,7 @@
     state.missed.forEach(function (card) {
       const strand = CC.strandOf(card.strand);
       const key = (strand ? strand.icon + " " + strand.label : card.strand) +
-        " · " + card.section + ". " + card.label;
+        " · week " + card.section + " · " + card.label;
       if (!byWhere[key]) byWhere[key] = [];
       byWhere[key].push(card);
     });
@@ -585,6 +680,18 @@
       event.preventDefault();
       state.nope();
     }
+  });
+
+  el.today.addEventListener("click", function () {
+    state.today = !state.today;
+    if (state.today) state.sections = [];
+    restart();
+  });
+
+  el.reached.addEventListener("change", function () {
+    state.reached = Number(el.reached.value) || WEEKS_IN_CYCLE;
+    saveReached(state.reached);
+    restart();
   });
 
   el.sectionToggle.addEventListener("click", function () {

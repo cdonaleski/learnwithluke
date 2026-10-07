@@ -67,8 +67,40 @@
 
 .cc-section-toggle:hover { border-color: var(--color-purple); }
 
-.chips--sections { width: 100%; margin-top: 0.3rem; }
+.chips--sections { width: 100%; margin-top: 0.3rem; display: grid; gap: 0.4rem; }
 .chips--sections .chip { min-width: 2.2rem; justify-content: center; padding: 0.3rem 0.4rem; }
+
+/* Today is the one chip most people want, so it reads as the shortcut it is
+   rather than as one more filter. */
+/* Specific enough to beat the toolbar's own .chip.is-on purple. */
+.cc-tools .chip--today { border-color: var(--color-sun); }
+.cc-tools .chip--today.is-on {
+  background: var(--color-sun);
+  border-color: var(--color-sun);
+  color: #4a3a12;
+}
+
+.cc-reached {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.cc-reached select {
+  padding: 0.25rem 0.4rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--color-text);
+}
+
+.cc-reached-why { flex-basis: 100%; font-size: 0.76rem; }
 
 /* The one-line collapsed form, phones only. */
 .cc-summary { display: none; }

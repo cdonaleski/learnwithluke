@@ -44,10 +44,20 @@
       </div>
 
       <div class="cc-row" id="section-bar" hidden>
-        <span class="cc-row-label">Sections</span>
+        <span class="cc-row-label">Weeks</span>
         <button type="button" class="cc-section-toggle" id="section-toggle"
                 aria-expanded="false" aria-controls="pick-section"></button>
-        <div class="cc-row chips--sections" id="pick-section" role="group" aria-label="Which sections" hidden></div>
+        <button type="button" class="chip chip--today" id="pick-today"
+                aria-pressed="false">★ Today</button>
+        <div class="cc-row chips--sections" id="pick-section" role="group" aria-label="Which weeks" hidden>
+          <div class="cc-row" id="pick-range" role="group" aria-label="A block of weeks"></div>
+          <div class="cc-row" id="pick-week" role="group" aria-label="One week at a time"></div>
+          <label class="cc-reached" for="pick-reached">
+            We are on week
+            <select id="pick-reached"></select>
+            <span class="cc-reached-why">Today only ever asks for weeks you have been taught.</span>
+          </label>
+        </div>
       </div>
 
       <div class="cc-row">
@@ -108,10 +118,23 @@
         the ones already known come last. Time spent on what you know is time
         not spent on what you do not.</dd>
 
-        <dt>Sections, not weeks</dt>
-        <dd>The numbers are the gray boxes on the proof sheets, because that is
-        how the proof is asked: <em>"section seven, thirteens"</em> and you
-        recite the whole box. Tap several to revise a run of them.</dd>
+        <dt>Today</dt>
+        <dd>Twenty-four weeks is too much for one sitting, so Today gives you
+        a slice of it — picked from the day of the week and whether the date
+        is even or odd, the same way the review schedule splits it up. That
+        makes twelve different days before anything comes round again, so you
+        do a little every day and still get through the whole year. The two
+        weeks it gives you are a span apart, one older and one newer, rather
+        than side by side. Sunday is not a slice: it gives you whatever you
+        have missed and not yet learned. And set <em>We are on week</em> to
+        where your community actually is — Today never asks for a week you
+        have not been taught.</dd>
+
+        <dt>Weeks</dt>
+        <dd>The numbers are the weeks on the Year at a Glance, and the same
+        numbers as the gray boxes on the proof sheets — week seven is
+        <em>"thirteens"</em> in math and the axial skeleton's week in science.
+        Tap several to revise a run, or take a whole block of six.</dd>
 
         <dt>Latin goes both ways</dt>
         <dd>Every Latin card is stored as a pair, so it can be asked in either

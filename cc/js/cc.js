@@ -197,6 +197,72 @@
     return { prompts: shuffle(chosen), answers: shuffle(chosen) };
   }
 
+  /* ---------------- Today's review ----------------
+     The whole year is twenty-four weeks and nobody drills twenty-four weeks
+     in a sitting. CC families split review by the day of the week and by
+     whether the date is even or odd, which gives twelve different days
+     before anything repeats -- so you work a little every day and still come
+     round to everything.
+
+     Twelve buckets over twenty-four weeks is two weeks a day, and they are
+     taken a span apart (1 and 13, 2 and 14) rather than side by side, so
+     every sitting mixes something old with something newer.
+
+     Sunday is not a bucket. It is for whatever has been missed, which the
+     progress store already knows. */
+
+  const REVIEW_DAYS = 12;   // six days, each split even and odd
+
+  /**
+   * What today asks for. `upTo` is the week the family has actually reached:
+   * reviewing week 17 in October would be drilling material nobody has been
+   * taught yet, so the slice is only ever drawn from weeks 1..upTo.
+   */
+  function reviewDay(when, upTo) {
+    const day = when.getDay();                 // 0 Sunday .. 6 Saturday
+    const evenDate = when.getDate() % 2 === 0;
+    const reached = Math.max(1, Number(upTo) || 1);
+
+    if (day === 0) return { kind: "catchup", day: day, even: evenDate, weeks: [] };
+
+    // Six weekdays, each split in two by the date: Monday-even, Monday-odd,
+    // Tuesday-even ... Saturday-odd.
+    const bucket = (day - 1) * 2 + (evenDate ? 0 : 1);
+
+    // Early in the year there are fewer weeks than buckets, so the span
+    // closes up and some days repeat a week. Everything taught still gets a
+    // turn, which is the part that matters.
+    const span = Math.min(REVIEW_DAYS, reached);
+    const slot = bucket % span;
+
+    const weeks = [];
+    for (let week = 1; week <= reached; week++) {
+      if ((week - 1) % span === slot) weeks.push(week);
+    }
+    return { kind: "weeks", day: day, even: evenDate, bucket: bucket, weeks: weeks };
+  }
+
+  const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  /** Said plainly, so a parent can see why today is what it is. */
+  function reviewWhy(plan) {
+    if (!plan || plan.kind === "catchup") {
+      return "Sunday — whatever has been missed, rather than a slice of the year.";
+    }
+    return DAY_NAMES[plan.day] + " on an " + (plan.even ? "even" : "odd") +
+      " date, so " + (plan.weeks.length === 1
+        ? "week " + plan.weeks[0] + "."
+        : "weeks " + plan.weeks.join(" and ") + ".");
+  }
+
+  /** Cards missed at some point and not yet learned -- Sunday's work. */
+  function stillShaky(cards) {
+    return cards.filter(function (card) {
+      const score = scoreOf(card);
+      return score.missed > 0 && score.said < SAID_IT_TO_LEARN;
+    });
+  }
+
   /** How far through a set of cards the student is. */
   function tally(cards) {
     const learned = cards.filter(isLearned).length;
@@ -341,6 +407,10 @@
     forPractice: forPractice,
     shuffle: shuffle,
     matchRound: matchRound,
+    reviewDay: reviewDay,
+    reviewWhy: reviewWhy,
+    stillShaky: stillShaky,
+    REVIEW_DAYS: REVIEW_DAYS,
     tally: tally,
     sectionsWithCards: sectionsWithCards,
     strandsWithCards: strandsWithCards,
