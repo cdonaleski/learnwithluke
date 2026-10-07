@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="States and capitals on a real map — find each state, then name its capital, the way the Memory Master geography proof is given. On Learn With Luke">
+  <title>States and Capitals Map · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="../css/cc.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page cc-practice cc-mapping">
+    <h1 class="visually-hidden">States and Capitals Map</h1>
+
+    <header class="cc-bar">
+      <a href="../index.html" class="cc-bar-back" title="Back to the Year at a Glance">
+        <span aria-hidden="true">←</span><span class="cc-bar-back-label">Year</span>
+      </a>
+      <div class="cc-bar-what cc-bar-what--static">
+        <span class="cc-bar-title" id="map-title">🗺️ States and Capitals</span>
+        <span class="cc-bar-sub" id="map-count" role="status" aria-live="polite"></span>
+      </div>
+    </header>
+
+    <!-- Mode and weeks on one line, so the map starts high on the page. -->
+    <div class="cc-map-controls">
+      <div class="cc-seg cc-seg--mode" id="map-mode" role="group" aria-label="How to practice"></div>
+      <div class="cc-map-weeks" id="map-weeks" role="group" aria-label="Which weeks"></div>
+    </div>
+
+    <!-- Laid out like a map app: the map, and beside it the question and the
+         Northeast close up. On a phone: question, map, close-up. -->
+    <section class="cc-map-stage" aria-label="Map of the United States">
+      <div class="cc-map-main" id="map-main"></div>
+      <section class="cc-map-prompt" id="map-prompt" aria-live="polite"></section>
+      <figure class="cc-map-inset">
+        <div id="map-inset"></div>
+        <figcaption>Northeast, close up — tap here for the small states.</figcaption>
+      </figure>
+    </section>
+
+    <details class="cc-help">
+      <summary>How it works</summary>
+      <dl>
+        <dt>Find it — on your own</dt>
+        <dd>The page names a state and you tap it on the map. A wrong tap tells
+        you which state you did touch; a second wrong tap shows you where the
+        right one is. Nothing here counts toward learned — it is practice.</dd>
+
+        <dt>Name it — with a parent</dt>
+        <dd>One state lights up. You point to it and say its capital and its
+        name, the way the proof asks — <em>"Augusta, Maine."</em> Whoever is
+        checking has the answer on screen and marks it. This is what fills in
+        the geography dots on the Year at a Glance, three right in a row, the
+        same as Recite.</dd>
+
+        <dt>The small states</dt>
+        <dd>Rhode Island, Delaware and the District of Columbia are a few
+        pixels wide on a whole-country map, so the Northeast is drawn again,
+        close up, beside it. Tap either one.</dd>
+
+        <dt>Weeks 1 to 10</dt>
+        <dd>The states and capitals are weeks 1 to 10 of Cycle 3, five a week
+        in the order of the proof sheet, with Washington, DC in week 3.</dd>
+
+        <dt>Santa Fe</dt>
+        <dd>The proof sheet prints “Sante Fe, NM”. That is a misprint —
+        Classical Conversations' own map, on the same pages, says Santa Fe,
+        which is the city's name — so Santa Fe is used here.</dd>
+
+        <dt>Where the map comes from</dt>
+        <dd>U.S. Census Bureau state boundaries (2017), which are public domain.
+        It is not traced from the map in the Foundations Guide.</dd>
+      </dl>
+    </details>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../js/cycle3.js"></script>
+  <script src="../js/cycle3-geography.js"></script>
+  <script src="../js/cc.js"></script>
+  <script src="../js/us-states.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

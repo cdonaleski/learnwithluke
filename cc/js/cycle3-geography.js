@@ -13,8 +13,18 @@
 
   const add = window.CC_ADD;
 
+  /**
+   * Every state and capital, in the sheet's order, for the map. Kept as data
+   * rather than read back out of the card text, so the map can never drift
+   * from what the cards say.
+   */
+  window.CC_CYCLE3.capitals = [];
+
   /** Capitals: ask for the capital, answer gives it with the state. */
   const capitals = function (section, rows) {
+    rows.forEach(function (row) {
+      window.CC_CYCLE3.capitals.push({ section: section, capital: row[0], state: row[1], abbr: row[2] });
+    });
     add("geography", section, "States and Capitals", rows.map(function (row) {
       return ["Capital of " + row[1] + "?", row[0] + ", " + row[2]];
     }));
@@ -35,6 +45,7 @@
   add("geography", 3, "States and Capitals", [
     ["Capital of the United States?", "Washington, DC"],
   ]);
+  window.CC_CYCLE3.capitals.push({ section: 3, capital: "Washington", state: "District of Columbia", abbr: "DC" });
   capitals(4, [
     ["Atlanta", "Georgia", "GA"], ["Tallahassee", "Florida", "FL"], ["Montgomery", "Alabama", "AL"],
     ["Jackson", "Mississippi", "MS"], ["Baton Rouge", "Louisiana", "LA"],
@@ -107,6 +118,13 @@
   window.CC_CYCLE3.cards.forEach(function (card) {
     if (card.strand === "geography" && card.label === "Great Lakes") {
       card.note = "Their first letters spell HOMES.";
+    }
+    // Section 8 of the proof sheet prints "Sante Fe, NM". That is a misprint:
+    // Classical Conversations' own map on page 244 labels it Santa Fe, which
+    // is the city's name. Said here so a parent checking against the sheet
+    // knows the difference is deliberate.
+    if (card.strand === "geography" && card.a === "Santa Fe, NM") {
+      card.note = "The proof sheet prints “Sante Fe” — a misprint. CC’s own map says Santa Fe.";
     }
   });
 })();

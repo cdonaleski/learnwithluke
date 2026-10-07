@@ -761,3 +761,179 @@
   line-height: 1.4;
   color: var(--color-text-muted);
 }
+
+/* ---------------- The states and capitals map ----------------
+   Same bar and switch as the practice screen; the map takes the card's place.
+   Colors carry meaning and only meaning: tan is "not this week", lavender is
+   "this week's", yellow is "this one", green is "found", coral is "not that". */
+
+.cc-bar-what--static { cursor: default; }
+.cc-bar-what--static:hover { background: transparent; }
+
+.cc-map-weeks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.cc-map-weeks .chip {
+  min-width: 2.4rem;
+  min-height: 2.4rem;
+  padding: 0 0.6rem;
+  border: 2px solid #e6dfd3;
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.cc-map-weeks .chip:hover { border-color: var(--color-purple); }
+.cc-map-weeks .chip.is-on { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+
+
+
+.cc-map-card {
+  padding: 1rem 1.3rem;
+  border-radius: var(--radius-md);
+  border: 3px solid #e8e2d8;
+  background: var(--color-bg);
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.cc-map-card--name { border-color: var(--color-sun); background: #fffdf4; }
+.cc-map-card--done { border-color: #bfe6d6; background: #f4fbf8; }
+
+.cc-map-q {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.cc-map-q strong { color: var(--color-purple); }
+.cc-map-sub { margin: 0.3rem 0 0; color: var(--color-text-muted); }
+
+.cc-map-status { min-height: 1.5em; margin: 0.5rem 0 0; font-family: var(--font-display); font-weight: 600; }
+.cc-map-status.is-right { color: #1f9e7a; }
+.cc-map-status.is-wrong { color: #c2453b; }
+
+.cc-map-card .cc-checker { text-align: center; }
+.cc-map-card .game-actions { margin-top: 0.9rem; }
+
+.cc-map-list {
+  display: inline-block;
+  margin: 0.8rem auto 0;
+  padding-left: 1.2rem;
+  text-align: left;
+  color: var(--color-text);
+}
+
+.cc-mapping { max-width: 72rem; }
+
+.cc-map-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1rem;
+  margin-bottom: 1rem;
+}
+
+/* The map, and beside it the question with the Northeast close up under it. */
+.cc-map-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  grid-template-areas:
+    "main prompt"
+    "main inset";
+  grid-template-rows: auto 1fr;
+  gap: 0.8rem 1rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+.cc-map-main { grid-area: main; }
+.cc-map-prompt { grid-area: prompt; }
+.cc-map-inset { grid-area: inset; }
+
+.cc-map-card { padding: 0.9rem 1rem; }
+.cc-map-card .game-actions { flex-wrap: wrap; gap: 0.4rem; }
+.cc-map-card .game-actions .btn { flex: 1 1 auto; padding-left: 0.8rem; padding-right: 0.8rem; }
+
+.cc-map-main,
+.cc-map-inset > div {
+  border-radius: var(--radius);
+  background: #eaf3fb;              /* water */
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.cc-map-inset { margin: 0; }
+.cc-map-inset figcaption {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.cc-map-svg { display: block; width: 100%; height: auto; }
+
+.cc-st {
+  fill: #ece4d6;
+  stroke: #fff;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: fill 0.15s;
+}
+
+.cc-map-inset .cc-st { stroke-width: 0.35; }
+
+.cc-st.is-play { fill: #ddd2f3; }
+.cc-st:hover { fill: #c9b8ef; }
+.cc-st:focus-visible { outline: none; stroke: var(--color-purple); stroke-width: 2.5; }
+.cc-st.is-target { fill: var(--color-sun); }
+.cc-st.is-right { fill: #7fd8b8; }
+.cc-st.is-wrong { fill: #f29a8f; }
+.cc-st.is-show { animation: cc-show 0.9s ease-in-out infinite alternate; }
+
+.cc-st--dot { stroke: #fff; stroke-width: 1; fill: #b9a9e3; }
+.cc-st--dot.is-play { fill: #9d86da; }
+
+@keyframes cc-show {
+  from { fill: #ddd2f3; }
+  to   { fill: var(--color-sun); }
+}
+
+@media (max-width: 760px) {
+  /* Stacked: the question, the country, then the close-up full width, where
+     it is big enough to tap Rhode Island with a thumb. */
+  .cc-map-stage {
+    grid-template-columns: 1fr;
+    grid-template-areas: "prompt" "main" "inset";
+    grid-template-rows: auto;
+  }
+  .cc-map-inset > div { max-width: 22rem; margin: 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-st { transition: none; }
+  .cc-st.is-show { animation: none; fill: var(--color-sun); }
+}
+.cc-hit { fill: transparent; cursor: pointer; }
+
+.cc-to-map {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-purple);
+}
+.cc-to-map[hidden] { display: none; }

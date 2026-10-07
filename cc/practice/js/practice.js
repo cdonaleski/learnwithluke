@@ -31,6 +31,7 @@
     levels: document.getElementById("pick-level"),
     directions: document.getElementById("pick-direction"),
     why: document.getElementById("cc-mode-why"),
+    toMap: document.getElementById("cc-to-map"),
     count: document.getElementById("cc-count"),
     stage: document.getElementById("cc-stage"),
     empty: document.getElementById("cc-empty"),
@@ -297,6 +298,12 @@
     const strand = state.strand === "all" ? null : CC.strandOf(state.strand);
     const where = state.drill ? "The ones you missed"
       : strand ? strand.icon + " " + strand.label : "Every strand";
+    if (el.toMap) {
+      el.toMap.hidden = state.strand !== "geography";
+      const mapWeeks = state.sections.filter(function (w) { return w <= 10; });
+      el.toMap.href = "../map/index.html" + (mapWeeks.length ? "?weeks=" + mapWeeks.join(",") : "");
+    }
+
     const weeksPart = summaryOfWeeks(CC.sectionsWithCards(state.cycle, state.strand));
     el.whatTitle.textContent = !state.drill && !strand && !state.today && !state.sections.length
       ? "Everything"
