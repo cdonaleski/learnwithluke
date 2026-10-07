@@ -383,8 +383,8 @@
       "Say it out loud, then " + (hasKeyboard() ? "press space" : "tap the card")));
 
     const back = make("div", "cc-face cc-face--back");
-    back.appendChild(make("p", "cc-aside", "The answer"));
-    back.appendChild(make("p", "cc-a", card.a));
+    back.appendChild(make("p", "cc-aside", card.say ? "Say the whole sentence" : "The answer"));
+    back.appendChild(make("p", "cc-a", CC.spoken(card)));
     if (card.note) back.appendChild(make("p", "cc-note", card.note));
     // The point of the exercise is that the answer is not there yet, so it is
     // hidden from a screen reader too, not just from the eye.
@@ -443,7 +443,7 @@
 
     const checker = make("div", "cc-checker");
     checker.appendChild(make("p", "cc-aside", "They should say:"));
-    checker.appendChild(make("p", "cc-a", card.a));
+    checker.appendChild(make("p", "cc-a", CC.spoken(card)));
     if (card.note) checker.appendChild(make("p", "cc-note", card.note));
 
     // The checker is holding the screen, so a scaffold floating above the

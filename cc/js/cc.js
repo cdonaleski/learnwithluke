@@ -103,6 +103,16 @@
    * means "with" and producing "apud" when you mean "with" are different
    * skills, and a card stored one way round only ever trains one of them.
    */
+  /**
+   * What has to come out of the student's mouth. For most cards that is the
+   * answer as printed; for a science list it is the sentence, because "lymph
+   * vessels, lymph nodes, spleen, thymus" said flat is not an answer a tutor
+   * accepts. `a` stays the sheet either way, so the two never get confused.
+   */
+  function spoken(card) {
+    return (card && card.say) || (card && card.a) || "";
+  }
+
   function hasPair(card) {
     return Boolean(card.lat && card.eng);
   }
@@ -361,6 +371,8 @@
    */
   function nudgeFor(card, level) {
     if (!card || !card.a || !level || level === "hard") return "";
+    // Deliberately `a`, not the spoken form: the stem repeats the question
+    // back, so prompting with it would give away nothing and count wrong.
     const words = String(card.a).split(/\s+/).filter(Boolean);
     if (words.length < 2) return "";
 
@@ -391,6 +403,7 @@
     DIRECTIONS: DIRECTIONS,
     LEVELS: LEVELS,
     levelOf: levelOf,
+    spoken: spoken,
     hintFor: hintFor,
     nudgeFor: nudgeFor,
     skeleton: skeleton,

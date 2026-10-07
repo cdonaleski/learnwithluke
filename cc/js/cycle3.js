@@ -11,8 +11,9 @@
  *   strand   math, latin, science, english, history, geography, timeline
  *   section  the number in the gray box, 1-24
  *   label    the heading beside that number
- *   q        the prompt, the way a tutor would say it
- *   a        what has to come back, in full
+ *   q        the prompt, word for word off the sheet
+ *   a        what has to come back, word for word off the sheet
+ *   say      for a list answer, the sentence it has to be SPOKEN as -- see below
  *   note     optional aside, never part of what is matched or marked
  *
  * ON WHAT IS COPIED. The Foundations Guide is a book Classical Conversations
@@ -43,16 +44,35 @@
    * rather than on every card, because repeating them 225 times is how they
    * end up disagreeing.
    */
-  window.CC_ADD = function (strand, section, label, pairs) {
-    pairs.forEach(function (pair) {
-      window.CC_CYCLE3.cards.push({
+  window.CC_ADD = function (strand, section, label, rows) {
+    rows.forEach(function (row) {
+      const card = Array.isArray(row) ? { q: row[0], a: row[1], note: row[2] } : row;
+      window.CC_CYCLE3.cards.push(Object.assign({
         strand: strand,
         section: section,
         label: label,
-        q: pair[0],
-        a: pair[1],
-        note: pair[2],
-      });
+      }, card));
     });
+  };
+
+  /**
+   * SPOKEN FORM. The sheet prints science and history answers as a list with
+   * a checkbox each -- "connective / epithelial / muscle / nerve". At proof
+   * that is not an answer. The student has to say a whole sentence back:
+   * "The four types of tissue are connective, epithelial, muscle, and
+   * nerve."
+   *
+   * The sheet never writes that sentence down, so the stem is the one thing
+   * on these cards NOT copied from the page. It is kept separate from `a`
+   * for exactly that reason: `a` is the sheet, `say` is the stem plus the
+   * sheet, and a wrong stem can be corrected without touching the facts.
+   */
+  window.CC_SAY = function (stem, items) {
+    const last = items.length - 1;
+    const joined = items.length < 2
+      ? items.join("")
+      : items.slice(0, last).join(", ") +
+        (items.length === 2 ? " and " : ", and ") + items[last];
+    return stem + " " + joined + ".";
   };
 })();
