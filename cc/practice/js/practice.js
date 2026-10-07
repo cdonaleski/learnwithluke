@@ -122,6 +122,24 @@
     return hasKeyboard() ? " · " + text : "";
   }
 
+  /**
+   * An answer as it should be shown: two columns when the sheet prints it
+   * that way (the principal parts), otherwise the sentence or list itself.
+   */
+  function answerNode(card) {
+    if (!card.rows) return make("p", "cc-a", CC.spoken(card));
+    const table = make("table", "cc-a cc-rows");
+    const body = make("tbody");
+    card.rows.forEach(function (row) {
+      const tr = make("tr");
+      tr.appendChild(make("th", null, row[0]));
+      tr.appendChild(make("td", null, row[1]));
+      body.appendChild(tr);
+    });
+    table.appendChild(body);
+    return table;
+  }
+
   function make(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -422,7 +440,7 @@
 
     const back = make("div", "cc-face cc-face--back");
     back.appendChild(make("p", "cc-aside", card.say ? "Say the whole sentence" : "The answer"));
-    back.appendChild(make("p", "cc-a", CC.spoken(card)));
+    back.appendChild(answerNode(card));
     if (card.note) back.appendChild(make("p", "cc-note", card.note));
     // The point of the exercise is that the answer is not there yet, so it is
     // hidden from a screen reader too, not just from the eye.
@@ -482,7 +500,7 @@
 
     const checker = make("div", "cc-checker");
     checker.appendChild(make("p", "cc-aside", "They should say:"));
-    checker.appendChild(make("p", "cc-a", CC.spoken(card)));
+    checker.appendChild(answerNode(card));
     if (card.note) checker.appendChild(make("p", "cc-note", card.note));
 
     // The checker is holding the screen, so a scaffold floating above the

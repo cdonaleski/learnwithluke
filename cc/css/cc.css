@@ -1093,3 +1093,20 @@
 .cc-map-toast[hidden] { display: none; }
 .cc-map-toast.is-right { color: #1f9e7a; }
 .cc-map-toast.is-wrong { color: #c2453b; }
+
+/* The principal parts, laid out as the sheet prints them: part | verb. */
+.cc-rows {
+  margin: 0.2rem auto 0;
+  border-collapse: collapse;
+  text-align: left;
+}
+.cc-rows th,
+.cc-rows td { padding: 0.18rem 0.6rem; vertical-align: top; }
+.cc-rows th {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.cc-rows td { font-weight: 700; color: var(--color-purple); }
+.cc-rows tr + tr th, .cc-rows tr + tr td { border-top: 1px dashed #e4dccd; }

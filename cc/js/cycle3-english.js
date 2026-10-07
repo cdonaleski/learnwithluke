@@ -14,10 +14,13 @@
 
   /** One verb, its five parts said in order. */
   const verb = function (section, name, parts) {
-    add("english", section, "To " + name, [
-      ["Principal parts of “to " + name + "”",
-       PARTS.map(function (part, i) { return part + ": " + parts[i]; }).join(" · ")],
-    ]);
+    add("english", section, "To " + name, [{
+      q: "Principal parts of “to " + name + "”",
+      a: PARTS.map(function (part, i) { return part + ": " + parts[i]; }).join(" · "),
+      // The sheet prints these as two columns -- the part on the left, the
+      // verb on the right -- and that is how they are shown.
+      rows: PARTS.map(function (part, i) { return [part, parts[i]]; }),
+    }]);
   };
 
   add("english", 1, "An Infinitive", [
