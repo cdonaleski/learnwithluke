@@ -18,7 +18,7 @@
 
 .cc-bar {
   position: sticky;
-  top: 0;
+  top: calc(var(--cc-header, 0px) + 0.4rem);
   z-index: 20;
   display: flex;
   align-items: center;
@@ -748,3 +748,6 @@
 @media (prefers-reduced-motion: reduce) {
   .cc-glance-dot { transition: none; }
 }
+
+/* Back is there when you need it and quiet when you don't. */
+.cc-back:disabled { opacity: 0.35; cursor: default; }

@@ -87,6 +87,9 @@
     // this is so a parent can see, at the end, what to work on tonight.
     missed: [],
     drill: null,
+    // Every step forward, so Back can retrace it -- and, in Recite, take back
+    // the verdict that step recorded.
+    trail: [],
   };
 
   // The Year at a Glance links straight in: ?strand=science&weeks=7, or
@@ -333,6 +336,7 @@
     state.picked = null;
     state.done = {};
     state.missed = [];
+    state.trail = [];
     state.round = state.mode === "match"
       ? CC.matchRound(state.queue, CC.levelOf(state.level).pairs)
       : null;
@@ -431,12 +435,13 @@
     state.space = function () { if (state.shown) step(); else turnOver(); };
 
     const row = make("div", "game-actions");
+    row.appendChild(backButton());
     row.appendChild(turn);
 
     el.stage.appendChild(flip);
     el.stage.appendChild(row);
     el.stage.appendChild(make("p", "cc-where",
-      (state.at + 1) + " of " + state.queue.length + keys("space turns it over")));
+      (state.at + 1) + " of " + state.queue.length + keys("space turns it over, ← goes back")));
   }
 
   /**
@@ -480,6 +485,7 @@
     const missed = make("button", "btn btn-secondary", "Not yet");
     missed.type = "button";
     missed.addEventListener("click", function () { judge(card, false); });
+    row.appendChild(backButton());
     row.appendChild(got);
     row.appendChild(missed);
     box.appendChild(row);
@@ -492,7 +498,7 @@
     el.stage.appendChild(box);
     el.stage.appendChild(make("p", "cc-where",
       (state.at + 1) + " of " + state.queue.length + " · every word counts" +
-      keys("space if they got it, N if not")));
+      keys("space if they got it, N if not, ← to go back")));
   }
 
   /**
@@ -501,11 +507,15 @@
    * work on rather than just how many were right.
    */
   function judge(card, right) {
+    const id = CC.idOf(card);
+    // What the progress store held for this card BEFORE this verdict, so
+    // Back can put it back exactly -- a mis-tapped "Said it all" must not
+    // leave a card one step nearer "learned".
+    const before = CC.progress()[id];
     CC.saidIt(card, right);
-    if (!right && !state.missed.some(function (m) { return CC.idOf(m) === CC.idOf(card); })) {
-      state.missed.push(card);
-    }
-    step();
+    const newMiss = !right && !state.missed.some(function (m) { return CC.idOf(m) === id; });
+    if (newMiss) state.missed.push(card);
+    step({ id: id, before: before, newMiss: newMiss });
   }
 
   function whereLine(card) {
@@ -516,10 +526,38 @@
       (CC.isLearned(card) ? " · learned" : ""));
   }
 
-  function step() {
+  function step(verdict) {
+    state.trail.push({ at: state.at, verdict: verdict || null });
     state.at += 1;
     state.shown = false;
     draw();
+  }
+
+  /** One step back. In Recite that also undoes the verdict given there. */
+  function back() {
+    const last = state.trail.pop();
+    if (!last) return;
+    if (last.verdict) {
+      const all = CC.progress();
+      if (last.verdict.before === undefined) delete all[last.verdict.id];
+      else all[last.verdict.id] = last.verdict.before;
+      CC.saveProgress(all);
+      if (last.verdict.newMiss) {
+        state.missed = state.missed.filter(function (m) { return CC.idOf(m) !== last.verdict.id; });
+      }
+    }
+    state.at = last.at;
+    state.shown = false;
+    draw();
+  }
+
+  /** The Back button, drawn the same way on every screen that has one. */
+  function backButton() {
+    const button = make("button", "btn btn-secondary cc-back", "← Back");
+    button.type = "button";
+    button.disabled = state.trail.length === 0;
+    button.addEventListener("click", back);
+    return button;
   }
 
   /**
@@ -535,6 +573,7 @@
       (sum.left ? " — " + sum.left + " to go." : " — every one of them.")));
 
     const row = make("div", "game-actions");
+    if (state.trail.length) row.appendChild(backButton());
     const again = make("button", "btn btn-primary", "Go again");
     again.type = "button";
     again.addEventListener("click", function () { restart(); });
@@ -691,6 +730,9 @@
       if (!state.space) return;
       event.preventDefault();      // or the page scrolls out from under you
       state.space();
+    } else if (event.key === "ArrowLeft" && state.trail.length && state.mode !== "match") {
+      event.preventDefault();
+      back();
     } else if ((event.key === "n" || event.key === "N") && state.nope) {
       event.preventDefault();
       state.nope();
@@ -708,6 +750,21 @@
     saveReached(state.reached);
     restart();
   });
+
+  /* ---------------- The bar ---------------- */
+
+  // The site header is sticky too. Stuck at top:0 the bar slid underneath
+  // it and vanished the moment the page scrolled, so it sticks just below
+  // the header instead -- measured, because the header is shorter on a
+  // phone than on a desktop.
+  function seatBar() {
+    const header = document.querySelector(".site-header");
+    const height = header && getComputedStyle(header).position === "sticky"
+      ? header.getBoundingClientRect().height : 0;
+    document.documentElement.style.setProperty("--cc-header", Math.round(height) + "px");
+  }
+  seatBar();
+  window.addEventListener("resize", seatBar);
 
   /* ---------------- The sheet ---------------- */
 
