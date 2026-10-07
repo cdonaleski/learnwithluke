@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mountains, lakes, rivers, trails, canals, regions and landmarks of the United States on a real map — the Memory Master geography proof, weeks 11 to 24. On Learn With Luke">
+  <title>Geography Features Map · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="../css/cc.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page cc-practice cc-mapping cc-features">
+    <h1 class="visually-hidden">Geography Features Map</h1>
+
+    <header class="cc-bar">
+      <a href="../index.html" class="cc-bar-back" title="Back to the Year at a Glance">
+        <span aria-hidden="true">←</span><span class="cc-bar-back-label">Year</span>
+      </a>
+      <div class="cc-bar-what cc-bar-what--static">
+        <span class="cc-bar-title" id="map-title">🏔️ Geography</span>
+        <span class="cc-bar-sub" id="map-count" role="status" aria-live="polite"></span>
+      </div>
+      <a class="cc-bar-change" href="index.html" title="States and capitals, weeks 1 to 10">States</a>
+    </header>
+
+    <div class="cc-map-controls">
+      <div class="cc-seg cc-seg--mode" id="map-mode" role="group" aria-label="How to practice"></div>
+      <div class="cc-map-weeks" id="map-weeks" role="group" aria-label="Which week"></div>
+    </div>
+
+    <!-- The map zooms to the week, so a week's features fill the screen and
+         Mt. Mitchell is not a pixel away from the Great Smokies. -->
+    <section class="cc-map-stage cc-map-stage--features" aria-label="Map of the United States">
+      <div class="cc-map-main" id="map-main"></div>
+      <section class="cc-map-prompt" id="map-prompt" aria-live="polite"></section>
+      <div class="cc-map-legend" id="map-legend" aria-hidden="true"></div>
+    </section>
+
+    <details class="cc-help">
+      <summary>How it works</summary>
+      <dl>
+        <dt>Find it — on your own</dt>
+        <dd>The page names a feature and you tap it. A wrong tap tells you
+        what you did touch; a second one shows you where the right one is.
+        Practice only — nothing is recorded.</dd>
+
+        <dt>Name it — with a parent</dt>
+        <dd>The week's features light up. Point to each one and name it, in
+        order, the way the proof is given — the whole box, not one at a time.
+        Whoever is checking has the list and marks the week, which is what
+        fills in its dot on the Year at a Glance.</dd>
+
+        <dt>Shapes and points</dt>
+        <dd>Where a public map has the real thing — a river's course, a lake,
+        a trail's route, the San Andreas Fault — it is drawn as it is. Where it
+        does not, the feature is a dot at its recorded location. Nothing is
+        sketched in by hand. Two exceptions, said plainly: the Native American
+        regions have no official borders, so Eastern Woodlands and Northwest
+        Coast are marked where Classical Conversations' own map labels them;
+        and Hudson Bay, which is in Canada, is the arrow off the top of the map.</dd>
+
+        <dt>Where the map comes from</dt>
+        <dd>Natural Earth and the U.S. Census Bureau (public domain); the
+        National Park Service's Santa Fe Trail; the Bureau of Land Management's
+        national historic trails; the U.S. Geological Survey's fault database;
+        and Wikidata for the locations of single points. None of it is traced
+        from the map in the Foundations Guide.</dd>
+      </dl>
+    </details>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="../js/cycle3.js"></script>
+  <script src="../js/cycle3-geography.js"></script>
+  <script src="../js/cc.js"></script>
+  <script src="../js/us-states.js"></script>
+  <script src="../js/us-features.js"></script>
+  <script src="js/features.js"></script>
+</body>
+</html>

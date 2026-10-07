@@ -242,7 +242,7 @@
 
   function draw() {
     paint();
-    if (!current()) { drawFinished(); return; }
+    if (!current()) { setStatus("", ""); drawFinished(); return; }
     if (state.mode === "find") drawFind(); else drawName();
     drawCount();
   }
@@ -269,17 +269,16 @@
     card.appendChild(make("p", "cc-map-sub", e.abbr === "DC"
       ? "The capital of the United States."
       : "Its capital is " + e.capital + "."));
-    const status = make("p", "cc-map-status");
-    status.id = "map-status";
-    card.appendChild(status);
     el.prompt.appendChild(card);
+    setStatus("", "");
   }
 
   function setStatus(text, tone) {
-    const node = document.getElementById("map-status");
+    const node = el.toast;
     if (!node) return;
     node.textContent = text;
-    node.className = "cc-map-status" + (tone ? " is-" + tone : "");
+    node.hidden = !text;
+    node.className = "cc-map-toast" + (tone ? " is-" + tone : "");
   }
 
   function tapped(abbr) {
@@ -477,6 +476,16 @@
   /* ---------------- Start ---------------- */
 
   drawMap(el.main, "0 0 " + MAP.width + " " + MAP.height, 5, true);
+  // Feedback floats on the map instead of sitting in the question card.
+  // In the card, a longer message made the card taller and pushed the map
+  // down the page -- by 29 pixels on a phone -- so a child's second tap,
+  // aimed at where the dot WAS, missed it.
+  el.toast = make("p", "cc-map-toast");
+  el.toast.id = "map-status";
+  el.toast.setAttribute("role", "status");
+  el.toast.setAttribute("aria-live", "polite");
+  el.toast.hidden = true;
+  el.main.appendChild(el.toast);
   drawMap(el.inset, INSET_VIEW, 3.6, false, 7.5);
   begin();
 

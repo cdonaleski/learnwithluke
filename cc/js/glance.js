@@ -115,10 +115,11 @@
         // so twenty-four rows still read as one picture.
         const link = make("a", "cc-glance-hit");
         link.appendChild(make("span", "cc-glance-dot is-fill-" + fill));
-        // States and capitals are practiced on the map, where the proof is.
-        link.href = strand.id === "geography" && week <= 10
-          ? "map/index.html?weeks=" + week
-          : practiceHref({ cycle: cycleNumber, strand: strand.id, weeks: week });
+        // Geography is practiced on the map, where the proof is: states and
+        // capitals for weeks 1-10, the physical features after that.
+        link.href = strand.id !== "geography"
+          ? practiceHref({ cycle: cycleNumber, strand: strand.id, weeks: week })
+          : week <= 10 ? "map/index.html?weeks=" + week : "map/features.html?weeks=" + week;
         link.title = strand.label + ", week " + week + " — " +
           sum.learned + " of " + sum.total + " learned";
         // The title is a tooltip and a tooltip is not an answer for anyone on

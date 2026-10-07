@@ -937,3 +937,159 @@
   color: var(--color-purple);
 }
 .cc-to-map[hidden] { display: none; }
+
+/* ---------------- The features map (weeks 11-24) ----------------
+   One look per kind of thing, the way a printed key works. Line widths are
+   in screen pixels (non-scaling), so a river reads the same zoomed in or out. */
+
+.cc-map-stage--features {
+  grid-template-areas:
+    "main prompt"
+    "main legend";
+}
+.cc-map-legend { grid-area: legend; }
+
+.cc-fbase path {
+  fill: #f1ebe0;
+  stroke: #fff;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.ft { cursor: pointer; }
+
+.ft-area { stroke-width: 1.2; vector-effect: non-scaling-stroke; fill-opacity: 0.55; transition: fill-opacity 0.15s; }
+.ft-area:hover { fill-opacity: 0.8; }
+
+.ft-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.ft-hit-line { fill: none; stroke: transparent; stroke-width: 22; vector-effect: non-scaling-stroke; cursor: pointer; }
+.ft-hit { fill: transparent; }
+.ft-mark { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+
+/* families */
+.ft--water.ft-area { fill: #7fb6e6; stroke: #4f8fca; }
+.ft--water.ft-line { stroke: #3d86cf; }
+.ft--water .ft-mark { fill: #3d86cf; }
+.ft--land.ft-area  { fill: #b89a72; stroke: #8f7350; }
+.ft--land .ft-mark { fill: #8f7350; }
+.ft--peak .ft-mark { fill: #c2453b; }
+.ft--region.ft-area { fill: #b9a6e8; stroke: #8b72cf; }
+.ft--region .ft-mark { fill: #8b72cf; }
+.ft--desert.ft-area { fill: #f0a066; stroke: #d97b3a; }
+.ft--desert .ft-mark { fill: #d97b3a; }
+.ft--trail.ft-line { stroke: #9a5b2e; stroke-dasharray: 6 4; }
+.ft--canal.ft-line { stroke: #1aa39a; stroke-width: 3.5; }
+.ft--canal .ft-mark { fill: #1aa39a; }
+.ft--fault.ft-line { stroke: #d63a2f; stroke-width: 2.5; }
+
+/* states of play */
+.ft.is-target.ft-area { fill: var(--color-sun); fill-opacity: 0.85; stroke: #c99a00; }
+.ft.is-target.ft-line { stroke: #e0a800; stroke-width: 5; }
+.ft.is-target .ft-mark { fill: var(--color-sun); stroke: #8a6a00; }
+
+.ft.is-right.ft-area { fill: #3cc9a5; fill-opacity: 0.8; stroke: #1f9e7a; }
+.ft.is-right.ft-line { stroke: #1f9e7a; stroke-width: 4.5; }
+.ft.is-right .ft-mark { fill: #1f9e7a; }
+
+.ft.is-wrong.ft-area { fill: #f29a8f; fill-opacity: 0.9; }
+.ft.is-wrong.ft-line { stroke: #e0574a; stroke-width: 5; }
+.ft.is-wrong .ft-mark { fill: #e0574a; }
+
+.ft.is-show.ft-area { animation: ft-pulse-area 0.9s ease-in-out infinite alternate; }
+.ft.is-show.ft-line { animation: ft-pulse-line 0.9s ease-in-out infinite alternate; }
+.ft.is-show .ft-mark { animation: ft-pulse-dot 0.9s ease-in-out infinite alternate; }
+@keyframes ft-pulse-area { from { fill-opacity: 0.4; } to { fill: var(--color-sun); fill-opacity: 0.95; } }
+@keyframes ft-pulse-line { from { stroke-width: 3; } to { stroke: var(--color-sun); stroke-width: 7; } }
+@keyframes ft-pulse-dot  { from { fill-opacity: 0.6; } to { fill: var(--color-sun); } }
+
+.cc-map-order { margin: 0.2rem 0 0; padding-left: 1.4rem; text-align: left; line-height: 1.55; }
+
+/* the key */
+.cc-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+.cc-key { display: inline-flex; align-items: center; gap: 0.35rem; }
+.cc-key i { display: inline-block; width: 1.1rem; height: 0.8rem; border-radius: 3px; }
+.cc-key > span { display: inline-flex; align-items: center; }
+.cc-key--water-area i  { background: #7fb6e6; }
+.cc-key--water-line i  { height: 3px; background: #3d86cf; }
+.cc-key--trail-line i  { height: 0; border-top: 3px dashed #9a5b2e; border-radius: 0; }
+.cc-key--canal-line i  { height: 4px; background: #1aa39a; }
+.cc-key--fault-line i  { height: 3px; background: #d63a2f; }
+.cc-key--land-area i   { background: #b89a72; }
+.cc-key--region-area i { background: #b9a6e8; }
+.cc-key--desert-area i { background: #f0a066; }
+.cc-key--peak-peak i   { width: 0; height: 0; border-radius: 0; background: none;
+                         border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 11px solid #c2453b; }
+.cc-key--land-dot i, .cc-key--water-dot i, .cc-key--canal-dot i, .cc-key--region-dot i,
+.cc-key--desert-dot i { width: 0.75rem; height: 0.75rem; border-radius: 50%; }
+.cc-key--land-dot i   { background: #8f7350; }
+.cc-key--water-dot i  { background: #3d86cf; }
+.cc-key--canal-dot i  { background: #1aa39a; }
+.cc-key--region-dot i { background: #8b72cf; }
+.cc-key--desert-dot i { background: #d97b3a; }
+.cc-key--water-edge i { width: 0; height: 0; border-radius: 0; background: none;
+                        border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid #3d86cf; }
+
+@media (max-width: 760px) {
+  .cc-map-stage--features {
+    grid-template-areas: "prompt" "main" "legend";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft.is-show.ft-area, .ft.is-show.ft-line, .ft.is-show .ft-mark { animation: none; }
+  .ft.is-show.ft-area { fill: var(--color-sun); }
+  .ft.is-show.ft-line { stroke: var(--color-sun); stroke-width: 6; }
+  .ft.is-show .ft-mark { fill: var(--color-sun); }
+}
+
+.cc-map-main { position: relative; }
+.cc-zoom-out {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  min-height: 2.4rem;
+  padding: 0 0.9rem;
+  border: 2px solid var(--color-purple);
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-purple);
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+}
+.cc-zoom-out[hidden] { display: none; }
+
+/* Feedback floats on the map, so it never moves what you are aiming at. */
+.cc-map-main { position: relative; }
+.cc-map-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 0.6rem;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 1.2rem);
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 4px 16px rgba(40, 25, 70, 0.18);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--color-text);
+  pointer-events: none;            /* never in the way of a tap */
+}
+.cc-map-toast[hidden] { display: none; }
+.cc-map-toast.is-right { color: #1f9e7a; }
+.cc-map-toast.is-wrong { color: #c2453b; }

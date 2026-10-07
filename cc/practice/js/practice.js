@@ -300,8 +300,16 @@
       : strand ? strand.icon + " " + strand.label : "Every strand";
     if (el.toMap) {
       el.toMap.hidden = state.strand !== "geography";
-      const mapWeeks = state.sections.filter(function (w) { return w <= 10; });
-      el.toMap.href = "../map/index.html" + (mapWeeks.length ? "?weeks=" + mapWeeks.join(",") : "");
+      const chosen = state.sections.slice().sort(function (a, b) { return a - b; });
+      const later = chosen.filter(function (w) { return w > 10; });
+      const early = chosen.filter(function (w) { return w <= 10; });
+      if (later.length && !early.length) {
+        el.toMap.href = "../map/features.html?weeks=" + later[0];
+        el.toMap.textContent = "🏔️ These are on the map →";
+      } else {
+        el.toMap.href = "../map/index.html" + (early.length ? "?weeks=" + early.join(",") : "");
+        el.toMap.textContent = "🗺️ States and capitals are on the map →";
+      }
     }
 
     const weeksPart = summaryOfWeeks(CC.sectionsWithCards(state.cycle, state.strand));
