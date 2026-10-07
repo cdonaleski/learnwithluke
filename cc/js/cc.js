@@ -166,11 +166,39 @@
    * spent on the ones that will fail the proof.
    */
   function forPractice(cards) {
-    return cards.slice().sort(function (a, b) {
-      const sa = scoreOf(a), sb = scoreOf(b);
-      const rank = function (s) { return s.missed > 0 ? 0 : s.said === 0 ? 1 : 2; };
-      return rank(sa) - rank(sb) || sa.said - sb.said;
+    const groups = [[], [], []];
+    cards.forEach(function (card) {
+      const s = scoreOf(card);
+      groups[s.missed > 0 ? 0 : s.said === 0 ? 1 : 2].push(card);
     });
+    return spread(groups[0]).concat(spread(groups[1]), spread(groups[2]));
+  }
+
+  /**
+   * Mix the subjects through a session instead of serving them strand by
+   * strand. A plain shuffle is not enough: a day's review is about half math
+   * -- two times tables are thirty cards -- so chance alone still deals long
+   * runs of it. Instead each strand's cards are shuffled and then laid out at
+   * evenly spaced points along the session, like dealing several decks into
+   * one, so math comes every other card or so and everything else is spread
+   * between. With only one strand chosen, this is simply a shuffle.
+   */
+  function spread(cards) {
+    const byStrand = {};
+    cards.forEach(function (card) {
+      (byStrand[card.strand] = byStrand[card.strand] || []).push(card);
+    });
+    const placed = [];
+    Object.keys(byStrand).forEach(function (strand) {
+      const deck = shuffle(byStrand[strand]);
+      const start = Math.random();           // so no strand always leads
+      deck.forEach(function (card, i) {
+        placed.push({ card: card, at: (i + start) / deck.length });
+      });
+    });
+    return placed
+      .sort(function (a, b) { return a.at - b.at; })
+      .map(function (p) { return p.card; });
   }
 
   /** Fisher-Yates, so a round is genuinely shuffled rather than nearly sorted. */
@@ -418,6 +446,7 @@
     idOf: idOf,
     pick: pick,
     forPractice: forPractice,
+    spread: spread,
     shuffle: shuffle,
     matchRound: matchRound,
     reviewDay: reviewDay,
