@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Practice the Classical Conversations memory work — cards, matching, and reciting, one strand and one section at a time. On Learn With Luke">
+  <meta name="description" content="Practice the Classical Conversations memory work — on your own with cards and matching, or with a parent for the real recitation. On Learn With Luke">
   <title>Practice Memory Work · Learn With Luke</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,23 +22,48 @@
     <header class="game-header">
       <h1>🧠 Practice</h1>
       <p class="game-instructions" role="note">
-        <strong>Pick a strand, pick the sections, pick how to practice.</strong>
-        Cards to learn them, Match to test yourself, Recite for the real thing —
-        prompt only, said out loud, the way it goes on proof day.
+        <strong>Cards and Match you can do on your own. Recite needs someone else</strong> —
+        a parent or a friend reads the prompt and checks you, the way it goes on proof day.
+        Easy gives you the first letter of every word to lean on; Hard gives you nothing.
       </p>
     </header>
 
-    <section class="game-panel" aria-labelledby="pick-title" id="cc-app">
-      <h2 id="pick-title" class="visually-hidden">What to practice</h2>
+    <!-- Everything you choose, in one bar that stays put while you work. -->
+    <div class="cc-tools" id="cc-app">
+      <!-- On a phone the full bar is half the screen, so there it collapses to
+           this one line and the card keeps the room. Desktop never sees it. -->
+      <button type="button" class="cc-summary" id="cc-summary"
+              aria-expanded="false" aria-controls="cc-app"></button>
 
-      <div class="chips chips--stages" id="pick-cycle" role="group" aria-label="Which cycle"></div>
-      <div class="chips chips--stages" id="pick-strand" role="group" aria-label="Which strand"></div>
-      <div class="chips chips--stages chips--sections" id="pick-section" role="group" aria-label="Which sections"></div>
-      <div class="chips chips--stages" id="pick-mode" role="group" aria-label="How to practice"></div>
+      <div class="cc-row" id="pick-cycle" role="group" aria-label="Which cycle"></div>
 
-      <p class="cc-mode-why" id="cc-mode-why"></p>
-      <p class="progress" id="cc-count" role="status" aria-live="polite"></p>
-    </section>
+      <div class="cc-row">
+        <span class="cc-row-label">Strand</span>
+        <span class="cc-row" id="pick-strand" role="group" aria-label="Which strand"></span>
+      </div>
+
+      <div class="cc-row" id="section-bar" hidden>
+        <span class="cc-row-label">Sections</span>
+        <button type="button" class="cc-section-toggle" id="section-toggle"
+                aria-expanded="false" aria-controls="pick-section"></button>
+        <div class="cc-row chips--sections" id="pick-section" role="group" aria-label="Which sections" hidden></div>
+      </div>
+
+      <div class="cc-row">
+        <span class="cc-row-label">How</span>
+        <span class="cc-row" id="pick-mode" role="group" aria-label="How to practice"></span>
+        <span class="cc-row" id="pick-level" role="group" aria-label="How much help"></span>
+        <span class="cc-row" id="pick-direction" role="group" aria-label="Which language to answer in" hidden></span>
+      </div>
+
+      <div class="cc-row">
+        <p class="cc-mode-why" id="cc-mode-why"></p>
+      </div>
+
+      <div class="cc-row">
+        <span class="cc-count" id="cc-count" role="status" aria-live="polite"></span>
+      </div>
+    </div>
 
     <section class="game-panel" aria-labelledby="stage-title">
       <h2 id="stage-title" class="visually-hidden">Practicing</h2>
@@ -49,26 +74,49 @@
     <section class="game-panel game-help" aria-labelledby="help-title">
       <h2 id="help-title">How It Works</h2>
       <dl>
+        <dt>On your own: Cards and Match</dt>
+        <dd><strong>Cards</strong> shows one prompt, you say it, then turn it
+        over to see if you were right. <strong>Match</strong> pairs prompts with
+        answers — easier, because picking the right one out of a handful is not
+        the same as producing it from nothing. Start here on new material.</dd>
+
+        <dt>With someone else: Recite</dt>
+        <dd>This is the real thing and it takes two people. Hand the device to
+        a parent or a friend: they read the prompt out loud, you say the whole
+        answer back, and they check you against what is on the screen. That is
+        exactly how the proof is given — four times over, to a parent, another
+        parent, your tutor, and the director.</dd>
+
+        <dt>Easy, Medium, Hard</dt>
+        <dd>Not harder cards — the same cards with less help.
+        <strong>Easy</strong> shows the first letter of every word, which is how
+        people have memorized long passages for centuries. <strong>Medium</strong>
+        gives you the opening and tells you how much is left.
+        <strong>Hard</strong> gives you nothing, which is what proof day gives
+        you. In Match, the level decides how many pairs are on screen at once;
+        in Recite it is what the checker can read out if you stall.</dd>
+
         <dt>What counts as learned</dt>
-        <dd>A card counts as learned once you have said it right <strong>three
-        times in Recite</strong>. Cards and Match are practice and do not count
-        — picking the right answer out of five is easier than saying the whole
-        thing from nothing, and proof day is the second one.</dd>
+        <dd>Only Recite counts it, three times right in a row, and one miss
+        resets the run. Cards and Match are practice. Pressing "Said it all"
+        when only half came out is the one way to make this useless.</dd>
 
         <dt>Why the same cards keep coming back</dt>
-        <dd>Whatever you missed comes first next time, then the ones you have
-        never seen, and the ones you already know come last. Time spent on
-        what you know is time not spent on what you do not.</dd>
+        <dd>Whatever was missed comes first next time, then the never-seen, and
+        the ones already known come last. Time spent on what you know is time
+        not spent on what you do not.</dd>
 
         <dt>Sections, not weeks</dt>
         <dd>The numbers are the gray boxes on the proof sheets, because that is
-        how the proof is given: a tutor says <em>"section seven, thirteens"</em>
-        and you recite the whole box. Tap several to revise a run of them.</dd>
+        how the proof is asked: <em>"section seven, thirteens"</em> and you
+        recite the whole box. Tap several to revise a run of them.</dd>
 
-        <dt>Recite — the real one</dt>
-        <dd>You see the prompt and nothing else. Say the <em>whole</em> answer
-        out loud, then mark yourself honestly. Pressing "I said it all" when you
-        only got half is the one way to make this useless.</dd>
+        <dt>Latin goes both ways</dt>
+        <dd>Every Latin card is stored as a pair, so it can be asked in either
+        direction. <strong>As taught</strong> follows the sheet — words for
+        their meaning, verses in Latin. <strong>→ Latin</strong> is the harder
+        one: you hear the English and have to produce the Latin. Each direction
+        is tracked separately, because they really are different skills.</dd>
 
         <dt>Where history is</dt>
         <dd>The history sentences are Classical Conversations' own writing, out
@@ -90,7 +138,7 @@
   <script src="../js/cycle3-timeline.js"></script>
   <!-- Family-only, git-ignored, and absent from the published site. The
        trainer treats a missing file as a strand with no cards. -->
-  <script src="../js/cycle3-history.local.js" onerror="this.dataset.missing='yes'"></script>
+  <script src="../js/cycle3-history.local.js"></script>
   <script src="../js/cc.js"></script>
   <script src="js/practice.js"></script>
 </body>

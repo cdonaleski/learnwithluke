@@ -1,111 +1,117 @@
 /**
  * Cycle 3 Latin — John 1:1-7, vocabulary first and then the verses.
  *
- * The Latin is the Vulgate and the English is the Douay-Rheims; both have
- * been out of copyright for centuries. The word-for-word glosses are
- * dictionary facts. Nothing here is anyone's property.
+ * Every card stores the PAIR, lat and eng, rather than a prompt and an
+ * answer. Which way round it is asked is then a choice made when it is
+ * drilled, not a decision baked into the data — because recognizing that
+ * "apud" means "with" and producing "apud" when you want to say "with" are
+ * two different skills, and only one of them was practiceable when these
+ * were stored one way round.
  *
- * Where the sheet gives several forms of a word (Deus, Deum, Deo) they stay
- * together on one card, because that is one checkbox and one thing to say.
+ * Each card still carries the direction it is normally taught in: the
+ * vocabulary sheet asks the meaning of a Latin word, and the verses are
+ * recited in Latin. That is the default; the other way is one tap away.
+ *
+ * The Latin is the Vulgate and the English is the Douay-Rheims, both out of
+ * copyright for centuries, and the word glosses are dictionary facts.
  */
 (function () {
   "use strict";
 
-  const add = window.CC_ADD;
+  const cards = window.CC_CYCLE3.cards;
 
-  add("latin", 1, "Prepositions", [
-    ["in", "in"],
-    ["apud", "with"],
-    ["per", "by"],
-    ["sine", "without"],
-    ["a", "from"],
-    ["de", "of"],
-  ]);
+  /** A word or a verse: stored as a pair, asked either way. */
+  const pair = function (section, label, lat, eng, taught) {
+    cards.push({
+      strand: "latin",
+      section: section,
+      label: label,
+      lat: lat,
+      eng: eng,
+      // Which language the ANSWER is in by default.
+      taught: taught,
+      q: taught === "lat" ? eng : lat,
+      a: taught === "lat" ? lat : eng,
+    });
+  };
 
-  add("latin", 2, "Conjunctions and Adverbs", [
-    ["et", "and"],
-    ["ut", "that"],
-    ["non", "not"],
-  ]);
+  /** Vocabulary: see the Latin, say what it means. */
+  const word = function (section, label, lat, eng) { pair(section, label, lat, eng, "eng"); };
 
-  add("latin", 3, "Pronouns", [
-    ["hic", "this"],
-    ["hoc", "same"],
-    ["ipso, ipsum", "him"],
-    ["cui", "whose"],
-    ["quod", "that"],
-    ["eam", "it"],
-    ["illum", "him"],
-  ]);
+  /** Verses: hear the English, say the Latin. */
+  const verse = function (section, reference, lat, eng) { pair(section, reference, lat, eng, "lat"); };
 
-  add("latin", 4, "Verbs", [
-    ["erat", "was"],
-    ["venit", "came"],
-    ["perhiberet", "bear"],
-    ["crederent", "believe"],
-  ]);
+  word(1, "Prepositions", "in", "in");
+  word(1, "Prepositions", "apud", "with");
+  word(1, "Prepositions", "per", "by");
+  word(1, "Prepositions", "sine", "without");
+  word(1, "Prepositions", "a", "from");
+  word(1, "Prepositions", "de", "of");
 
-  add("latin", 5, "Verbs", [
-    ["facta sunt", "were made"],
-    ["factum est", "was made"],
-    ["missus", "sent"],
-    ["conprehenderunt", "comprehended"],
-    ["lucet", "shineth"],
-    ["fuit", "there was"],
-  ]);
+  word(2, "Conjunctions and Adverbs", "et", "and");
+  word(2, "Conjunctions and Adverbs", "ut", "that");
+  word(2, "Conjunctions and Adverbs", "non", "not");
 
-  add("latin", 6, "Nouns", [
-    ["verbum", "word"],
-    ["Deus, Deum, Deo", "God"],
-    ["principio", "beginning"],
-    ["omnia, omnes", "all"],
-    ["nihil", "nothing"],
-  ]);
+  word(3, "Pronouns", "hic", "this");
+  word(3, "Pronouns", "hoc", "same");
+  word(3, "Pronouns", "ipso, ipsum", "him");
+  word(3, "Pronouns", "cui", "whose");
+  word(3, "Pronouns", "quod", "that");
+  word(3, "Pronouns", "eam", "it");
+  word(3, "Pronouns", "illum", "him");
 
-  add("latin", 7, "Nouns", [
-    ["vita", "life"],
-    ["lux", "light"],
-    ["homo, hominum", "man"],
-    ["nomen", "name"],
-  ]);
+  word(4, "Verbs", "erat", "was");
+  word(4, "Verbs", "venit", "came");
+  word(4, "Verbs", "perhiberet", "bear");
+  word(4, "Verbs", "crederent", "believe");
 
-  add("latin", 8, "Nouns", [
-    ["testimonium", "witness, testimony"],
-    ["lumine", "light"],
-    ["Iohannes", "John"],
-    ["tenebris, tenebrae", "darkness"],
-  ]);
+  word(5, "Verbs", "facta sunt", "were made");
+  word(5, "Verbs", "factum est", "was made");
+  word(5, "Verbs", "missus", "sent");
+  word(5, "Verbs", "conprehenderunt", "comprehended");
+  word(5, "Verbs", "lucet", "shineth");
+  word(5, "Verbs", "fuit", "there was");
 
-  add("latin", 9, "Verb Rules", [
+  word(6, "Nouns", "verbum", "word");
+  word(6, "Nouns", "Deus, Deum, Deo", "God");
+  word(6, "Nouns", "principio", "beginning");
+  word(6, "Nouns", "omnia, omnes", "all");
+  word(6, "Nouns", "nihil", "nothing");
+
+  word(7, "Nouns", "vita", "life");
+  word(7, "Nouns", "lux", "light");
+  word(7, "Nouns", "homo, hominum", "man");
+  word(7, "Nouns", "nomen", "name");
+
+  word(8, "Nouns", "testimonium", "witness, testimony");
+  word(8, "Nouns", "lumine", "light");
+  word(8, "Nouns", "Iohannes", "John");
+  word(8, "Nouns", "tenebris, tenebrae", "darkness");
+
+  /* 9-11: rules about Latin, asked and answered in English. No pair, so no
+     direction to choose, and the trainer leaves them alone when flipped. */
+  window.CC_ADD("latin", 9, "Verb Rules", [
     ["What is the rule for Latin verbs?",
      "Latin verbs have different endings called conjugations."],
   ]);
-
-  add("latin", 10, "Article Rules", [
+  window.CC_ADD("latin", 10, "Article Rules", [
     ["What is the rule for Latin articles?",
      "Latin has no translation for articles a, an, the."],
   ]);
-
-  add("latin", 11, "Nouns/Pronouns Rules", [
+  window.CC_ADD("latin", 11, "Nouns/Pronouns Rules", [
     ["What is the rule for Latin nouns and pronouns?",
      "Latin nouns and pronouns have different endings called declensions."],
   ]);
 
-  /* 12-24: the verses themselves. The prompt is the English, so the student
-     produces the Latin — which is the direction the recitation runs. */
-  const verse = function (section, reference, latin, english) {
-    add("latin", section, reference, [[english, latin]]);
-  };
-
   verse(12, "John 1:1", "in principio erat Verbum", "in the beginning was the Word");
   verse(13, "John 1:1", "et Verbum erat apud Deum", "and the Word was with God");
-  add("latin", 13, "John 1:1", [["and the Word was God", "et Deus erat Verbum"]]);
+  verse(13, "John 1:1", "et Deus erat Verbum", "and the Word was God");
   verse(14, "John 1:2", "hoc erat in principio apud Deum", "the same was in the beginning with God");
   verse(15, "John 1:3", "omnia per ipsum facta sunt", "all things were made by him");
   verse(16, "John 1:3", "et sine ipso factum est nihil", "and without him was made nothing");
-  add("latin", 16, "John 1:3", [["that was made", "quod factum est"]]);
+  verse(16, "John 1:3", "quod factum est", "that was made");
   verse(17, "John 1:4", "in ipso vita erat", "in him was life");
-  add("latin", 17, "John 1:4", [["and the life was the light of men", "et vita erat lux hominum"]]);
+  verse(17, "John 1:4", "et vita erat lux hominum", "and the life was the light of men");
   verse(18, "John 1:5", "et lux in tenebris lucet", "and the light shineth in the darkness");
   verse(19, "John 1:5", "et tenebrae eam non conprehenderunt",
     "and the darkness did not comprehend it");

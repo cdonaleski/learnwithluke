@@ -1,25 +1,111 @@
 /* Memory Work — page-specific styles */
 
-.cc-mode-why {
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-  max-width: 52ch;
-  margin: 0.6rem auto 0;
+/* ---------------- The toolbar ----------------
+   Four things to choose and twenty-four sections to choose between. Laid out
+   as plain rows it pushed the card itself off the bottom of a phone, so you
+   scrolled down to read, up to change, down again. It is one compact bar now,
+   stuck to the top: the card is always in view and so are the controls. */
+
+.cc-tools {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid #e8e2d8;
+  background: color-mix(in srgb, var(--color-bg-alt) 94%, transparent);
+  backdrop-filter: blur(8px);
+  display: grid;
+  gap: 0.4rem;
 }
+
+/* display:flex beats the [hidden] attribute, so a row JS has hidden -- the
+   cycle chips when there is only one cycle, the sections when no strand is
+   chosen -- would otherwise sit there empty. */
+.cc-row[hidden] { display: none; }
+
+.cc-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cc-row-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  min-width: 3.4rem;
+}
+
+/* Chips in the toolbar are smaller than the site's standard chip: there are
+   a lot of them and they must not become the page. */
+.cc-tools .chip {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  border-width: 2px;
+}
+
+.cc-tools .chip.is-on { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+
+/* Twenty-four section numbers stay folded away behind their own summary. */
+.cc-section-toggle {
+  padding: 0.3rem 0.7rem;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.cc-section-toggle:hover { border-color: var(--color-purple); }
+
+.chips--sections { width: 100%; margin-top: 0.3rem; }
+.chips--sections .chip { min-width: 2.2rem; justify-content: center; padding: 0.3rem 0.4rem; }
+
+/* The one-line collapsed form, phones only. */
+.cc-summary { display: none; }
+
+@media (max-width: 640px) {
+  .cc-summary {
+    display: block;
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border: 2px solid #e8e2d8;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: left;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .cc-tools:not(.is-open) > .cc-row { display: none; }
+}
+
+.cc-mode-why {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0.1rem 0 0;
+  line-height: 1.4;
+}
+
+.cc-count { font-family: var(--font-display); font-weight: 600; font-size: 0.8rem; color: var(--color-purple); }
 
 .cc-empty {
   text-align: center;
   color: var(--color-text-muted);
   max-width: 54ch;
   margin: 1.5rem auto;
-}
-
-/* Twenty-four section numbers need to be small and square, not word-sized. */
-.chips--sections .chip {
-  min-width: 2.4rem;
-  padding: 0.4rem 0.5rem;
-  justify-content: center;
 }
 
 /* ---------------- One card at a time ---------------- */
@@ -36,6 +122,7 @@
 
 .cc-card.is-open { border-color: var(--color-purple); background: #f7f4fd; }
 .cc-card.is-done { border-color: #bfe6d6; background: #f4fbf8; }
+.cc-card.is-recite { border-color: var(--color-sun); background: #fffdf4; }
 
 .cc-card-where {
   font-family: var(--font-display);
@@ -56,16 +143,51 @@
 }
 
 .cc-a {
-  margin-top: 0.9rem;
-  padding-top: 0.9rem;
-  border-top: 2px dashed #ddd4c4;
   font-size: clamp(1rem, 2.8vw, 1.25rem);
   line-height: 1.5;
   color: var(--color-purple);
 }
 
+.cc-card.is-open .cc-a {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 2px dashed #ddd4c4;
+}
+
+/* The scaffold: enough to unlock the sentence, never enough to read it. */
+.cc-hint {
+  margin-top: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: var(--color-orange);
+  word-break: break-word;
+}
+
+/* Recite is two people, so the card is split: the prompt to read out, and
+   below it what the checker is listening for. */
+.cc-aside {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.cc-checker {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 2px dashed #e0cf90;
+  background: #fffaea;
+}
+
+.cc-aside--nudge { margin-top: 0.9rem; padding-top: 0.7rem; border-top: 2px dashed #e8dcae; }
+.cc-checker .cc-hint { margin-top: 0.2rem; }
+
 .cc-note { margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-muted); font-style: italic; }
-.cc-say { margin-top: 0.8rem; color: var(--color-text-muted); font-size: 0.95rem; }
 .cc-card .game-actions { margin-top: 1.1rem; }
 .cc-where { text-align: center; margin-top: 0.8rem; font-size: 0.85rem; color: var(--color-text-muted); }
 
@@ -82,7 +204,7 @@
 .cc-match-side { display: grid; gap: 0.5rem; align-content: start; }
 
 .cc-pair {
-  min-height: 3.2rem;
+  min-height: 3rem;
   padding: 0.6rem 0.8rem;
   border: 2px solid #e8e2d8;
   border-radius: var(--radius-sm);
@@ -93,7 +215,7 @@
   text-align: left;
   color: var(--color-text);
   cursor: pointer;
-  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+  transition: border-color 0.12s, background 0.12s;
 }
 
 .cc-pair--a { font-family: var(--font-display); font-weight: 600; }
@@ -128,10 +250,11 @@
 .cc-dl dd { color: var(--color-text-muted); margin-top: 0.25rem; }
 
 @media (max-width: 560px) {
-  /* Two columns of long answers is unreadable on a phone; stack them and
-     let the pairing be top-to-bottom instead of side-to-side. */
+  /* Two columns of long answers is unreadable on a phone; stack them so the
+     pairing runs top to bottom instead of side to side. */
   .cc-match { grid-template-columns: 1fr; }
-  .cc-match-side:first-child { order: 0; }
+  .cc-row-label { min-width: 0; }
+  .cc-card { padding: 1.1rem 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

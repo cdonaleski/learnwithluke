@@ -95,11 +95,43 @@
 
   /* ---------------- Choosing what to work on ---------------- */
 
+  /* ---------------- Which way round a card is asked ---------------- */
+
   /**
-   * Cards for a cycle, narrowed by strand and section. `sections` is a list
-   * of section numbers; an empty list means all of them.
+   * Some cards are a PAIR rather than a question: a Latin word and its
+   * meaning, where either side can be the prompt. Recognizing that "apud"
+   * means "with" and producing "apud" when you mean "with" are different
+   * skills, and a card stored one way round only ever trains one of them.
    */
-  function pick(cycleNumber, strand, sections) {
+  function hasPair(card) {
+    return Boolean(card.lat && card.eng);
+  }
+
+  /**
+   * `want` is "taught" (the way the sheet drills it), "eng" (answer in
+   * English) or "lat" (answer in Latin). A card with no pair is returned
+   * untouched, so the Latin rules and every other strand are unaffected.
+   *
+   * The prompt is what identifies a card in the progress store, so asking
+   * it the other way round is automatically a separate thing to learn --
+   * which is right, because it is.
+   */
+  function askedAs(card, want) {
+    if (!hasPair(card) || !want || want === "taught") return card;
+    const answerIn = want === "lat" ? "lat" : "eng";
+    return Object.assign({}, card, {
+      q: answerIn === "lat" ? card.eng : card.lat,
+      a: answerIn === "lat" ? card.lat : card.eng,
+      asked: answerIn,
+    });
+  }
+
+  /**
+   * Cards for a cycle, narrowed by strand and section, and asked whichever
+   * way round was chosen. `sections` is a list of section numbers; an empty
+   * list means all of them.
+   */
+  function pick(cycleNumber, strand, sections, direction) {
     const found = cycleOf(cycleNumber);
     if (!found) return [];
     return found.cards
@@ -110,7 +142,12 @@
       })
       // The cycle rides on the card from here, so a card can be identified
       // without knowing which list it came out of.
-      .map(function (card) { return Object.assign({ cycle: found.cycle }, card); });
+      .map(function (card) { return askedAs(Object.assign({ cycle: found.cycle }, card), direction); });
+  }
+
+  /** Does anything in this selection have two sides to it? */
+  function canChooseDirection(cycleNumber, strand, sections) {
+    return pick(cycleNumber, strand, sections).some(hasPair);
   }
 
   /**
@@ -183,8 +220,93 @@
     });
   }
 
+  /* ---------------- How much help the prompt gives ---------------- */
+
+  /**
+   * Difficulty here is not "harder cards" -- the cards are the cards, and the
+   * proof asks for all of them. It is how much of the answer the student can
+   * see while trying to produce it, which is the thing that actually makes
+   * recall easy or hard.
+   *
+   * Easy is the first-letter method, which is how people have memorized long
+   * passages for centuries: enough to unlock the sentence, never enough to
+   * read it off.
+   */
+  const LEVELS = [
+    { id: "easy", label: "Easy", pairs: 4, why: "First letter of every word to lean on." },
+    { id: "medium", label: "Medium", pairs: 6, why: "Just the opening, and how much is left." },
+    { id: "hard", label: "Hard", pairs: 8, why: "Nothing but the prompt. This is proof day." },
+  ];
+
+  /** A word with everything after its first character hidden. */
+  function skeleton(word) {
+    let out = "";
+    let seenFirst = false;
+    for (let i = 0; i < word.length; i++) {
+      const ch = word[i];
+      if (/[A-Za-z0-9]/.test(ch)) {
+        // Digits are masked like letters: showing "104" in full would be the
+        // whole answer for most of the math strand.
+        out += seenFirst ? "·" : ch;
+        seenFirst = true;
+      } else {
+        out += ch;
+      }
+    }
+    return out;
+  }
+
+  /**
+   * What the student is allowed to see before answering. Never the answer:
+   * at easy it is the shape of it, at medium the start of it, at hard
+   * nothing. Returns "" when there is no help to give.
+   */
+  function hintFor(card, level) {
+    if (!card || !card.a || !level || level === "hard") return "";
+    const answer = String(card.a);
+    const words = answer.split(/\s+/).filter(Boolean);
+    if (!words.length) return "";
+
+    const hint = level === "easy" ? easyHint(words) : mediumHint(words);
+
+    // Short answers have nothing to scaffold: "1 × 1" answers "1", and one
+    // character masked is still that character. Give nothing rather than
+    // print the answer above the card and call it a hint.
+    return hint === answer ? "" : hint;
+  }
+
+  function easyHint(words) {
+    return words.map(skeleton).join(" ");
+  }
+
+  function mediumHint(words) {
+    const lead = words.length > 8 ? 2 : 1;
+    const rest = words.length - lead;
+    if (rest <= 0) return skeleton(words[0]);
+    return words.slice(0, lead).join(" ") + " … (" + rest + " more word" + (rest === 1 ? "" : "s") + ")";
+  }
+
+  function levelOf(id) {
+    return LEVELS.filter(function (l) { return l.id === id; })[0] || LEVELS[2];
+  }
+
+  /** How a pair can be asked. "taught" is whichever way the sheet drills it. */
+  const DIRECTIONS = [
+    { id: "taught", label: "As taught", why: "Words for their meaning, verses in Latin — the way the sheet drills them." },
+    { id: "eng", label: "→ English", why: "See the Latin, say what it means." },
+    { id: "lat", label: "→ Latin", why: "Hear the English, produce the Latin. The harder way." },
+  ];
+
   window.CC = {
     STRANDS: STRANDS,
+    DIRECTIONS: DIRECTIONS,
+    LEVELS: LEVELS,
+    levelOf: levelOf,
+    hintFor: hintFor,
+    skeleton: skeleton,
+    hasPair: hasPair,
+    askedAs: askedAs,
+    canChooseDirection: canChooseDirection,
     SAID_IT_TO_LEARN: SAID_IT_TO_LEARN,
     MATCH_ROUND: MATCH_ROUND,
     cycles: cycles,
