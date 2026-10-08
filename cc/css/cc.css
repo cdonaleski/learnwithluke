@@ -1110,3 +1110,139 @@
 }
 .cc-rows td { font-weight: 700; color: var(--color-purple); }
 .cc-rows tr + tr th, .cc-rows tr + tr td { border-top: 1px dashed #e4dccd; }
+
+/* ---------------- Which map ----------------
+   The two maps as one switch, the one you are on picked out. A single pill
+   reading "Features" on one page and "States" on the other was a link
+   dressed as a button, with an underline and no sense of where it went. */
+.cc-mapswitch {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: #ece6dc;
+}
+.cc-mapswitch a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.3rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cc-mapswitch a:hover { color: var(--color-text); }
+.cc-mapswitch a[aria-current="page"] {
+  background: var(--color-bg-alt);
+  color: var(--color-purple);
+  box-shadow: 0 1px 4px rgba(60, 40, 90, 0.18);
+}
+.cc-mapswitch-short { display: none; }
+@media (max-width: 640px) {
+  .cc-mapswitch-long { display: none; }
+  .cc-mapswitch-short { display: inline; }
+  .cc-mapswitch a { padding: 0 0.6rem; }
+}
+.cc-map-card--study { border-color: #cfe0f7; background: #f6faff; }
+.cc-map-hint { margin: 0.4rem 0 0; color: var(--color-text-muted); font-size: 0.9rem; }
+
+/* ---------------- The features map, drawn like CC's key ----------------
+   Page 246 of the Guide and its Black Line Master: pale land with soft
+   state lines on a pale-blue sea; ranges as clusters of small triangles;
+   peaks red; deserts orange; water blue; trails dotted; regions in tints. */
+
+.cc-features .cc-map-main { background: #e2eef8; }
+.cc-features .cc-fbase path { fill: #f7f3ea; stroke: #d6ccbb; stroke-width: 0.7; }
+
+/* Areas */
+.ft-a--range  { fill: #c9b79c; fill-opacity: 0.35; stroke: none; }
+.ft-a--hills  { fill: #d7c4a5; fill-opacity: 0.3; stroke: none; }
+.ft-over      { stroke: none; pointer-events: none; }
+#ft-mtn path  { fill: #9a8c7a; }
+#ft-hill path { fill: none; stroke: #8b6b4a; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+.ft-a--desert { fill: #f0874a; fill-opacity: 0.8; stroke: none; }
+.ft-a--canyon { fill: #7b4a31; stroke: none; }
+.ft-a--delta  { fill: #8fc6b3; fill-opacity: 0.85; stroke: #5d9e88; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.ft-a--water  { fill: #3f97e6; stroke: none; }
+.ft-a--region-plains { fill: #bfe0b1; fill-opacity: 0.55; stroke: none; }
+.ft-a--region-basin  { fill: #f2e597; fill-opacity: 0.6; stroke: none; }
+.ft-a--land, .ft-a--region { fill: #d9c9b0; fill-opacity: 0.5; stroke: none; }
+
+/* Lines */
+.ft-l--water { stroke: #2f5d8c; stroke-width: 2.2; }
+.ft-l--trail { stroke: #8a3b2a; stroke-width: 2.2; stroke-dasharray: 1.5 4; }
+.ft-l--canal { stroke: #4fb3e8; stroke-width: 3; }
+.ft-l--fault { stroke: #d63a2f; stroke-width: 2.5; }
+
+/* Symbols */
+.ft-mark { stroke: none; }
+.ft-tri { fill: #9a8c7a; }
+.ft-peak { fill: #d8332a; stroke: #fff; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.ft-valley { fill: #5b4a3f; }
+.ft-valley-green { fill: #a9c77f; }
+.ft-desert-mark { fill: #f0874a; }
+.ft-swamp-mark { fill: #6a6fc4; }
+.ft-tuft { stroke: #3d3f8f; stroke-width: 1.5; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.ft-forest-mark { fill: #3d9a5b; }
+.ft-trunk { fill: #7a5a3a; }
+.ft-water-mark { fill: #3f97e6; }
+.ft-cave-mark { fill: #8a8a8a; }
+.ft-canal-mark { fill: #4fb3e8; }
+.ft-region-mark { fill: #c9b6ef; fill-opacity: 0.55; stroke: #8b72cf; stroke-width: 1.5; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+.ft-place-mark, .ft-pin-mark { fill: #8f7350; stroke: #fff; stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+/* Hard: everything is there to tap, nothing is there to see -- until it is
+   answered, flashed, or the checker asks to see it. */
+.cc-fmap.is-bare .ft:not(.is-right):not(.is-wrong):not(.is-show):not(.is-target) { opacity: 0; }
+
+/* Controls */
+.cc-map-level-why { flex-basis: 100%; margin: 0; text-align: center; font-size: 0.82rem; color: var(--color-text-muted); }
+.cc-reveal {
+  margin-top: 0.6rem;
+  min-height: 2.3rem;
+  padding: 0 0.9rem;
+  border: 2px dashed #c9a400;
+  border-radius: 999px;
+  background: #fffbe8;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #6b5200;
+  cursor: pointer;
+}
+
+/* The key, drawn with the same symbols */
+.cc-sw { display: inline-block; width: 1.1rem; height: 0.85rem; border-radius: 3px; }
+.cc-sw--a-range, .cc-sw--g-range {
+  background:
+    linear-gradient(135deg, transparent 50%, #9a8c7a 50%) 0 0 / 0.5rem 0.5rem,
+    rgba(201, 183, 156, 0.35);
+  clip-path: polygon(0 100%, 25% 30%, 50% 100%, 75% 30%, 100% 100%);
+}
+.cc-sw--g-peak { width: 0; height: 0; border-radius: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 11px solid #d8332a; }
+.cc-sw--a-hills { background: #d7c4a5; }
+.cc-sw--a-water, .cc-sw--g-water { background: #3f97e6; }
+.cc-sw--l-water { height: 3px; background: #2f5d8c; }
+.cc-sw--l-canal, .cc-sw--g-canal { height: 4px; background: #4fb3e8; }
+.cc-sw--l-trail { height: 0; border-radius: 0; border-top: 3px dotted #8a3b2a; }
+.cc-sw--l-fault { height: 3px; background: #d63a2f; }
+.cc-sw--a-desert, .cc-sw--g-desert { background: #f0874a; }
+.cc-sw--a-canyon { background: #7b4a31; }
+.cc-sw--g-valley { background: #5b4a3f; border-radius: 50%; }
+.cc-sw--g-valley-green { background: #a9c77f; border-radius: 50%; }
+.cc-sw--a-delta { background: #8fc6b3; }
+.cc-sw--g-swamp { background: #6a6fc4; border-radius: 50%; }
+.cc-sw--g-forest { width: 0; height: 0; border-radius: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid #3d9a5b; }
+.cc-sw--g-falls { background: #3f97e6; border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%; width: 0.7rem; }
+.cc-sw--g-cave { background: #8a8a8a; width: 0.75rem; height: 0.75rem; }
+.cc-sw--a-region-plains { background: #bfe0b1; }
+.cc-sw--a-region-basin { background: #f2e597; }
+.cc-sw--g-region { background: #c9b6ef; border-radius: 50%; border: 1.5px dashed #8b72cf; }
+.cc-sw--g-place { background: #8f7350; border-radius: 50%; width: 0.7rem; height: 0.7rem; }
+.cc-sw--g-edge { width: 0; height: 0; border-radius: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid #3f97e6; }
+.cc-key { gap: 0.25rem; }

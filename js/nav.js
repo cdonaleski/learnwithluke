@@ -9,7 +9,7 @@
    */
   const SECTIONS = [
     { id: "cube", label: "The Cube" },
-    { id: "cc", label: "Memory Work" },
+    { id: "cc", label: "CC Memory Work" },
     { id: "puzzles", label: "Puzzles" },
     { id: "games", label: "Games" },
     { id: "tools", label: "Tools" },
@@ -35,7 +35,7 @@
    */
   const MENU = [
     { id: "cube", label: "The Cube" },
-    { id: "cc", label: "Memory Work" },
+    { id: "cc", label: "CC Memory Work" },
     { label: "Play", sections: ["puzzles", "games"] },
     // One page lists every STEM tool, so STEM is a link, not a drop-down
     // of four thinner pages. It still lights up anywhere inside them.

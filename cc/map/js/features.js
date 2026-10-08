@@ -39,6 +39,8 @@
     title: document.getElementById("map-title"),
     count: document.getElementById("map-count"),
     modes: document.getElementById("map-mode"),
+    levels: document.getElementById("map-level"),
+    levelWhy: document.getElementById("map-level-why"),
     weeks: document.getElementById("map-weeks"),
     prompt: document.getElementById("map-prompt"),
     main: document.getElementById("map-main"),
@@ -47,7 +49,7 @@
 
   const MODES = [
     { id: "find", label: "Find it", icon: "👆" },
-    { id: "name", label: "Name it", icon: "🎤" },
+    { id: "name", label: "Recite", icon: "🎤" },
   ];
 
   /* What each kind of feature looks like: drawn as an area, a line or a dot. */
@@ -61,6 +63,64 @@
     "region-point": { family: "region", as: "dot" }, "desert-point": { family: "desert", as: "dot" },
     edge: { family: "water", as: "edge" },
   };
+
+  /*
+   * THE GRAPHICS, after Classical Conversations' own key (page 246) and its
+   * Black Line Master: mountain ranges as clusters of small triangles, peaks
+   * as red triangles, deserts in orange, water in blue, trails dotted, the
+   * Grand Canyon and Death Valley in dark brown, Mammoth Cave a small square,
+   * the swamp a purple-blue patch, the Native American regions in pale tints.
+   *
+   * These are symbols, the way a map key's are. Where a feature has a real
+   * shape it is drawn in that shape; where it is only a point, the symbol
+   * marks the point and claims no outline.
+   */
+  const AREA_STYLE = {
+    "Adirondack Mountains": "range", "Blue Ridge Mountains": "range", "Rocky Mountains": "range",
+    "Sierra Nevadas": "range", "Cascade Mountains": "range", "Black Hills": "range",
+    "Ozark Highlands": "hills", "Grand Canyon": "canyon", "Mississippi River Delta": "delta",
+    "Sonoran Desert": "desert", "Great Salt Lake Desert": "desert",
+    "Plains": "region-plains", "Great Basin": "region-basin",
+  };
+  const POINT_GLYPH = {
+    "White Mountains": "range", "Green Mountains": "range", "Allegheny Mountains": "range",
+    "Great Smoky Mountains": "range", "Cumberland Mountains": "range",
+    "The Great Valley": "valley-green", "Death Valley": "valley",
+    "Mojave Desert": "desert", "Colorado Desert": "desert", "Painted Desert": "desert",
+    "Okefenokee Swamp": "swamp", "Olympic rainforests": "forest", "Niagara Falls": "falls",
+    "Mammoth Cave": "cave", "Puget Sound": "water",
+  };
+
+  function areaStyle(item, part) {
+    if (AREA_STYLE[item.name]) return AREA_STYLE[item.name];
+    return LOOK[part.kind].family === "water" ? "water" : LOOK[part.kind].family;
+  }
+
+  function pointGlyph(item, part) {
+    if (part.kind === "peak") return "peak";
+    if (part.kind === "edge") return "edge";
+    if (POINT_GLYPH[item.name]) return POINT_GLYPH[item.name];
+    if (part.kind === "canal-point") return "canal";
+    if (part.kind === "region-point" || item.week === 21) return "region";
+    if (part.kind === "desert-point") return "desert";
+    if (part.kind === "water-point") return "water";
+    return "place";
+  }
+
+  /*
+   * EASY, MEDIUM, HARD -- how much the map gives away.
+   *   Easy    only this week's features are drawn, zoomed in to where they are.
+   *   Medium  every feature from every week is drawn, unnamed, on the whole
+   *           country, the way the Black Line Master is: you have to know
+   *           which triangles are the Cascades.
+   *   Hard    nothing is drawn. The country, and your memory.
+   */
+  const LEVELS = [
+    { id: "easy", label: "Easy", why: "Only this week's features, zoomed in close to each one." },
+    { id: "medium", label: "Medium", why: "Every feature drawn, none named — the whole country." },
+    { id: "hard", label: "Hard", why: "A bare map. Nothing is drawn." },
+  ];
+  const LEVEL_KEY = "cc-features-level";
 
   /* ---- The features, grouped by name: Eastern Woodlands is two points. ---- */
 
@@ -121,6 +181,12 @@
     trail: [],
     timer: null,
     view: FULL,
+    level: (function () {
+      try { const v = window.localStorage.getItem(LEVEL_KEY); if (v === "medium" || v === "hard") return v; }
+      catch (err) { /* fine */ }
+      return "easy";
+    })(),
+    showAll: false,         // Recite on Hard: the checker asked to see them
   };
 
   (function fromLink() {
@@ -128,7 +194,9 @@
     const week = Number(params.get("weeks"));
     if (WEEKS.indexOf(week) !== -1) state.week = week;
     else if (params.get("weeks") === "all") state.week = 0;
-    if (params.get("mode") === "name") state.mode = "name";
+    if (params.get("mode") === "name" || params.get("mode") === "recite") state.mode = "name";
+    const level = params.get("level");
+    if (level === "easy" || level === "medium" || level === "hard") state.level = level;
   })();
 
   function weeksInPlay() { return state.week ? [state.week] : WEEKS.slice(); }
@@ -196,6 +264,32 @@
     return { x: x, y: y, w: w, h: h };
   }
 
+  /**
+   * Easy's zoom: the area around the one feature being asked about. A whole
+   * week often spans the country -- the rivers run from Montana to the St.
+   * Lawrence -- so zooming to the week would not zoom at all. This frames
+   * roughly a third of the country around the feature (or the feature itself,
+   * if it is bigger), with the week's other features drawn for company, and
+   * nudged a little off-center so the answer is not always dead middle.
+   */
+  function regionFrame(item) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    item.parts.forEach(function (p) {
+      x0 = Math.min(x0, p.bbox[0]); y0 = Math.min(y0, p.bbox[1]);
+      x1 = Math.max(x1, p.bbox[2]); y1 = Math.max(y1, p.bbox[3]);
+    });
+    let w = Math.max((x1 - x0) * 1.6, 330), h = Math.max((y1 - y0) * 1.6, 206);
+    if (w / h > ASPECT) h = w / ASPECT; else w = h * ASPECT;
+    if (w >= FULL.w || h >= FULL.h) return FULL;
+    // A stable nudge per feature, so the same question frames the same way.
+    const jitter = function (n) { return (((item.id * 37 + n * 101) % 21) - 10) / 10; };
+    let x = (x0 + x1) / 2 - w / 2 + jitter(1) * w * 0.15;
+    let y = (y0 + y1) / 2 - h / 2 + jitter(2) * h * 0.15;
+    x = Math.max(0, Math.min(x, FULL.w - w));
+    y = Math.max(0, Math.min(y, FULL.h - h));
+    return { x: x, y: y, w: w, h: h };
+  }
+
   function pxPerUnit() {
     const width = svg ? svg.getBoundingClientRect().width : 0;
     return width ? width / state.view.w : 1;
@@ -214,46 +308,65 @@
   }
 
   function drawMap() {
-    const items = itemsInPlay();
-    state.view = frameFor(items);
+    const easy = state.level === "easy";
+    // Easy draws the week; Medium and Hard lay out every feature, so the
+    // right one has to be told apart from all the rest. On Hard they are
+    // there but invisible -- still tappable, so a wrong tap can say what it
+    // touched, and still revealed when shown.
+    const items = easy ? itemsInPlay() : ITEMS;
+    state.view = easy ? frameFor(itemsInPlay()) : FULL;
     state.weekView = state.view;
     const v = state.view;
 
     svg = svgNode("svg", {
       viewBox: v.x + " " + v.y + " " + v.w + " " + v.h,
-      class: "cc-map-svg cc-fmap",
+      class: "cc-map-svg cc-fmap" + (state.level === "hard" ? " is-bare" : ""),
       role: "group",
       "aria-label": "Map — tap a feature",
     });
 
+    // Patterns for the ranges and hills. Sized in screen pixels in sizeDots,
+    // so the triangles stay the same size however far the map is zoomed.
+    const defs = svgNode("defs");
+    const mtn = svgNode("pattern", { id: "ft-mtn", patternUnits: "userSpaceOnUse" });
+    mtn.appendChild(svgNode("path", { class: "ft-mtn-a" }));
+    mtn.appendChild(svgNode("path", { class: "ft-mtn-b" }));
+    const hill = svgNode("pattern", { id: "ft-hill", patternUnits: "userSpaceOnUse" });
+    hill.appendChild(svgNode("path", { class: "ft-hill-a" }));
+    defs.appendChild(mtn); defs.appendChild(hill);
+    svg.appendChild(defs);
+
     // The states underneath, for bearings only.
     const base = svgNode("g", { class: "cc-fbase" });
-    MAP.states.forEach(function (s) { base.appendChild(svgNode("path", { d: s.d })); });
+    MAP.states.forEach(function (st) { base.appendChild(svgNode("path", { d: st.d })); });
     svg.appendChild(base);
 
-    // Areas first, lines over them, dots on top: so a peak inside a range,
+    // Areas first, lines over them, symbols on top: so a peak inside a range,
     // or a desert inside a bigger desert, is still the thing you hit.
     const areas = svgNode("g"), lines = svgNode("g"), dots = svgNode("g");
     items.forEach(function (item) {
       item.parts.forEach(function (p) {
         const look = LOOK[p.kind];
-        const cls = "ft ft--" + look.family;
         if (look.as === "area") {
-          areas.appendChild(svgNode("path", { d: p.d, class: cls + " ft-area", "data-item": item.id }));
+          const style = areaStyle(item, p);
+          areas.appendChild(svgNode("path", { d: p.d, class: "ft ft-area ft-a--" + style, "data-item": item.id }));
+          if (style === "range" || style === "hills") {
+            areas.appendChild(svgNode("path", { d: p.d, class: "ft ft-over", "data-item": item.id,
+              fill: style === "range" ? "url(#ft-mtn)" : "url(#ft-hill)" }));
+          }
           // A pin inside the shape, used only if the shape turns out too small
           // to tap at this zoom -- San Francisco Bay is 13 pixels across on a
           // whole-country map, the Mississippi Delta 10.
           if (p.px != null) {
-            dots.appendChild(svgNode("g", { class: cls + " ft-dot ft-dot--pin", "data-item": item.id,
+            dots.appendChild(svgNode("g", { class: "ft ft-dot ft-dot--pin ft-g--" + style, "data-item": item.id,
               "data-x": p.px, "data-y": p.py, "data-w": p.bbox[2] - p.bbox[0], "data-h": p.bbox[3] - p.bbox[1] }));
           }
         } else if (look.as === "line") {
-          lines.appendChild(svgNode("path", { d: p.d, class: cls + " ft-line", "data-item": item.id }));
+          lines.appendChild(svgNode("path", { d: p.d, class: "ft ft-line ft-l--" + look.family, "data-item": item.id }));
           lines.appendChild(svgNode("path", { d: p.d, class: "ft-hit-line", "data-item": item.id }));
         } else {
-          const g = svgNode("g", { class: cls + " ft-dot ft-dot--" + look.as, "data-item": item.id,
-                                   "data-x": p.x, "data-y": p.y });
-          dots.appendChild(g);
+          dots.appendChild(svgNode("g", { class: "ft ft-dot ft-g--" + pointGlyph(item, p), "data-item": item.id,
+            "data-x": p.x, "data-y": p.y }));
         }
       });
     });
@@ -270,17 +383,24 @@
     // guess. So the map closes in on those dots instead, and the next tap
     // decides.
     svg.addEventListener("click", function (event) {
-      const under = [], dots = [];
+      const under = [], dotsHere = [];
       document.elementsFromPoint(event.clientX, event.clientY).forEach(function (node) {
         const hit = node.closest && node.closest("[data-item]");
         if (hit && svg.contains(hit)) {
           const id = Number(hit.getAttribute("data-item"));
           if (under.indexOf(id) === -1) under.push(id);
-          if (hit.classList.contains("ft-dot") && dots.indexOf(id) === -1) dots.push(id);
+          if (hit.classList.contains("ft-dot") && hit.firstChild && dotsHere.indexOf(id) === -1) dotsHere.push(id);
         }
       });
-      if (state.mode === "find" && !state.solved && dots.length > 1) {
-        zoomTo(dots);
+      // ...unless the map has already closed in on these same dots and they
+      // still overlap. The Great Valley and the Chesapeake and Ohio Canal are
+      // recorded about two miles apart: no zoom separates them, and zooming
+      // again would trap the child in a loop. Then the spot counts for
+      // whichever of them was asked.
+      const crowd = dotsHere.slice().sort().join(",");
+      if (state.mode === "find" && !state.solved && dotsHere.length > 1 && state.zoomedOn !== crowd) {
+        state.zoomedOn = crowd;
+        zoomTo(dotsHere);
         setStatus("Those are close together — tap the one you mean.", "");
         return;
       }
@@ -308,14 +428,87 @@
     sizeDots();
   }
 
+  /* The symbols, drawn around a point in screen-pixel sizes (s = one unit). */
+  function tri(x, y, s) {
+    return "M" + x + "," + (y - s) + "L" + (x + s * 0.95) + "," + (y + s * 0.7) + "L" + (x - s * 0.95) + "," + (y + s * 0.7) + "Z";
+  }
+
+  function glyph(g, kind, x, y, r) {
+    const add = function (tag, attrs) { g.appendChild(svgNode(tag, attrs)); };
+    if (kind === "range") {
+      // A little range: five triangles, like the clusters on CC's key.
+      const s = r * 0.62, d = r * 0.95;
+      [[-1, 0.55], [0, 0.75], [1, 0.5], [-0.5, -0.45], [0.55, -0.5]].forEach(function (o) {
+        add("path", { class: "ft-mark ft-tri", d: tri(x + o[0] * d, y + o[1] * d, s) });
+      });
+    } else if (kind === "peak") {
+      add("path", { class: "ft-mark ft-peak", d: tri(x, y, r * 1.35) });
+    } else if (kind === "edge") {
+      // Hudson Bay: an arrow pointing north, off the top of the map.
+      const s = r * 1.5, top = Math.max(y, state.view.y + s * 1.2);
+      add("path", { class: "ft-mark ft-water-mark",
+        d: "M" + x + "," + (top - s) + "L" + (x + s) + "," + (top + s * 0.6) + "L" + (x - s) + "," + (top + s * 0.6) + "Z" });
+      g.querySelector(".ft-hit").setAttribute("cy", top);
+    } else if (kind === "valley" || kind === "valley-green") {
+      add("ellipse", { class: "ft-mark ft-" + kind, cx: x, cy: y, rx: r * 1.5, ry: r * 0.5,
+        transform: "rotate(-35 " + x + " " + y + ")" });
+    } else if (kind === "desert") {
+      add("path", { class: "ft-mark ft-desert-mark", d:
+        "M" + (x - r * 1.2) + "," + y + "q" + r * 0.2 + "," + -r * 1.1 + " " + r * 1.1 + "," + -r * 0.9 +
+        "q" + r * 0.9 + "," + -r * 0.2 + " " + r * 1.2 + "," + r * 0.6 + "q" + r * 0.2 + "," + r * 1 + " " + -r * 0.9 + "," + r * 1.1 +
+        "q" + -r * 1.2 + "," + r * 0.1 + " " + -r * 1.4 + "," + -r * 0.8 + "Z" });
+    } else if (kind === "swamp") {
+      add("ellipse", { class: "ft-mark ft-swamp-mark", cx: x, cy: y, rx: r * 1.2, ry: r * 0.85 });
+      [-0.45, 0, 0.45].forEach(function (o) {
+        add("path", { class: "ft-tuft", d: "M" + (x + o * r) + "," + (y + r * 0.35) + "l0," + -r * 0.6 });
+      });
+    } else if (kind === "forest") {
+      add("path", { class: "ft-mark ft-forest-mark", d: tri(x, y - r * 0.15, r * 1.05) });
+      add("rect", { class: "ft-trunk", x: x - r * 0.14, y: y + r * 0.55, width: r * 0.28, height: r * 0.45 });
+    } else if (kind === "falls") {
+      add("path", { class: "ft-mark ft-water-mark", d:
+        "M" + x + "," + (y - r * 1.2) + "C" + (x + r * 0.9) + "," + (y - r * 0.1) + " " + (x + r * 0.9) + "," + (y + r * 0.9) +
+        " " + x + "," + (y + r * 0.9) + "C" + (x - r * 0.9) + "," + (y + r * 0.9) + " " + (x - r * 0.9) + "," + (y - r * 0.1) + " " + x + "," + (y - r * 1.2) + "Z" });
+    } else if (kind === "cave") {
+      add("rect", { class: "ft-mark ft-cave-mark", x: x - r * 0.7, y: y - r * 0.7, width: r * 1.4, height: r * 1.4, rx: r * 0.15 });
+    } else if (kind === "water") {
+      add("ellipse", { class: "ft-mark ft-water-mark", cx: x, cy: y, rx: r * 1.1, ry: r * 0.8 });
+    } else if (kind === "canal") {
+      add("rect", { class: "ft-mark ft-canal-mark", x: x - r * 1.1, y: y - r * 0.32, width: r * 2.2, height: r * 0.64, rx: r * 0.32 });
+    } else if (kind === "region") {
+      add("circle", { class: "ft-mark ft-region-mark", cx: x, cy: y, r: r * 1.5 });
+    } else {
+      add("circle", { class: "ft-mark ft-place-mark", cx: x, cy: y, r: r * 0.8 });
+    }
+  }
+
   /**
-   * Dots are drawn in screen pixels, not map units, so they are the same
-   * size however far the map is zoomed. Redone on every resize.
+   * Symbols and patterns are drawn in screen pixels, not map units, so they
+   * are the same size however far the map is zoomed. Redone on every resize
+   * and every zoom.
    */
   function sizeDots() {
     if (!svg) return;
     const k = pxPerUnit();
-    const r = POINT_PX / k, hit = POINT_HIT_PX / k;
+    // What you SEE shrinks with a small map -- on a phone, laptop-sized
+    // symbols crowded the whole country -- but what you can TAP does not:
+    // the hit circles stay finger-sized.
+    const width = svg.getBoundingClientRect().width || 700;
+    const look = Math.max(0.55, Math.min(1, width / 650));
+    const r = POINT_PX * look / k, hit = POINT_HIT_PX / k;
+
+    // Range pattern: two staggered triangles per tile, 18px apart on screen.
+    const t = 18 * look / k, ts = 4.2 * look / k;
+    const mtn = svg.querySelector("#ft-mtn");
+    mtn.setAttribute("width", t); mtn.setAttribute("height", t);
+    mtn.querySelector(".ft-mtn-a").setAttribute("d", tri(t * 0.25, t * 0.32, ts));
+    mtn.querySelector(".ft-mtn-b").setAttribute("d", tri(t * 0.75, t * 0.82, ts));
+    const hill = svg.querySelector("#ft-hill");
+    const h = 14 * look / k;
+    hill.setAttribute("width", h); hill.setAttribute("height", h);
+    hill.querySelector(".ft-hill-a").setAttribute("d",
+      "M" + h * 0.2 + "," + h * 0.55 + "L" + h * 0.4 + "," + h * 0.3 + "L" + h * 0.6 + "," + h * 0.55);
+
     svg.querySelectorAll(".ft-dot").forEach(function (g) {
       const x = Number(g.getAttribute("data-x")), y = Number(g.getAttribute("data-y"));
       g.innerHTML = "";
@@ -323,23 +516,12 @@
         const smallest = Math.min(Number(g.getAttribute("data-w")), Number(g.getAttribute("data-h"))) * k;
         if (smallest >= MIN_AREA_PX) return;          // big enough to tap as it is
         g.appendChild(svgNode("circle", { cx: x, cy: y, r: hit, class: "ft-hit" }));
-        g.appendChild(svgNode("circle", { cx: x, cy: y, r: r * 0.75, class: "ft-mark" }));
+        g.appendChild(svgNode("circle", { cx: x, cy: y, r: r * 0.75, class: "ft-mark ft-pin-mark" }));
         return;
       }
       g.appendChild(svgNode("circle", { cx: x, cy: y, r: hit, class: "ft-hit" }));
-      if (g.classList.contains("ft-dot--peak")) {
-        const s = r * 1.35;
-        g.appendChild(svgNode("path", { class: "ft-mark",
-          d: "M" + x + "," + (y - s) + "L" + (x + s * 0.95) + "," + (y + s * 0.7) + "L" + (x - s * 0.95) + "," + (y + s * 0.7) + "Z" }));
-      } else if (g.classList.contains("ft-dot--edge")) {
-        // Hudson Bay: an arrow pointing north, off the top of the map.
-        const s = r * 1.5, top = Math.max(y, state.view.y + s * 1.2);
-        g.appendChild(svgNode("path", { class: "ft-mark",
-          d: "M" + x + "," + (top - s) + "L" + (x + s) + "," + (top + s * 0.6) + "L" + (x - s) + "," + (top + s * 0.6) + "Z" }));
-        g.querySelector(".ft-hit").setAttribute("cy", top);
-      } else {
-        g.appendChild(svgNode("circle", { cx: x, cy: y, r: r, class: "ft-mark" }));
-      }
+      const kind = (g.getAttribute("class").match(/ft-g--([\w-]+)/) || [])[1] || "place";
+      glyph(g, kind, x, y, r);
     });
   }
 
@@ -371,24 +553,39 @@
       state.queue.slice(0, state.at).forEach(function (item) { mark(item.id, "is-right", true); });
     } else {
       const week = current();
-      if (week) ITEMS.filter(function (i) { return i.week === week; })
-        .forEach(function (i) { mark(i.id, "is-target", true); });
+      // On Hard the map stays bare: pointing to them is the test. The
+      // checker can light them up to check, with the button in the card.
+      if (week && (state.level !== "hard" || state.showAll)) {
+        ITEMS.filter(function (i) { return i.week === week; })
+          .forEach(function (i) { mark(i.id, "is-target", true); });
+      }
     }
   }
 
   function drawLegend() {
-    const seen = {};
-    itemsInPlay().forEach(function (i) { i.parts.forEach(function (p) { seen[LOOK[p.kind].family + ":" + LOOK[p.kind].as] = true; }); });
-    const KEY = [
-      ["water:area", "lake, bay or sea"], ["water:line", "river"], ["trail:line", "trail"],
-      ["canal:line", "canal"], ["canal:dot", "canal"], ["fault:line", "fault"],
-      ["land:area", "mountains or landform"], ["region:area", "region"], ["region:dot", "region"],
-      ["desert:area", "desert"], ["desert:dot", "desert"], ["peak:peak", "peak"],
-      ["land:dot", "place"], ["water:dot", "water"], ["water:edge", "off the map"],
-    ];
     el.legend.innerHTML = "";
-    // One entry per word: a desert drawn as a shape and one marked by a dot
-    // are both "desert", and the key should say so once, with both swatches.
+    el.legend.hidden = state.level === "hard";
+    if (state.level === "hard") return;
+    const drawn = state.level === "easy" ? itemsInPlay() : ITEMS;
+    const seen = {};
+    drawn.forEach(function (item) {
+      item.parts.forEach(function (p) {
+        const as = LOOK[p.kind].as;
+        if (as === "area") seen["a-" + areaStyle(item, p)] = true;
+        else if (as === "line") seen["l-" + LOOK[p.kind].family] = true;
+        else seen["g-" + pointGlyph(item, p)] = true;
+      });
+    });
+    const KEY = [
+      ["a-range", "mountain range"], ["g-range", "mountain range"], ["g-peak", "mountain peak"],
+      ["a-hills", "highlands"], ["a-water", "lake, bay or sea"], ["g-water", "lake, bay or sea"],
+      ["l-water", "river"], ["l-canal", "canal"], ["g-canal", "canal"], ["l-trail", "trail"],
+      ["l-fault", "fault"], ["a-desert", "desert"], ["g-desert", "desert"], ["a-canyon", "canyon"],
+      ["g-valley", "valley"], ["g-valley-green", "valley"], ["a-delta", "river delta"],
+      ["g-swamp", "swamp"], ["g-forest", "rainforest"], ["g-falls", "waterfall"], ["g-cave", "cave"],
+      ["a-region-plains", "Native American region"], ["a-region-basin", "Native American region"],
+      ["g-region", "Native American region"], ["g-place", "place"], ["g-edge", "off the map"],
+    ];
     const rows = {};
     KEY.filter(function (k) { return seen[k[0]]; }).forEach(function (k) {
       let row = rows[k[1]];
@@ -397,8 +594,7 @@
         el.legend.appendChild(row);
         row.appendChild(document.createTextNode(k[1]));
       }
-      const swatch = make("span", "cc-key--" + k[0].replace(":", "-"));
-      swatch.appendChild(make("i"));
+      const swatch = make("span", "cc-sw cc-sw--" + k[0]);
       row.insertBefore(swatch, row.lastChild);
     });
   }
@@ -418,6 +614,7 @@
     state.helped = [];
     state.missed = [];
     state.trail = [];
+    state.showAll = false;
     drawControls();
     drawMap();
     drawLegend();
@@ -443,6 +640,7 @@
 
   function drawFind() {
     const item = current();
+    if (state.level === "easy") setView(regionFrame(item));
     el.prompt.innerHTML = "";
     const card = make("div", "cc-map-card");
     card.appendChild(make("p", "cc-aside", "Week " + item.week + " · " + weekLabel(item.week) + " · on your own"));
@@ -500,6 +698,7 @@
 
   function next() {
     window.clearTimeout(state.timer);
+    state.zoomedOn = null;
     state.at += 1;
     state.tries = 0;
     state.solved = false;
@@ -515,7 +714,9 @@
     el.prompt.innerHTML = "";
     const card = make("div", "cc-map-card cc-map-card--name");
     card.appendChild(make("p", "cc-aside", "Week " + week + " · with a parent"));
-    card.appendChild(make("p", "cc-map-q", weekLabel(week) + ": point to each one and name it, in order."));
+    card.appendChild(make("p", "cc-map-q", state.level === "hard"
+      ? weekLabel(week) + ": name each one, in order, and point to where it is."
+      : weekLabel(week) + ": point to each one and name it, in order."));
 
     const checker = make("div", "cc-checker");
     checker.appendChild(make("p", "cc-aside", "They should name:"));
@@ -524,6 +725,12 @@
     checker.appendChild(ol);
     const c = weekCard(week);
     if (c && c.note) checker.appendChild(make("p", "cc-note", c.note));
+    if (state.level === "hard") {
+      checker.appendChild(button(state.showAll ? "Hide them again" : "Show where they are", "cc-reveal", function () {
+        state.showAll = !state.showAll;
+        draw();
+      }));
+    }
     card.appendChild(checker);
 
     const row = make("div", "game-actions");
@@ -539,6 +746,7 @@
   }
 
   function judge(right) {
+    state.showAll = false;
     const week = current();
     const card = weekCard(week);
     if (!card) return;
@@ -617,6 +825,19 @@
       }));
     });
 
+    if (el.levels) {
+      el.levels.innerHTML = "";
+      LEVELS.forEach(function (lv) {
+        el.levels.appendChild(chip(lv.label, lv.id === state.level, function () {
+          state.level = lv.id;
+          try { window.localStorage.setItem(LEVEL_KEY, lv.id); } catch (err) { /* fine */ }
+          begin();
+        }, lv.why));
+      });
+      const lv = LEVELS.filter(function (l) { return l.id === state.level; })[0];
+      el.levelWhy.textContent = lv.why;
+    }
+
     el.weeks.innerHTML = "";
     WEEKS.forEach(function (w) {
       el.weeks.appendChild(chip(String(w), state.week === w, function () {
@@ -655,5 +876,5 @@
 
   begin();
 
-  window.CCFeatures = { state: state, ITEMS: ITEMS, begin: begin, tapped: tapped, itemsInPlay: itemsInPlay };
+  window.CCFeatures = { state: state, ITEMS: ITEMS, begin: begin, tapped: tapped, itemsInPlay: itemsInPlay, next: next };
 })();

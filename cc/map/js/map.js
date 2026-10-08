@@ -40,11 +40,15 @@
     inset: document.getElementById("map-inset"),
   };
 
+  // Three ways in, the same split as the rest of Memory Work: two on your
+  // own, one with someone checking. Only Recite counts toward learned.
   const MODES = [
     { id: "find", label: "Find it", icon: "👆",
       why: "On your own. The page names a state — tap it on the map." },
-    { id: "name", label: "Name it", icon: "🎤",
-      why: "With a parent. A state lights up — point to it and say its capital and its name." },
+    { id: "study", label: "Study", icon: "🧠",
+      why: "On your own. A state lights up — say it, then show the answer to check yourself." },
+    { id: "name", label: "Recite", icon: "🎤",
+      why: "With a parent or a friend. A state lights up — point to it and say its capital and its name." },
   ];
 
   const nameOf = {};
@@ -68,7 +72,8 @@
     const weeks = (params.get("weeks") || "").split(",").map(Number)
       .filter(function (n) { return WEEKS.indexOf(n) !== -1; });
     if (weeks.length) state.weeks = weeks;
-    if (params.get("mode") === "name") state.mode = "name";
+    if (params.get("mode") === "name" || params.get("mode") === "recite") state.mode = "name";
+    if (params.get("mode") === "study") state.mode = "study";
   })();
 
   /* ---------------- Helpers ---------------- */
@@ -197,7 +202,7 @@
     document.querySelectorAll(".cc-map-svg [data-abbr]").forEach(function (node) {
       const abbr = node.getAttribute("data-abbr");
       node.classList.toggle("is-play", Boolean(play[abbr]));
-      node.classList.toggle("is-target", state.mode === "name" && Boolean(target) && abbr === target.abbr);
+      node.classList.toggle("is-target", state.mode !== "find" && Boolean(target) && abbr === target.abbr);
       node.classList.remove("is-right", "is-wrong", "is-show");
     });
     if (state.mode === "find") {
@@ -229,7 +234,10 @@
   function begin() {
     window.clearTimeout(state.timer);
     const play = inPlay();
-    state.queue = state.mode === "find" ? shuffle(play) : play.slice();
+    // Recite goes in the proof sheet's order, the way it is asked; the two
+    // on-your-own modes are shuffled so the order is not what gets learned.
+    state.queue = state.mode === "name" ? play.slice() : shuffle(play);
+    state.revealed = false;
     state.at = 0;
     state.tries = 0;
     state.solved = false;
@@ -243,7 +251,9 @@
   function draw() {
     paint();
     if (!current()) { setStatus("", ""); drawFinished(); return; }
-    if (state.mode === "find") drawFind(); else drawName();
+    if (state.mode === "find") drawFind();
+    else if (state.mode === "study") drawStudy();
+    else drawName();
     drawCount();
   }
 
@@ -321,6 +331,54 @@
     draw();
   }
 
+  /* ---- Study ---- */
+
+  /**
+   * A flashcard on a map: the state is the prompt, the answer stays hidden
+   * until asked for, and you mark yourself. Nothing is recorded toward
+   * learned -- that is Recite's job, with someone else listening -- but the
+   * ones you did not know are listed at the end to go round again.
+   */
+  function drawStudy() {
+    const e = current();
+    el.prompt.innerHTML = "";
+    const card = make("div", "cc-map-card cc-map-card--study");
+    card.appendChild(make("p", "cc-aside", "Week " + e.section + " · on your own"));
+    card.appendChild(make("p", "cc-map-q", "Which state is the yellow one — and what is its capital?"));
+
+    const row = make("div", "game-actions");
+    if (!state.revealed) {
+      card.appendChild(make("p", "cc-map-hint", "Say it out loud first, then check."));
+      row.appendChild(button("Show answer", "btn btn-primary", function () {
+        state.revealed = true;
+        draw();
+      }));
+    } else {
+      const answer = make("div", "cc-checker");
+      answer.appendChild(make("p", "cc-aside", "The answer"));
+      answer.appendChild(make("p", "cc-a", spoken(e)));
+      const c = cardFor(e);
+      if (c && c.note) answer.appendChild(make("p", "cc-note", c.note));
+      card.appendChild(answer);
+      row.appendChild(button("✓ I knew it", "btn btn-primary", function () { studyMark(true); }));
+      row.appendChild(button("Not yet", "btn btn-secondary", function () { studyMark(false); }));
+    }
+    card.appendChild(row);
+    card.appendChild(make("p", "cc-where", hasKeyboard()
+      ? (state.revealed ? "space if you knew it, N if not" : "space shows the answer")
+      : ""));
+    el.prompt.appendChild(card);
+  }
+
+  function studyMark(knew) {
+    const e = current();
+    if (!e) return;
+    if (!knew && state.missed.indexOf(e) === -1) state.missed.push(e);
+    state.at += 1;
+    state.revealed = false;
+    draw();
+  }
+
   /* ---- Name it ---- */
 
   function drawName() {
@@ -382,6 +440,7 @@
     el.prompt.innerHTML = "";
     const card = make("div", "cc-map-card cc-map-card--done");
     const list = state.mode === "find" ? state.helped : state.missed;
+    const knewAll = state.mode === "study" ? "You knew every one of them." : "Every one of them said right.";
 
     if (state.mode === "find") {
       const first = state.queue.length - state.helped.length;
@@ -390,7 +449,7 @@
     } else {
       card.appendChild(make("p", "cc-map-q", list.length
         ? list.length + " to work on."
-        : "Every one of them said right."));
+        : knewAll));
     }
 
     if (list.length) {
@@ -406,7 +465,7 @@
       row.appendChild(button("Just these " + list.length, "btn btn-secondary", function () {
         const only = list.slice();
         begin();
-        state.queue = state.mode === "find" ? shuffle(only) : only;
+        state.queue = state.mode === "name" ? only : shuffle(only);
         draw();
       }));
     }
@@ -462,8 +521,16 @@
                (on.getAttribute && on.getAttribute("role") === "button"))) return;
 
     if (event.key === " ") {
+      if (state.mode === "study" && current()) {
+        event.preventDefault();
+        if (!state.revealed) { state.revealed = true; draw(); } else studyMark(true);
+        return;
+      }
       if (state.mode === "name" && current()) { event.preventDefault(); judge(true); }
       else if (state.mode === "find" && state.solved) { event.preventDefault(); next(); }
+    } else if ((event.key === "n" || event.key === "N") && state.mode === "study" && current() && state.revealed) {
+      event.preventDefault();
+      studyMark(false);
     } else if ((event.key === "n" || event.key === "N") && state.mode === "name" && current()) {
       event.preventDefault();
       judge(false);
