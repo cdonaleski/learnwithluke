@@ -1,8 +1,9 @@
 /**
  * States and capitals, on a map.
  *
- * Two ways to practice, the same split as the rest of Memory Work:
+ * Ways to practice, the same split as the rest of Memory Work:
  *
+ *   Explore   no questions. Tap a state; the card names it and its capital.
  *   Find it   on your own. The page names a state and you tap it. A wrong
  *             tap says which state you did touch; a second one shows you
  *             where the right one is. Practice -- nothing is recorded.
@@ -43,6 +44,8 @@
   // Three ways in, the same split as the rest of Memory Work: two on your
   // own, one with someone checking. Only Recite counts toward learned.
   const MODES = [
+    { id: "explore", label: "Explore", icon: "🔎",
+      why: "On your own. Tap any state to see its name and its capital." },
     { id: "find", label: "Find it", icon: "👆",
       why: "On your own. The page names a state — tap it on the map." },
     { id: "study", label: "Study", icon: "🧠",
@@ -65,6 +68,7 @@
     missed: [],        // Name it: "Not yet"
     trail: [],         // Name it: for Back, and undoing a verdict
     timer: null,
+    picked: null,      // Explore: the state last tapped
   };
 
   (function fromLink() {
@@ -74,6 +78,7 @@
     if (weeks.length) state.weeks = weeks;
     if (params.get("mode") === "name" || params.get("mode") === "recite") state.mode = "name";
     if (params.get("mode") === "study") state.mode = "study";
+    if (params.get("mode") === "explore") state.mode = "explore";
   })();
 
   /* ---------------- Helpers ---------------- */
@@ -202,7 +207,8 @@
     document.querySelectorAll(".cc-map-svg [data-abbr]").forEach(function (node) {
       const abbr = node.getAttribute("data-abbr");
       node.classList.toggle("is-play", Boolean(play[abbr]));
-      node.classList.toggle("is-target", state.mode !== "find" && Boolean(target) && abbr === target.abbr);
+      node.classList.toggle("is-target", state.mode === "explore" ? abbr === state.picked
+        : state.mode !== "find" && Boolean(target) && abbr === target.abbr);
       node.classList.remove("is-right", "is-wrong", "is-show");
     });
     if (state.mode === "find") {
@@ -236,7 +242,8 @@
     const play = inPlay();
     // Recite goes in the proof sheet's order, the way it is asked; the two
     // on-your-own modes are shuffled so the order is not what gets learned.
-    state.queue = state.mode === "name" ? play.slice() : shuffle(play);
+    state.queue = state.mode === "explore" ? [] : state.mode === "name" ? play.slice() : shuffle(play);
+    state.picked = null;
     state.revealed = false;
     state.at = 0;
     state.tries = 0;
@@ -250,6 +257,7 @@
 
   function draw() {
     paint();
+    if (state.mode === "explore") { setStatus("", ""); drawExplore(); drawCount(); return; }
     if (!current()) { setStatus("", ""); drawFinished(); return; }
     if (state.mode === "find") drawFind();
     else if (state.mode === "study") drawStudy();
@@ -258,10 +266,37 @@
   }
 
   function drawCount() {
+    if (state.mode === "explore") { el.count.textContent = "Explore · nothing is recorded"; return; }
     const cards = inPlay().map(cardFor).filter(Boolean);
     const sum = CC.tally(cards);
     el.count.textContent = (state.at + (current() ? 1 : 0)) + " of " + state.queue.length +
       " · " + sum.learned + " of " + sum.total + " learned";
+  }
+
+  /* ---- Explore ---- */
+
+  /**
+   * No questions: tap any state, on the big map or the close-up, and the card
+   * says its name, its capital, and the week it is on the sheet. The weeks
+   * chosen stay shaded, so a week's states stand out.
+   */
+  function drawExplore() {
+    el.prompt.innerHTML = "";
+    const card = make("div", "cc-map-card cc-map-card--explore");
+    const e = CYCLE.capitals.filter(function (c) { return c.abbr === state.picked; })[0];
+    if (!e) {
+      card.appendChild(make("p", "cc-aside", "Explore · on your own"));
+      card.appendChild(make("p", "cc-map-q", "Tap any state to see its name and its capital."));
+      card.appendChild(make("p", "cc-map-hint", "The small states are easier to tap in the Northeast close-up."));
+    } else {
+      card.appendChild(make("p", "cc-aside", "You tapped"));
+      card.appendChild(make("p", "cc-explore-name", e.abbr === "DC" ? "Washington, DC" : e.state));
+      card.appendChild(make("p", "cc-explore-what", e.abbr === "DC"
+        ? "The capital of the United States · Week " + e.section
+        : "Capital: " + e.capital + " · Week " + e.section));
+      card.appendChild(make("p", "cc-explore-say", "Say it: “" + spoken(e) + "”"));
+    }
+    el.prompt.appendChild(card);
   }
 
   /* ---- Find it ---- */
@@ -292,6 +327,12 @@
   }
 
   function tapped(abbr) {
+    if (state.mode === "explore") {
+      state.picked = abbr;
+      paint();
+      drawExplore();
+      return;
+    }
     const e = current();
     if (!e) return;
 
@@ -520,6 +561,11 @@
     if (on && (on.tagName === "BUTTON" || on.tagName === "INPUT" || on.tagName === "SELECT" ||
                (on.getAttribute && on.getAttribute("role") === "button"))) return;
 
+    if (event.key === "Escape" && state.mode === "explore" && state.picked) {
+      state.picked = null;
+      draw();
+      return;
+    }
     if (event.key === " ") {
       if (state.mode === "study" && current()) {
         event.preventDefault();

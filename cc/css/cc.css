@@ -1241,6 +1241,7 @@
 .cc-fmap.is-explore .ft.is-dim:not(.is-target) { opacity: 0.3; }
 .cc-explore-name { margin: 0.2rem 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.2; color: var(--color-text); }
 .cc-explore-what { margin: 0.2rem 0 0; font-size: 0.9rem; color: var(--color-text-muted); }
+.cc-explore-say { margin: 0.7rem 0 0; padding: 0.5rem 0.7rem; border-radius: 12px; background: #f3effe; font-family: var(--font-display); font-weight: 600; color: var(--color-text); }
 .cc-explore-also { margin: 0.7rem 0 0; padding: 0.5rem 0.7rem; border-radius: 12px; background: #fffbe8; font-size: 0.88rem; color: #6b5200; }
 .ft-badge circle { fill: #1f3b57; stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .ft-badge text { fill: #fff; font-family: var(--font-display); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
