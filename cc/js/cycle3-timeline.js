@@ -123,8 +123,9 @@
     window.CC_ADD("timeline", Number(week), "Timeline week " + week, pairs[week]);
   });
 
-  /* 24: the presidents, four to a card, in office order. */
-  window.CC_ADD("timeline", 24, "U.S. Presidents", [
+  /* 24: the presidents, four to a card, in office order -- the sheet's
+     boxes 162 to 173. */
+  const PRESIDENTS = [
     ["Presidents 1–4", "Washington, Adams, Jefferson, Madison"],
     ["Presidents 5–8", "Monroe, Adams, Jackson, Van Buren"],
     ["Presidents 9–12", "Harrison, Tyler, Polk, Taylor"],
@@ -137,7 +138,8 @@
     ["Presidents 37–40", "Nixon, Ford, Carter, Reagan"],
     ["Presidents 41–44", "Bush, Clinton, Bush, Obama"],
     ["Presidents 45 on", "Trump"],
-  ]);
+  ];
+  window.CC_ADD("timeline", 24, "U.S. Presidents", PRESIDENTS);
 
   /*
    * The whole timeline, 1 to 161, said straight through. Built from ORDER
@@ -159,6 +161,21 @@
     q: "Say the whole timeline, 1 to 161.",
     a: rows.map(function (r) { return r[1]; }).join("\n"),
     rows: rows,
+  });
+
+  /*
+   * All the presidents, said straight through: the same twelve groups as
+   * the cards above, numbered 162 to 173 as the sheet numbers them.
+   */
+  const presidentRows = PRESIDENTS.map(function (p, i) { return [String(162 + i), p[1]]; });
+  window.CC_CYCLE3.cards.push({
+    strand: "timeline",
+    section: 24,
+    label: "All the presidents",
+    whole: true,               // too long for a Match tile
+    q: "Say all the presidents, Washington to Trump.",
+    a: presidentRows.map(function (r) { return r[1]; }).join("\n"),
+    rows: presidentRows,
   });
 
   window.CC_CYCLE3.timelineOrder = ORDER;
