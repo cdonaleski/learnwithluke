@@ -113,6 +113,9 @@
   verse(17, "John 1:4", "in ipso vita erat", "in him was life");
   verse(17, "John 1:4", "et vita erat lux hominum", "and the life was the light of men");
   verse(18, "John 1:5", "et lux in tenebris lucet", "and the light shineth in the darkness");
+  // CC's own two pages differ by one word here; the card keeps the sheet's.
+  cards[cards.length - 1].note = "This is the Latin sheet's English. The scripture page in the Foundations " +
+    "Guide says \u201cshineth in darkness,\u201d without \u201cthe.\u201d";
   verse(19, "John 1:5", "et tenebrae eam non conprehenderunt",
     "and the darkness did not comprehend it");
   verse(20, "John 1:6", "fuit homo missus a Deo", "there was a man sent from God");
