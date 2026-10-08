@@ -896,6 +896,12 @@
 }
 
 .cc-map-inset .cc-st { stroke-width: 0.35; }
+/* Zoomed in, lines stay as thin on screen as they are on the whole map. */
+.cc-map-main .cc-st { stroke-width: calc(0.8px * var(--zk, 1)); }
+.cc-map-main .cc-st:focus-visible { stroke-width: calc(2.5px * var(--zk, 1)); }
+.cc-map-main .cc-st--dot { stroke-width: calc(1px * var(--zk, 1)); }
+.cc-map-svg.is-zoomed { touch-action: none; cursor: grab; }
+.cc-map-svg.is-zoomed:active { cursor: grabbing; }
 
 .cc-st.is-play { fill: #ddd2f3; }
 .cc-st:hover { fill: #c9b8ef; }

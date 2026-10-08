@@ -179,6 +179,11 @@
     }
 
     svg.addEventListener("click", function (event) {
+      if (focusable && zoom.swallow) { zoom.swallow = false; return; }
+      if (focusable) {
+        const box = svg.getBoundingClientRect(), k = box.width / zoom.view.w;
+        zoom.lastTap = { x: zoom.view.x + (event.clientX - box.left) / k, y: zoom.view.y + (event.clientY - box.top) / k };
+      }
       const hit = event.target.closest("[data-abbr]");
       if (hit) tapped(hit.getAttribute("data-abbr"));
     });
@@ -193,6 +198,85 @@
 
     container.innerHTML = "";
     container.appendChild(svg);
+  }
+
+  /* ---------------- Zoom ---------------- */
+
+  /*
+   * + and − on the big map, toward wherever was last tapped, and a drag to
+   * move around once zoomed in. A drag is never a tap. Lines and the DC dot
+   * stay the same size on screen however far in you go.
+   */
+  const FULL = { x: 0, y: 0, w: MAP.width, h: MAP.height };
+  const ASPECT = MAP.width / MAP.height;
+  const MAX_ZOOM = 8;
+  const zoom = { view: FULL, lastTap: null, swallow: false, svg: null };
+
+  function setView(view) {
+    zoom.view = view;
+    const svg = zoom.svg;
+    if (!svg) return;
+    svg.setAttribute("viewBox", view.x + " " + view.y + " " + view.w + " " + view.h);
+    const zk = view.w / FULL.w;
+    svg.style.setProperty("--zk", zk);
+    const dot = svg.querySelector(".cc-st--dot");
+    if (dot) dot.setAttribute("r", 5 * zk);
+    svg.classList.toggle("is-zoomed", view.w < FULL.w - 0.5);
+    el.wholeMap.hidden = view === FULL;
+    el.zoomIn.disabled = view.w <= FULL.w / MAX_ZOOM + 0.5;
+    el.zoomOut.disabled = view === FULL;
+  }
+
+  function zoomBy(f) {
+    const v = zoom.view, t = zoom.lastTap;
+    let cx = v.x + v.w / 2, cy = v.y + v.h / 2;
+    if (t && t.x > v.x && t.x < v.x + v.w && t.y > v.y && t.y < v.y + v.h) { cx = t.x; cy = t.y; }
+    const w = Math.max(FULL.w / MAX_ZOOM, Math.min(FULL.w, v.w / f));
+    if (w >= FULL.w - 0.5) { setView(FULL); return; }
+    const h = w / ASPECT;
+    setView({
+      x: Math.max(0, Math.min(cx - w / 2, FULL.w - w)),
+      y: Math.max(0, Math.min(cy - h / 2, FULL.h - h)),
+      w: w, h: h,
+    });
+  }
+
+  function setupZoom() {
+    const svg = zoom.svg = el.main.querySelector("svg");
+    const ctl = make("div", "cc-zoom");
+    ctl.setAttribute("role", "group");
+    ctl.setAttribute("aria-label", "Zoom");
+    el.zoomIn = button("+", "cc-zoom-btn", function () { zoomBy(1.6); });
+    el.zoomIn.setAttribute("aria-label", "Zoom in");
+    el.zoomOut = button("−", "cc-zoom-btn", function () { zoomBy(1 / 1.6); });
+    el.zoomOut.setAttribute("aria-label", "Zoom out");
+    ctl.appendChild(el.zoomIn);
+    ctl.appendChild(el.zoomOut);
+    el.main.appendChild(ctl);
+    el.wholeMap = button("⤢ Whole map", "cc-zoom-out", function () { setView(FULL); });
+    el.main.appendChild(el.wholeMap);
+
+    let drag = null;
+    svg.addEventListener("pointerdown", function (event) {
+      zoom.swallow = false;
+      if (!svg.classList.contains("is-zoomed")) return;
+      drag = { x: event.clientX, y: event.clientY, v: zoom.view, id: event.pointerId, moved: false };
+    });
+    svg.addEventListener("pointermove", function (event) {
+      if (!drag) return;
+      const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+      if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+      if (!drag.moved) { drag.moved = zoom.swallow = true; try { svg.setPointerCapture(drag.id); } catch (err) { /* fine */ } }
+      const k = svg.getBoundingClientRect().width / drag.v.w, v = drag.v;
+      setView({
+        x: Math.max(0, Math.min(v.x - dx / k, FULL.w - v.w)),
+        y: Math.max(0, Math.min(v.y - dy / k, FULL.h - v.h)),
+        w: v.w, h: v.h,
+      });
+    });
+    svg.addEventListener("pointerup", function () { drag = null; });
+    svg.addEventListener("pointercancel", function () { drag = null; });
+    setView(FULL);
   }
 
   /** Every shape for a state, on both maps. */
@@ -244,6 +328,8 @@
     // on-your-own modes are shuffled so the order is not what gets learned.
     state.queue = state.mode === "explore" ? [] : state.mode === "name" ? play.slice() : shuffle(play);
     state.picked = null;
+    zoom.lastTap = null;
+    if (zoom.svg && zoom.view !== FULL) setView(FULL);
     state.revealed = false;
     state.at = 0;
     state.tries = 0;
@@ -266,7 +352,7 @@
   }
 
   function drawCount() {
-    if (state.mode === "explore") { el.count.textContent = "Explore · nothing is recorded"; return; }
+    if (state.mode === "explore") { el.count.textContent = "Explore"; return; }
     const cards = inPlay().map(cardFor).filter(Boolean);
     const sum = CC.tally(cards);
     el.count.textContent = (state.at + (current() ? 1 : 0)) + " of " + state.queue.length +
@@ -366,6 +452,8 @@
 
   function next() {
     window.clearTimeout(state.timer);
+    zoom.lastTap = null;
+    if (zoom.view !== FULL) setView(FULL);
     state.at += 1;
     state.tries = 0;
     state.solved = false;
@@ -561,6 +649,11 @@
     if (on && (on.tagName === "BUTTON" || on.tagName === "INPUT" || on.tagName === "SELECT" ||
                (on.getAttribute && on.getAttribute("role") === "button"))) return;
 
+    if ((event.key === "+" || event.key === "=" || event.key === "-") && zoom.svg) {
+      event.preventDefault();
+      zoomBy(event.key === "-" ? 1 / 1.6 : 1.6);
+      return;
+    }
     if (event.key === "Escape" && state.mode === "explore" && state.picked) {
       state.picked = null;
       draw();
@@ -599,6 +692,7 @@
   el.toast.setAttribute("aria-live", "polite");
   el.toast.hidden = true;
   el.main.appendChild(el.toast);
+  setupZoom();
   drawMap(el.inset, INSET_VIEW, 3.6, false, 7.5);
   begin();
 
