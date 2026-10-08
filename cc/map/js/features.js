@@ -888,7 +888,7 @@
     const cards = weeksInPlay().map(weekCard).filter(Boolean);
     const sum = CC.tally(cards);
     el.count.textContent = Math.min(state.at + 1, state.queue.length) + " of " + state.queue.length +
-      " · " + sum.learned + " of " + sum.total + (sum.total === 1 ? " week" : " weeks") + " learned";
+      " · " + CC.progressLine(sum, sum.total === 1 ? "week" : "weeks");
   }
 
   /* ---- Explore ---- */

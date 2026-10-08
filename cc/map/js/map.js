@@ -356,7 +356,7 @@
     const cards = inPlay().map(cardFor).filter(Boolean);
     const sum = CC.tally(cards);
     el.count.textContent = (state.at + (current() ? 1 : 0)) + " of " + state.queue.length +
-      " · " + sum.learned + " of " + sum.total + " learned";
+      " · " + CC.progressLine(sum);
   }
 
   /* ---- Explore ---- */

@@ -384,7 +384,7 @@
     state.nope = null;
     const all = cards();
     const sum = CC.tally(all);
-    el.count.textContent = all.length ? sum.learned + " of " + sum.total + " learned" : "";
+    el.count.textContent = all.length ? CC.progressLine(sum) : "";
     el.empty.hidden = all.length > 0;
     el.stage.hidden = all.length === 0;
 
@@ -558,10 +558,32 @@
 
   function whereLine(card) {
     const strand = CC.strandOf(card.strand);
-    return make("p", "cc-card-where",
+    const line = make("p", "cc-card-where",
       (strand ? strand.icon + " " + strand.label : card.strand) +
-      " · week " + card.section + " · " + card.label +
-      (CC.isLearned(card) ? " · learned" : ""));
+      " · week " + card.section + " · " + card.label);
+    line.appendChild(runDots(card));
+    return line;
+  }
+
+  /**
+   * The card's run toward learned: ●●○ is two right in a row, one to go.
+   * A miss in Recite empties it again.
+   */
+  function runDots(card) {
+    const need = CC.SAID_IT_TO_LEARN;
+    const said = Math.min(CC.scoreOf(card).said, need);
+    const span = make("span", "cc-run" + (said >= need ? " is-learned" : ""));
+    if (said >= need) {
+      span.textContent = " · ✓ learned";
+    } else {
+      span.textContent = " · " + "●".repeat(said) + "○".repeat(need - said);
+      span.title = said
+        ? "Said right " + said + (said === 1 ? " time" : " times") + " in a row in Recite — " +
+          (need - said) + " more to learn it"
+        : "Not said in Recite yet — " + need + " right in a row to learn it";
+      span.setAttribute("aria-label", span.title);
+    }
+    return span;
   }
 
   function step(verdict) {
@@ -607,8 +629,10 @@
     const box = make("div", "cc-card is-done");
     box.appendChild(make("p", "cc-q", state.drill ? "That is the lot." : "That is the whole set."));
     const sum = CC.tally(cards());
-    box.appendChild(make("p", "cc-a", sum.learned + " of " + sum.total + " learned" +
+    box.appendChild(make("p", "cc-a", CC.progressLine(sum) +
       (sum.left ? " — " + sum.left + " to go." : " — every one of them.")));
+    box.appendChild(make("p", "cc-note", "A card is learned when it has been said right in Recite " +
+      CC.SAID_IT_TO_LEARN + " times in a row. The dots on each card show its run so far."));
 
     const row = make("div", "game-actions");
     if (state.trail.length) row.appendChild(backButton());

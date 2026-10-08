@@ -444,6 +444,9 @@
   color: var(--color-text-muted);
   margin-bottom: 0.6rem;
 }
+/* The run toward learned, after where the card is from: ●●○. */
+.cc-run { letter-spacing: 0.12em; color: var(--color-purple); white-space: nowrap; }
+.cc-run.is-learned { letter-spacing: 0; color: #1f9e7a; font-weight: 700; }
 
 .cc-q {
   font-family: var(--font-display);

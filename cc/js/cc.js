@@ -303,10 +303,31 @@
     });
   }
 
-  /** How far through a set of cards the student is. */
+  /**
+   * How far through a set of cards the student is. "Learned" is three right
+   * in a row and takes days, so a count of learned alone sits at 0 for the
+   * first week and looks broken. "On the way" is every card with a run
+   * started; `steps` counts each right answer in the current runs, so
+   * progress shows from the very first "Said it all".
+   */
   function tally(cards) {
-    const learned = cards.filter(isLearned).length;
-    return { learned: learned, total: cards.length, left: cards.length - learned };
+    let learned = 0, started = 0, steps = 0;
+    cards.forEach(function (card) {
+      const said = Math.min(scoreOf(card).said, SAID_IT_TO_LEARN);
+      steps += said;
+      if (said >= SAID_IT_TO_LEARN) learned += 1;
+      else if (said > 0) started += 1;
+    });
+    return {
+      learned: learned, started: started, total: cards.length, left: cards.length - learned,
+      steps: steps, of: cards.length * SAID_IT_TO_LEARN,
+    };
+  }
+
+  /** "2 of 34 learned · 9 on the way" -- the one way progress is worded. */
+  function progressLine(sum, noun) {
+    return sum.learned + " of " + sum.total + (noun ? " " + noun : "") + " learned" +
+      (sum.started ? " · " + sum.started + " on the way" : "");
   }
 
   /** The sections that actually have cards, for the section picker. */
@@ -481,6 +502,7 @@
     stillShaky: stillShaky,
     REVIEW_DAYS: REVIEW_DAYS,
     tally: tally,
+    progressLine: progressLine,
     sectionsWithCards: sectionsWithCards,
     strandsWithCards: strandsWithCards,
     scoreOf: scoreOf,

@@ -42,12 +42,16 @@
     return "practice/index.html?" + query.join("&");
   }
 
-  /** Not started / started / learned, as a quarter-step ramp. */
+  /**
+   * Not started / on the way / learned, as a quarter-step ramp. It moves
+   * with every right answer in Recite, not only when a card reaches three,
+   * so the first session already shows.
+   */
   function fillOf(sum) {
     if (!sum.total) return null;
-    if (sum.learned === 0) return 0;
+    if (sum.steps === 0) return 0;
     if (sum.learned === sum.total) return 4;
-    const part = sum.learned / sum.total;
+    const part = sum.steps / sum.of;
     return part < 0.34 ? 1 : part < 0.67 ? 2 : 3;
   }
 
@@ -120,8 +124,7 @@
         link.href = strand.id !== "geography"
           ? practiceHref({ cycle: cycleNumber, strand: strand.id, weeks: week })
           : week <= 10 ? "map/index.html?weeks=" + week : "map/features.html?weeks=" + week;
-        link.title = strand.label + ", week " + week + " — " +
-          sum.learned + " of " + sum.total + " learned";
+        link.title = strand.label + ", week " + week + " — " + CC.progressLine(sum);
         // The title is a tooltip and a tooltip is not an answer for anyone on
         // a phone or a screen reader, so the state is in the label as well.
         link.setAttribute("aria-label", link.title);
@@ -137,7 +140,8 @@
     const footer = make("p", "cc-glance-total");
     footer.appendChild(make("strong", null, all.learned + " of " + all.total));
     footer.appendChild(document.createTextNode(
-      " learned" + (all.left ? " · " + all.left + " to go" : " — the whole cycle")));
+      " learned" + (all.started ? " · " + all.started + " on the way" : "") +
+      (all.left ? " · " + all.left + " to go" : " — the whole cycle")));
     root.appendChild(footer);
 
     const key = make("p", "cc-glance-key");
