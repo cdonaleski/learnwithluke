@@ -459,6 +459,10 @@
   color: var(--color-purple);
 }
 
+/* A whole passage keeps its line breaks, one verse to a line. */
+.cc-a, .cc-q, .cc-report-list dt, .cc-report-list dd { white-space: pre-line; }
+.cc-a--passage { font-size: clamp(1rem, 2.4vw, 1.2rem); line-height: 1.6; }
+
 .cc-card.is-open .cc-a {
   margin-top: 0.9rem;
   padding-top: 0.9rem;

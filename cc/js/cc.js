@@ -226,7 +226,9 @@
     const want = size || MATCH_ROUND;
     const chosen = [];
     const seen = {};
-    shuffle(forPractice(cards).slice(0, Math.max(want * 4, want))).forEach(function (card) {
+    // A whole passage is far too long for a tile.
+    shuffle(forPractice(cards.filter(function (c) { return !c.whole; }))
+      .slice(0, Math.max(want * 4, want))).forEach(function (card) {
       if (chosen.length >= want) return;
       if (seen[card.a]) return;
       seen[card.a] = true;

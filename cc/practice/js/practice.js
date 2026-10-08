@@ -127,7 +127,7 @@
    * that way (the principal parts), otherwise the sentence or list itself.
    */
   function answerNode(card) {
-    if (!card.rows) return make("p", "cc-a", CC.spoken(card));
+    if (!card.rows) return make("p", "cc-a" + (card.whole ? " cc-a--passage" : ""), CC.spoken(card));
     const table = make("table", "cc-a cc-rows");
     const body = make("tbody");
     card.rows.forEach(function (row) {

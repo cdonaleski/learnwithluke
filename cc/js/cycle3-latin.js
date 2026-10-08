@@ -120,4 +120,42 @@
   verse(22, "John 1:7", "hic venit in testimonium", "this man came for a witness");
   verse(23, "John 1:7", "ut testimonium perhiberet de lumine", "to give testimony of the light");
   verse(24, "John 1:7", "ut omnes crederent per illum", "that all men might believe through him");
+
+  /*
+   * The whole passage, said straight through, the way it is recited for
+   * Memory Master. The Latin is not typed again: it is the sheet's own lines
+   * above, joined verse by verse, so it cannot drift from the sheet. The
+   * English is the Foundations Guide's scripture page for John 1:1-7, word
+   * for word with its own capitals and punctuation -- which differs from the
+   * week 18 line by one word, as the note says.
+   */
+  const verses = [];
+  cards.filter(function (c) { return c.strand === "latin" && /^John 1:\d$/.test(c.label); })
+    .forEach(function (c) {
+      let v = verses.filter(function (x) { return x.label === c.label; })[0];
+      if (!v) { v = { label: c.label, lines: [] }; verses.push(v); }
+      v.lines.push(c.lat);
+    });
+  const passage = verses.map(function (v) { return v.lines.join(" "); }).join("\n");
+  cards.push({
+    strand: "latin",
+    section: 24,
+    label: "John 1:1–7",
+    whole: true,               // too long for a Match tile
+    lat: passage,
+    eng: [
+      "In the beginning was the Word, and the Word was with God, and the Word was God.",
+      "The same was in the beginning with God.",
+      "All things were made by him; and without him was made nothing that was made.",
+      "In him was life; and the life was the light of men.",
+      "And the light shineth in darkness; and the darkness did not comprehend it.",
+      "There was a man sent from God, whose name was John.",
+      "This man came for a witness, to give testimony of the light, that all men might believe through him.",
+    ].join("\n"),
+    taught: "lat",
+    q: "Say John 1:1–7 in Latin, all the way through.",
+    a: passage,
+    note: "One verse to a line. The English is the scripture page in the Foundations Guide, word for word; " +
+      "it says \u201cshineth in darkness\u201d where the week 18 line says \u201cshineth in the darkness.\u201d",
+  });
 })();
