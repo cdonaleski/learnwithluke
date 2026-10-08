@@ -189,7 +189,6 @@
       catch (err) { /* fine */ }
       return "easy";
     })(),
-    showAll: false,         // Recite on Hard: the checker asked to see them
   };
 
   (function fromLink() {
@@ -210,7 +209,7 @@
   }
 
   function drawnItems() {
-    return state.level === "easy" && state.mode === "name" ? itemsInPlay() : ITEMS;
+    return state.mode === "name" ? itemsInPlay() : ITEMS;
   }
 
   /* ---- Helpers ---- */
@@ -339,8 +338,8 @@
   function drawMap() {
     const easy = state.level === "easy";
     // Every level lays out every feature, so the right one has to be told
-    // apart from the rest -- Easy just zooms in close (Recite on Easy draws
-    // only the week, framed). On Hard they are there but invisible -- still
+    // apart from the rest -- Easy just zooms in close. (Recite draws only
+    // the weeks in play, at any level: there the map is the checker's.) On Hard they are there but invisible -- still
     // tappable, so a wrong tap can say what it touched, and still revealed
     // when shown.
     const items = drawnItems();
@@ -350,7 +349,7 @@
 
     svg = svgNode("svg", {
       viewBox: v.x + " " + v.y + " " + v.w + " " + v.h,
-      class: "cc-map-svg cc-fmap" + (state.level === "hard" ? " is-bare" : ""),
+      class: "cc-map-svg cc-fmap" + (state.mode === "name" ? " is-recite" : state.level === "hard" ? " is-bare" : ""),
       role: "group",
       "aria-label": "Map — tap a feature",
     });
@@ -571,6 +570,7 @@
       const kind = (g.getAttribute("class").match(/ft-g--([\w-]+)/) || [])[1] || "place";
       glyph(g, kind, x, y, r);
     });
+    drawBadges();
   }
 
   window.addEventListener("resize", sizeDots);
@@ -604,9 +604,9 @@
       if (item) mark(item.id, "is-target", true);
     } else {
       const week = current();
-      // On Hard the map stays bare: pointing to them is the test. The
-      // checker can light them up to check, with the button in the card.
-      if (week && (state.level !== "hard" || state.showAll)) {
+      // Recite's screen is the checker's answer key -- the child points on a
+      // paper map -- so the week is always lit, whatever the level.
+      if (week) {
         ITEMS.filter(function (i) { return i.week === week; })
           .forEach(function (i) { mark(i.id, "is-target", true); });
       }
@@ -668,7 +668,6 @@
     state.helped = [];
     state.missed = [];
     state.trail = [];
-    state.showAll = false;
     drawControls();
     drawMap();
     drawLegend();
@@ -681,7 +680,49 @@
     else if (state.mode === "find") drawFind();
     else if (state.mode === "study") drawStudy();
     else drawName();
+    drawBadges();
     drawCount();
+  }
+
+  /**
+   * Recite's numbers: a numbered badge beside each of the week's features,
+   * matching the numbered list in the card, so a parent who does not know
+   * where the Cumberland Mountains are can still tell whether the child
+   * pointed to the right place. Drawn in screen pixels, like the symbols.
+   */
+  function anchorOf(item) {
+    const p = item.parts[0];
+    if (p.x !== undefined) return [p.x, p.y];
+    if (p.px !== undefined) return [p.px, p.py];
+    const line = svg.querySelector('path.ft-line[data-item="' + item.id + '"], path.ft[data-item="' + item.id + '"]');
+    if (line && line.getTotalLength && /ft-line/.test(line.getAttribute("class"))) {
+      const at = line.getPointAtLength(line.getTotalLength() / 2);
+      return [at.x, at.y];
+    }
+    return [(p.bbox[0] + p.bbox[2]) / 2, (p.bbox[1] + p.bbox[3]) / 2];
+  }
+
+  function drawBadges() {
+    if (!svg) return;
+    const old = svg.querySelector(".ft-badges");
+    if (old) old.remove();
+    const week = state.mode === "name" ? current() : null;
+    if (!week) return;
+    const k = pxPerUnit(), r = 11 / k, off = 15 / k;
+    const layer = svgNode("g", { class: "ft-badges", "aria-hidden": "true" });
+    ITEMS.filter(function (i) { return i.week === week; }).forEach(function (item, n) {
+      const a = anchorOf(item), v = state.view;
+      // Kept inside the frame -- Hudson Bay's arrow sits on the map's edge.
+      const x = Math.max(v.x + r * 1.3, Math.min(a[0] + off, v.x + v.w - r * 1.3));
+      const y = Math.max(v.y + r * 1.3, Math.min(a[1] - off, v.y + v.h - r * 1.3));
+      const g = svgNode("g", { class: "ft-badge" });
+      g.appendChild(svgNode("circle", { cx: x, cy: y, r: r }));
+      const t = svgNode("text", { x: x, y: y, "font-size": 13 / k });
+      t.textContent = String(n + 1);
+      g.appendChild(t);
+      layer.appendChild(g);
+    });
+    svg.appendChild(layer);
   }
 
   function drawCount() {
@@ -766,26 +807,23 @@
   function drawName() {
     const week = current();
     const items = ITEMS.filter(function (i) { return i.week === week; });
+    // Framed on the week, for the checker. The child is not looking here.
+    state.weekView = frameFor(items);
+    setView(state.weekView);
     el.prompt.innerHTML = "";
     const card = make("div", "cc-map-card cc-map-card--name");
     card.appendChild(make("p", "cc-aside", "Week " + week + " · with a parent"));
-    card.appendChild(make("p", "cc-map-q", state.level === "hard"
-      ? weekLabel(week) + ": name each one, in order, and point to where it is."
-      : weekLabel(week) + ": point to each one and name it, in order."));
+    card.appendChild(make("p", "cc-map-q", "On a paper map, point to each one and name it, in order."));
+    card.appendChild(make("p", "cc-map-hint",
+      "This screen is for the checker. Use a printed U.S. map or the Black Line Master."));
 
     const checker = make("div", "cc-checker");
-    checker.appendChild(make("p", "cc-aside", "They should name:"));
+    checker.appendChild(make("p", "cc-aside", "They should point to and name — numbered on the map:"));
     const ol = make("ol", "cc-map-order");
     items.forEach(function (i) { ol.appendChild(make("li", null, i.name)); });
     checker.appendChild(ol);
     const c = weekCard(week);
     if (c && c.note) checker.appendChild(make("p", "cc-note", c.note));
-    if (state.level === "hard") {
-      checker.appendChild(button(state.showAll ? "Hide them again" : "Show where they are", "cc-reveal", function () {
-        state.showAll = !state.showAll;
-        draw();
-      }));
-    }
     card.appendChild(checker);
 
     const row = make("div", "game-actions");
@@ -801,7 +839,6 @@
   }
 
   function judge(right) {
-    state.showAll = false;
     const week = current();
     const card = weekCard(week);
     if (!card) return;
@@ -943,7 +980,12 @@
         }, lv.why));
       });
       const lv = LEVELS.filter(function (l) { return l.id === state.level; })[0];
-      el.levelWhy.textContent = lv.why;
+      // Levels are for the child's own practice. In Recite the screen is the
+      // checker's, and it always shows the answers.
+      el.levels.hidden = state.mode === "name";
+      el.levelWhy.textContent = state.mode === "name"
+        ? "The week's features are lit and numbered — the answer key for whoever is checking."
+        : lv.why;
     }
 
     el.weeks.innerHTML = "";
