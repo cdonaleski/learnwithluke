@@ -139,7 +139,19 @@
     ["Presidents 41–44", "Bush, Clinton, Bush, Obama"],
     ["Presidents 45 on", "Trump"],
   ];
-  window.CC_ADD("timeline", 24, "U.S. Presidents", PRESIDENTS);
+  // Asked the way the timeline is, by what comes next: the order is the
+  // thing to know, not which number each president was.
+  window.CC_ADD("timeline", 24, "U.S. Presidents", PRESIDENTS.map(function (p, i) {
+    return [i === 0 ? "Start the presidents" : "After \u201c" + PRESIDENTS[i - 1][1] + "\u201d", p[1]];
+  }));
+  // These cards used to be asked by number ("Presidents 5–8"). Progress is
+  // stored by prompt, so the old prompts are listed for cc.js to carry over.
+  window.CC_CYCLE3.renamed = PRESIDENTS.map(function (p, i) {
+    return {
+      strand: "timeline", section: 24, from: p[0],
+      to: i === 0 ? "Start the presidents" : "After \u201c" + PRESIDENTS[i - 1][1] + "\u201d",
+    };
+  });
 
   /*
    * The whole timeline, 1 to 161, said straight through. Built from ORDER
@@ -165,17 +177,16 @@
 
   /*
    * All the presidents, said straight through: the same twelve groups as
-   * the cards above, numbered 162 to 173 as the sheet numbers them.
+   * the cards above, one to a line, in order. No numbers -- the order is
+   * what is learnt.
    */
-  const presidentRows = PRESIDENTS.map(function (p, i) { return [String(162 + i), p[1]]; });
   window.CC_CYCLE3.cards.push({
     strand: "timeline",
     section: 24,
     label: "All the presidents",
     whole: true,               // too long for a Match tile
     q: "Say all the presidents, Washington to Trump.",
-    a: presidentRows.map(function (r) { return r[1]; }).join("\n"),
-    rows: presidentRows,
+    a: PRESIDENTS.map(function (p) { return p[1]; }).join("\n"),
   });
 
   window.CC_CYCLE3.timelineOrder = ORDER;

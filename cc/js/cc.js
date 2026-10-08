@@ -64,6 +64,23 @@
     catch (err) { return {}; }
   }
 
+  /*
+   * A card whose prompt was reworded keeps its progress: the old id is moved
+   * to the new one, once, if the new one has nothing yet.
+   */
+  (function carryOver() {
+    const all = progress();
+    let moved = false;
+    cycles().forEach(function (c) {
+      (c.renamed || []).forEach(function (r) {
+        const from = c.cycle + ":" + r.strand + ":" + r.section + ":" + r.from;
+        const to = c.cycle + ":" + r.strand + ":" + r.section + ":" + r.to;
+        if (all[from] && !all[to]) { all[to] = all[from]; delete all[from]; moved = true; }
+      });
+    });
+    if (moved) saveProgress(all);
+  })();
+
   function saveProgress(all) {
     try { window.localStorage.setItem(STORE, JSON.stringify(all)); } catch (err) { /* fine */ }
   }
