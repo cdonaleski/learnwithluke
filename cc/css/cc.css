@@ -1070,6 +1070,36 @@
 }
 .cc-zoom-out[hidden] { display: none; }
 
+/* + and −, on Hard and in Explore. Once zoomed in, the map drags. */
+.cc-zoom {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+.cc-zoom-btn {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--color-purple);
+  cursor: pointer;
+}
+.cc-zoom-btn + .cc-zoom-btn { border-top: 1px solid #e6e0f5; }
+.cc-zoom-btn:hover:not(:disabled), .cc-zoom-btn:focus-visible { background: #f3effe; outline: none; }
+.cc-zoom-btn:disabled { color: #c9c2dc; cursor: default; }
+.cc-fmap.is-zoomed { touch-action: none; cursor: grab; }
+.cc-fmap.is-zoomed:active { cursor: grabbing; }
+
 /* Feedback floats on the map, so it never moves what you are aiming at. */
 .cc-map-main { position: relative; }
 .cc-map-toast {
@@ -1206,6 +1236,12 @@
    play fade back. Numbers match the list in the card. */
 .cc-fmap.is-recite .ft:not(.is-target) { opacity: 0.3; }
 .ft-badges { pointer-events: none; }
+
+/* Explore: a chosen week stands out, the rest fade back. */
+.cc-fmap.is-explore .ft.is-dim:not(.is-target) { opacity: 0.3; }
+.cc-explore-name { margin: 0.2rem 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.2; color: var(--color-text); }
+.cc-explore-what { margin: 0.2rem 0 0; font-size: 0.9rem; color: var(--color-text-muted); }
+.cc-explore-also { margin: 0.7rem 0 0; padding: 0.5rem 0.7rem; border-radius: 12px; background: #fffbe8; font-size: 0.88rem; color: #6b5200; }
 .ft-badge circle { fill: #1f3b57; stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .ft-badge text { fill: #fff; font-family: var(--font-display); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 

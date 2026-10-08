@@ -49,6 +49,7 @@
   };
 
   const MODES = [
+    { id: "explore", label: "Explore", icon: "🔎" },
     { id: "find", label: "Find it", icon: "👆" },
     { id: "study", label: "Study", icon: "🧠" },
     { id: "name", label: "Recite", icon: "🎤" },
@@ -183,6 +184,8 @@
     missed: [],
     trail: [],
     timer: null,
+    picked: [],             // Explore: what the last tap landed on
+    lastTap: null,          // where, on the map, so + can zoom toward it
     view: FULL,
     level: (function () {
       try { const v = window.localStorage.getItem(LEVEL_KEY); if (v === "medium" || v === "hard") return v; }
@@ -198,6 +201,7 @@
     else if (params.get("weeks") === "all") state.week = 0;
     if (params.get("mode") === "name" || params.get("mode") === "recite") state.mode = "name";
     if (params.get("mode") === "study") state.mode = "study";
+    if (params.get("mode") === "explore") state.mode = "explore";
     const level = params.get("level");
     if (level === "easy" || level === "medium" || level === "hard") state.level = level;
   })();
@@ -210,6 +214,33 @@
 
   function drawnItems() {
     return state.mode === "name" ? itemsInPlay() : ITEMS;
+  }
+
+  /** Hard and Explore get + and − and can be dragged around once zoomed in. */
+  function zoomable() {
+    return state.mode === "explore" || (state.level === "hard" && state.mode !== "name");
+  }
+
+  /** The legend's words for each kind of symbol, also used by Explore. */
+  const KEY = [
+    ["a-range", "mountain range"], ["g-range", "mountain range"], ["g-peak", "mountain peak"],
+    ["a-hills", "highlands"], ["a-water", "lake, bay or sea"], ["g-water", "lake, bay or sea"],
+    ["l-water", "river"], ["l-canal", "canal"], ["g-canal", "canal"], ["l-trail", "trail"],
+    ["l-fault", "fault"], ["a-desert", "desert"], ["g-desert", "desert"], ["a-canyon", "canyon"],
+    ["g-valley", "valley"], ["g-valley-green", "valley"], ["a-delta", "river delta"],
+    ["g-swamp", "swamp"], ["g-forest", "rainforest"], ["g-falls", "waterfall"], ["g-cave", "cave"],
+    ["a-region-plains", "Native American region"], ["a-region-basin", "Native American region"],
+    ["g-region", "Native American region"], ["g-place", "place"], ["g-edge", "off the map"],
+  ];
+
+  /** What a feature is, in the legend's words: "mountain range", "river". */
+  function kindOf(item) {
+    const p = item.parts[0];
+    const as = LOOK[p.kind].as;
+    const id = as === "area" ? "a-" + areaStyle(item, p)
+      : as === "line" ? "l-" + LOOK[p.kind].family : "g-" + pointGlyph(item, p);
+    const row = KEY.filter(function (k) { return k[0] === id; })[0];
+    return row ? row[1] : "";
   }
 
   /* ---- Helpers ---- */
@@ -328,6 +359,39 @@
     if (svg) svg.setAttribute("viewBox", view.x + " " + view.y + " " + view.w + " " + view.h);
     sizeDots();
     if (el.zoomOut) el.zoomOut.hidden = view === state.weekView;
+    syncZoom();
+  }
+
+  /* ---- + and − ---- */
+
+  const MAX_ZOOM = 10;          // closest: a tenth of the country across
+
+  function syncZoom() {
+    if (!svg) return;
+    const v = state.view;
+    svg.classList.toggle("is-zoomed", zoomable() && v.w < FULL.w - 0.5);
+    if (!el.zoomIn) return;
+    el.zoomIn.disabled = v.w <= FULL.w / MAX_ZOOM + 0.5;
+    el.zoomOutStep.disabled = v.w >= FULL.w - 0.5;
+  }
+
+  /**
+   * Zoom in (f > 1) or out (f < 1). Around the last tap if it is still in
+   * view -- a near miss in New England, then +, closes in on New England --
+   * and otherwise around the middle.
+   */
+  function zoomBy(f) {
+    const v = state.view, t = state.lastTap;
+    let cx = v.x + v.w / 2, cy = v.y + v.h / 2;
+    if (t && t.x > v.x && t.x < v.x + v.w && t.y > v.y && t.y < v.y + v.h) { cx = t.x; cy = t.y; }
+    const w = Math.max(FULL.w / MAX_ZOOM, Math.min(FULL.w, v.w / f));
+    if (w >= FULL.w - 0.5) { setView(FULL); return; }
+    const h = w / ASPECT;
+    setView({
+      x: Math.max(0, Math.min(cx - w / 2, FULL.w - w)),
+      y: Math.max(0, Math.min(cy - h / 2, FULL.h - h)),
+      w: w, h: h,
+    });
   }
 
   /** Close in on a few features, when they are too near to tell apart. */
@@ -343,13 +407,14 @@
     // tappable, so a wrong tap can say what it touched, and still revealed
     // when shown.
     const items = drawnItems();
-    state.view = easy ? frameFor(itemsInPlay()) : FULL;
+    state.view = easy || state.mode === "explore" ? frameFor(itemsInPlay()) : FULL;
     state.weekView = state.view;
     const v = state.view;
 
     svg = svgNode("svg", {
       viewBox: v.x + " " + v.y + " " + v.w + " " + v.h,
-      class: "cc-map-svg cc-fmap" + (state.mode === "name" ? " is-recite" : state.level === "hard" ? " is-bare" : ""),
+      class: "cc-map-svg cc-fmap" + (state.mode === "name" ? " is-recite" : state.mode === "explore" ? " is-explore"
+        : state.level === "hard" ? " is-bare" : ""),
       role: "group",
       "aria-label": "Map — tap a feature",
     });
@@ -426,9 +491,67 @@
         }
       });
     }
+    // Zoomed in on Hard or in Explore, a drag moves the map. A drag is not a
+    // tap: the click that ends it is swallowed.
+    let drag = null, dragged = false;
+    svg.addEventListener("pointerdown", function (event) {
+      dragged = false;
+      if (!svg.classList.contains("is-zoomed")) return;
+      drag = { x: event.clientX, y: event.clientY, v: state.view, id: event.pointerId };
+    });
+    svg.addEventListener("pointermove", function (event) {
+      if (!drag) return;
+      const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+      if (!dragged && Math.hypot(dx, dy) < 6) return;
+      if (!dragged) { dragged = true; try { svg.setPointerCapture(drag.id); } catch (err) { /* fine */ } }
+      const k = pxPerUnit(), v = drag.v;
+      state.view = {
+        x: Math.max(0, Math.min(v.x - dx / k, FULL.w - v.w)),
+        y: Math.max(0, Math.min(v.y - dy / k, FULL.h - v.h)),
+        w: v.w, h: v.h,
+      };
+      svg.setAttribute("viewBox", state.view.x + " " + state.view.y + " " + state.view.w + " " + state.view.h);
+      if (el.zoomOut) el.zoomOut.hidden = false;
+    });
+    function endDrag() {
+      if (drag && dragged) drawBadges();
+      drag = null;
+    }
+    svg.addEventListener("pointerup", endDrag);
+    svg.addEventListener("pointercancel", endDrag);
+
     svg.addEventListener("click", function (event) {
+      if (dragged) { dragged = false; return; }
+      const box = svg.getBoundingClientRect(), k = pxPerUnit();
+      state.lastTap = { x: state.view.x + (event.clientX - box.left) / k, y: state.view.y + (event.clientY - box.top) / k };
       const under = [], dotsHere = [];
       idsAt(event.clientX, event.clientY, under, dotsHere);
+      if (state.mode === "explore") {
+        // The most exact thing under the finger: a point over a river or
+        // trail, a river or trail over the area it runs through -- Pikes Peak,
+        // not Pikes Peak and the whole of the Rocky Mountains.
+        const tiers = [[], [], []];
+        document.elementsFromPoint(event.clientX, event.clientY).forEach(function (node) {
+          const hit = node.closest && node.closest("[data-item]");
+          if (!hit || !svg.contains(hit)) return;
+          const id = Number(hit.getAttribute("data-item"));
+          const c = hit.getAttribute("class") || "";
+          const tier = /ft-dot/.test(c) ? 0 : /ft-hit-line|ft-line/.test(c) ? 1 : 2;
+          if (tiers[tier].indexOf(id) === -1) tiers[tier].push(id);
+        });
+        // Close points, nearest the finger first.
+        const m = svg.getScreenCTM();
+        const away = function (id) {
+          const g = svg.querySelector('.ft-dot[data-item="' + id + '"]');
+          const x = Number(g.getAttribute("data-x")) * m.a + m.e, y = Number(g.getAttribute("data-y")) * m.d + m.f;
+          return Math.hypot(x - event.clientX, y - event.clientY);
+        };
+        tiers[0].sort(function (a, b) { return away(a) - away(b); });
+        state.picked = tiers[0].length ? tiers[0] : tiers[1].length ? tiers[1] : tiers[2];
+        paint();
+        drawExplore();
+        return;
+      }
       const item = current();
       if (state.level === "hard" && state.mode === "find" && !state.solved && item) {
         const near = under.slice();
@@ -472,7 +595,21 @@
     el.zoomOut = button("⤢ Whole map", "cc-zoom-out", function () { setView(state.weekView); });
     el.zoomOut.hidden = true;
     el.main.appendChild(el.zoomOut);
+    el.zoomIn = el.zoomOutStep = null;
+    if (zoomable()) {
+      const ctl = make("div", "cc-zoom");
+      ctl.setAttribute("role", "group");
+      ctl.setAttribute("aria-label", "Zoom");
+      el.zoomIn = button("+", "cc-zoom-btn", function () { zoomBy(1.6); });
+      el.zoomIn.setAttribute("aria-label", "Zoom in");
+      el.zoomOutStep = button("−", "cc-zoom-btn", function () { zoomBy(1 / 1.6); });
+      el.zoomOutStep.setAttribute("aria-label", "Zoom out");
+      ctl.appendChild(el.zoomIn);
+      ctl.appendChild(el.zoomOutStep);
+      el.main.appendChild(ctl);
+    }
     sizeDots();
+    syncZoom();
   }
 
   /* The symbols, drawn around a point in screen-pixel sizes (s = one unit). */
@@ -595,9 +732,16 @@
   function paint() {
     if (!svg) return;
     svg.querySelectorAll("[data-item]").forEach(function (n) {
-      n.classList.remove("is-right", "is-show", "is-target", "is-wrong");
+      n.classList.remove("is-right", "is-show", "is-target", "is-wrong", "is-dim");
     });
-    if (state.mode === "find") {
+    if (state.mode === "explore") {
+      // A week chosen: its features stand out, the rest fade back.
+      if (state.week) {
+        ITEMS.filter(function (i) { return i.week !== state.week; })
+          .forEach(function (i) { mark(i.id, "is-dim", true); });
+      }
+      if (state.picked.length) mark(state.picked[0], "is-target", true);   // the one named
+    } else if (state.mode === "find") {
       state.queue.slice(0, state.at).forEach(function (item) { mark(item.id, "is-right", true); });
     } else if (state.mode === "study") {
       const item = current();
@@ -627,16 +771,6 @@
         else seen["g-" + pointGlyph(item, p)] = true;
       });
     });
-    const KEY = [
-      ["a-range", "mountain range"], ["g-range", "mountain range"], ["g-peak", "mountain peak"],
-      ["a-hills", "highlands"], ["a-water", "lake, bay or sea"], ["g-water", "lake, bay or sea"],
-      ["l-water", "river"], ["l-canal", "canal"], ["g-canal", "canal"], ["l-trail", "trail"],
-      ["l-fault", "fault"], ["a-desert", "desert"], ["g-desert", "desert"], ["a-canyon", "canyon"],
-      ["g-valley", "valley"], ["g-valley-green", "valley"], ["a-delta", "river delta"],
-      ["g-swamp", "swamp"], ["g-forest", "rainforest"], ["g-falls", "waterfall"], ["g-cave", "cave"],
-      ["a-region-plains", "Native American region"], ["a-region-basin", "Native American region"],
-      ["g-region", "Native American region"], ["g-place", "place"], ["g-edge", "off the map"],
-    ];
     const rows = {};
     KEY.filter(function (k) { return seen[k[0]]; }).forEach(function (k) {
       let row = rows[k[1]];
@@ -668,6 +802,8 @@
     state.helped = [];
     state.missed = [];
     state.trail = [];
+    state.picked = [];
+    state.lastTap = null;
     drawControls();
     drawMap();
     drawLegend();
@@ -676,6 +812,7 @@
 
   function draw() {
     paint();
+    if (state.mode === "explore") { setStatus("", ""); drawExplore(); drawBadges(); drawCount(); return; }
     if (!current()) { setStatus("", ""); drawFinished(); }
     else if (state.mode === "find") drawFind();
     else if (state.mode === "study") drawStudy();
@@ -726,10 +863,48 @@
   }
 
   function drawCount() {
+    if (state.mode === "explore") {
+      el.count.textContent = "Explore · " + itemsInPlay().length + " features";
+      return;
+    }
     const cards = weeksInPlay().map(weekCard).filter(Boolean);
     const sum = CC.tally(cards);
     el.count.textContent = Math.min(state.at + 1, state.queue.length) + " of " + state.queue.length +
       " · " + sum.learned + " of " + sum.total + (sum.total === 1 ? " week" : " weeks") + " learned";
+  }
+
+  /* ---- Explore ---- */
+
+  /**
+   * No questions: tap anything and the card says what it is and which week
+   * it belongs to. Everything is drawn; a chosen week stands out. Several
+   * things under one tap -- the trails that shared the Platte route -- are
+   * all listed.
+   */
+  function drawExplore() {
+    el.prompt.innerHTML = "";
+    const card = make("div", "cc-map-card cc-map-card--explore");
+    const picked = state.picked.map(function (id) { return ITEMS[id]; });
+    if (!picked.length) {
+      card.appendChild(make("p", "cc-aside", "Explore · on your own"));
+      card.appendChild(make("p", "cc-map-q", "Tap anything on the map to see what it is."));
+      card.appendChild(make("p", "cc-map-hint", "Use + and − to zoom in, and drag the map to move around."));
+    } else {
+      const item = picked[0];
+      card.appendChild(make("p", "cc-aside", "You tapped"));
+      card.appendChild(make("p", "cc-explore-name", item.name));
+      const what = kindOf(item);
+      card.appendChild(make("p", "cc-explore-what",
+        (what ? what.charAt(0).toUpperCase() + what.slice(1) + " · " : "") +
+        "Week " + item.week + " · " + weekLabel(item.week)));
+      if (picked.length > 1) {
+        card.appendChild(make("p", "cc-explore-also", "Also right here: " +
+          picked.slice(1).map(function (i) { return i.name; }).join(", ") + ". Zoom in with + to tell them apart."));
+      } else {
+        card.appendChild(make("p", "cc-map-hint", "Tap something else, or tap an empty spot to clear."));
+      }
+    }
+    el.prompt.appendChild(card);
   }
 
   /* ---- Find it ---- */
@@ -795,6 +970,7 @@
   function next() {
     window.clearTimeout(state.timer);
     state.zoomedOn = null;
+    state.lastTap = null;
     state.at += 1;
     state.tries = 0;
     state.solved = false;
@@ -982,10 +1158,12 @@
       const lv = LEVELS.filter(function (l) { return l.id === state.level; })[0];
       // Levels are for the child's own practice. In Recite the screen is the
       // checker's, and it always shows the answers.
-      el.levels.hidden = state.mode === "name";
+      el.levels.hidden = state.mode === "name" || state.mode === "explore";
       el.levelWhy.textContent = state.mode === "name"
         ? "The week's features are lit and numbered — the answer key for whoever is checking."
-        : lv.why;
+        : state.mode === "explore"
+          ? "Every feature drawn. Tap one to see what it is."
+          : lv.why;
     }
 
     el.weeks.innerHTML = "";
@@ -1012,6 +1190,17 @@
     const on = event.target;
     if (on && (on.tagName === "BUTTON" || on.tagName === "INPUT" || on.tagName === "SELECT")) return;
 
+    if ((event.key === "+" || event.key === "=" || event.key === "-") && zoomable() && svg) {
+      event.preventDefault();
+      zoomBy(event.key === "-" ? 1 / 1.6 : 1.6);
+      return;
+    }
+    if (event.key === "Escape" && state.mode === "explore" && state.picked.length) {
+      state.picked = [];
+      paint();
+      drawExplore();
+      return;
+    }
     if (event.key === " ") {
       if (state.mode === "study" && current()) {
         event.preventDefault();
