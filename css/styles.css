@@ -157,6 +157,14 @@ body::after {
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
   transition: background 0.2s, color 0.2s;
+  white-space: nowrap;           /* "CC Memory Work" on one line, never two */
+}
+
+/* Just above the hamburger, seven links and the logo are a tight fit:
+   closer together rather than wrapping. */
+@media (max-width: 1000px) {
+  .nav-links a { padding: 0.5rem 0.6rem; }
+  .nav-inner { padding: 0 1rem; }
 }
 
 .nav-links a:hover,

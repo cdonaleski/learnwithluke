@@ -987,6 +987,8 @@
 .ft.is-target.ft-area { fill: var(--color-sun); fill-opacity: 0.85; stroke: #c99a00; }
 .ft.is-target.ft-line { stroke: #e0a800; stroke-width: 5; }
 .ft.is-target .ft-mark { fill: var(--color-sun); stroke: #8a6a00; }
+/* A small symbol in yellow is easy to lose among the others: give it a halo. */
+.ft.is-target .ft-hit { fill: rgba(255, 214, 10, 0.4); stroke: #e0a800; stroke-width: 2; vector-effect: non-scaling-stroke; }
 
 .ft.is-right.ft-area { fill: #3cc9a5; fill-opacity: 0.8; stroke: #1f9e7a; }
 .ft.is-right.ft-line { stroke: #1f9e7a; stroke-width: 4.5; }

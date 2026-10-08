@@ -32,6 +32,7 @@
   const NEXT_AFTER = 1100;
   const POINT_PX = 9;          // a dot's drawn radius on screen
   const POINT_HIT_PX = 20;     // and the radius a finger can hit
+  const HARD_NEAR_PX = 26;     // on Hard, how near the right one a tap may land
   const LINE_HIT_PX = 22;      // the invisible width around a river or trail
   const MIN_AREA_PX = 28;      // an area narrower than this on screen gets a pin
 
@@ -49,6 +50,7 @@
 
   const MODES = [
     { id: "find", label: "Find it", icon: "👆" },
+    { id: "study", label: "Study", icon: "🧠" },
     { id: "name", label: "Recite", icon: "🎤" },
   ];
 
@@ -109,14 +111,15 @@
 
   /*
    * EASY, MEDIUM, HARD -- how much the map gives away.
-   *   Easy    only this week's features are drawn, zoomed in to where they are.
+   *   Easy    every feature is drawn, zoomed in close to the one being asked
+ *           about, so it sits among its few nearest neighbors.
    *   Medium  every feature from every week is drawn, unnamed, on the whole
    *           country, the way the Black Line Master is: you have to know
    *           which triangles are the Cascades.
    *   Hard    nothing is drawn. The country, and your memory.
    */
   const LEVELS = [
-    { id: "easy", label: "Easy", why: "Only this week's features, zoomed in close to each one." },
+    { id: "easy", label: "Easy", why: "Every feature drawn, zoomed in close on each one." },
     { id: "medium", label: "Medium", why: "Every feature drawn, none named — the whole country." },
     { id: "hard", label: "Hard", why: "A bare map. Nothing is drawn." },
   ];
@@ -195,6 +198,7 @@
     if (WEEKS.indexOf(week) !== -1) state.week = week;
     else if (params.get("weeks") === "all") state.week = 0;
     if (params.get("mode") === "name" || params.get("mode") === "recite") state.mode = "name";
+    if (params.get("mode") === "study") state.mode = "study";
     const level = params.get("level");
     if (level === "easy" || level === "medium" || level === "hard") state.level = level;
   })();
@@ -203,6 +207,10 @@
   function itemsInPlay() {
     const weeks = weeksInPlay();
     return ITEMS.filter(function (i) { return weeks.indexOf(i.week) !== -1; });
+  }
+
+  function drawnItems() {
+    return state.level === "easy" && state.mode === "name" ? itemsInPlay() : ITEMS;
   }
 
   /* ---- Helpers ---- */
@@ -268,23 +276,44 @@
    * Easy's zoom: the area around the one feature being asked about. A whole
    * week often spans the country -- the rivers run from Montana to the St.
    * Lawrence -- so zooming to the week would not zoom at all. This frames
-   * roughly a third of the country around the feature (or the feature itself,
-   * if it is bigger), with the week's other features drawn for company, and
-   * nudged a little off-center so the answer is not always dead middle.
+   * the feature together with its three nearest neighbors (from any week),
+   * so there are a few pictures to choose between and not just the answer;
+   * at least a third of the country, never more than about half; nudged a
+   * little off-center so the answer is not always dead middle.
    */
-  function regionFrame(item) {
+  function boxOf(item) {
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     item.parts.forEach(function (p) {
       x0 = Math.min(x0, p.bbox[0]); y0 = Math.min(y0, p.bbox[1]);
       x1 = Math.max(x1, p.bbox[2]); y1 = Math.max(y1, p.bbox[3]);
     });
-    let w = Math.max((x1 - x0) * 1.6, 330), h = Math.max((y1 - y0) * 1.6, 206);
+    return [x0, y0, x1, y1];
+  }
+
+  function regionFrame(item) {
+    let [x0, y0, x1, y1] = boxOf(item);
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    const near = ITEMS.filter(function (o) { return o !== item; }).map(function (o) {
+      const b = boxOf(o);
+      return { b: b, d: Math.hypot((b[0] + b[2]) / 2 - cx, (b[1] + b[3]) / 2 - cy) };
+    }).sort(function (a, b) { return a.d - b.d; });
+    let added = 0;
+    for (let i = 0; i < near.length && added < 3; i++) {
+      const b = near[i].b;
+      const nx0 = Math.min(x0, b[0]), ny0 = Math.min(y0, b[1]);
+      const nx1 = Math.max(x1, b[2]), ny1 = Math.max(y1, b[3]);
+      // A neighbor that would pull the frame out past half the country is
+      // skipped -- a long river nearby should not undo the zoom.
+      if ((nx1 - nx0) * 1.25 > FULL.w * 0.5 || (ny1 - ny0) * 1.25 > FULL.h * 0.5) continue;
+      x0 = nx0; y0 = ny0; x1 = nx1; y1 = ny1; added++;
+    }
+    let w = Math.max((x1 - x0) * 1.25, 330), h = Math.max((y1 - y0) * 1.25, 206);
     if (w / h > ASPECT) h = w / ASPECT; else w = h * ASPECT;
     if (w >= FULL.w || h >= FULL.h) return FULL;
     // A stable nudge per feature, so the same question frames the same way.
     const jitter = function (n) { return (((item.id * 37 + n * 101) % 21) - 10) / 10; };
-    let x = (x0 + x1) / 2 - w / 2 + jitter(1) * w * 0.15;
-    let y = (y0 + y1) / 2 - h / 2 + jitter(2) * h * 0.15;
+    let x = (x0 + x1) / 2 - w / 2 + jitter(1) * (w - (x1 - x0)) * 0.15;
+    let y = (y0 + y1) / 2 - h / 2 + jitter(2) * (h - (y1 - y0)) * 0.15;
     x = Math.max(0, Math.min(x, FULL.w - w));
     y = Math.max(0, Math.min(y, FULL.h - h));
     return { x: x, y: y, w: w, h: h };
@@ -309,11 +338,12 @@
 
   function drawMap() {
     const easy = state.level === "easy";
-    // Easy draws the week; Medium and Hard lay out every feature, so the
-    // right one has to be told apart from all the rest. On Hard they are
-    // there but invisible -- still tappable, so a wrong tap can say what it
-    // touched, and still revealed when shown.
-    const items = easy ? itemsInPlay() : ITEMS;
+    // Every level lays out every feature, so the right one has to be told
+    // apart from the rest -- Easy just zooms in close (Recite on Easy draws
+    // only the week, framed). On Hard they are there but invisible -- still
+    // tappable, so a wrong tap can say what it touched, and still revealed
+    // when shown.
+    const items = drawnItems();
     state.view = easy ? frameFor(itemsInPlay()) : FULL;
     state.weekView = state.view;
     const v = state.view;
@@ -382,16 +412,34 @@
     // the tap could be either, and counting it right for both would accept a
     // guess. So the map closes in on those dots instead, and the next tap
     // decides.
-    svg.addEventListener("click", function (event) {
-      const under = [], dotsHere = [];
-      document.elementsFromPoint(event.clientX, event.clientY).forEach(function (node) {
+    //
+    // Hard is different. Nothing is drawn, so there is nothing to close in
+    // on and nothing to tell apart -- the question is whether you know WHERE
+    // it is. A tap that lands near enough to the one asked for counts, even
+    // if another feature happens to be nearer.
+    function idsAt(x, y, under, dotsHere) {
+      document.elementsFromPoint(x, y).forEach(function (node) {
         const hit = node.closest && node.closest("[data-item]");
         if (hit && svg.contains(hit)) {
           const id = Number(hit.getAttribute("data-item"));
           if (under.indexOf(id) === -1) under.push(id);
-          if (hit.classList.contains("ft-dot") && hit.firstChild && dotsHere.indexOf(id) === -1) dotsHere.push(id);
+          if (dotsHere && hit.classList.contains("ft-dot") && hit.firstChild && dotsHere.indexOf(id) === -1) dotsHere.push(id);
         }
       });
+    }
+    svg.addEventListener("click", function (event) {
+      const under = [], dotsHere = [];
+      idsAt(event.clientX, event.clientY, under, dotsHere);
+      const item = current();
+      if (state.level === "hard" && state.mode === "find" && !state.solved && item) {
+        const near = under.slice();
+        for (let i = 0; i < 16; i++) {
+          const a = i * Math.PI / 4, d = i < 8 ? HARD_NEAR_PX : HARD_NEAR_PX / 2;
+          idsAt(event.clientX + Math.cos(a) * d, event.clientY + Math.sin(a) * d, near);
+        }
+        tapped(near.indexOf(item.id) !== -1 ? [item.id] : under);
+        return;
+      }
       // ...unless the map has already closed in on these same dots and they
       // still overlap. The Great Valley and the Chesapeake and Ohio Canal are
       // recorded about two miles apart: no zoom separates them, and zooming
@@ -551,6 +599,9 @@
     });
     if (state.mode === "find") {
       state.queue.slice(0, state.at).forEach(function (item) { mark(item.id, "is-right", true); });
+    } else if (state.mode === "study") {
+      const item = current();
+      if (item) mark(item.id, "is-target", true);
     } else {
       const week = current();
       // On Hard the map stays bare: pointing to them is the test. The
@@ -566,7 +617,7 @@
     el.legend.innerHTML = "";
     el.legend.hidden = state.level === "hard";
     if (state.level === "hard") return;
-    const drawn = state.level === "easy" ? itemsInPlay() : ITEMS;
+    const drawn = drawnItems();
     const seen = {};
     drawn.forEach(function (item) {
       item.parts.forEach(function (p) {
@@ -607,7 +658,10 @@
 
   function begin() {
     window.clearTimeout(state.timer);
-    state.queue = state.mode === "find" ? shuffle(itemsInPlay()) : weeksInPlay();
+    // Find it and Study go one feature at a time, shuffled; Recite goes a
+    // week at a time, the way the proof asks.
+    state.queue = state.mode === "name" ? weeksInPlay() : shuffle(itemsInPlay());
+    state.revealed = false;
     state.at = 0;
     state.tries = 0;
     state.solved = false;
@@ -625,6 +679,7 @@
     paint();
     if (!current()) { setStatus("", ""); drawFinished(); }
     else if (state.mode === "find") drawFind();
+    else if (state.mode === "study") drawStudy();
     else drawName();
     drawCount();
   }
@@ -774,28 +829,81 @@
 
   /* ---- The end of a sitting ---- */
 
+  /* ---- Study ---- */
+
+  /**
+   * A flashcard on the map: one feature lights up, its name stays hidden
+   * until asked for, and you mark yourself. Easy zooms in close to it, Medium
+   * shows it among everything else, Hard shows it alone on a bare map. Not
+   * recorded toward learned -- Recite's job -- but the ones you did not know
+   * are listed at the end.
+   */
+  function drawStudy() {
+    const item = current();
+    if (state.level === "easy") setView(regionFrame(item));
+    else if (state.view !== state.weekView) setView(state.weekView);
+    el.prompt.innerHTML = "";
+    const card = make("div", "cc-map-card cc-map-card--study");
+    card.appendChild(make("p", "cc-aside", "Week " + item.week + " · " + weekLabel(item.week) + " · on your own"));
+    card.appendChild(make("p", "cc-map-q", "What is the yellow one?"));
+
+    const row = make("div", "game-actions");
+    if (!state.revealed) {
+      card.appendChild(make("p", "cc-map-hint", "Say it out loud first, then check."));
+      row.appendChild(button("Show answer", "btn btn-primary", function () {
+        state.revealed = true;
+        draw();
+      }));
+    } else {
+      const answer = make("div", "cc-checker");
+      answer.appendChild(make("p", "cc-aside", "The answer"));
+      answer.appendChild(make("p", "cc-a", item.name));
+      card.appendChild(answer);
+      row.appendChild(button("✓ I knew it", "btn btn-primary", function () { studyMark(true); }));
+      row.appendChild(button("Not yet", "btn btn-secondary", function () { studyMark(false); }));
+    }
+    card.appendChild(row);
+    if (hasKeyboard()) {
+      card.appendChild(make("p", "cc-where", state.revealed ? "space if you knew it, N if not" : "space shows the answer"));
+    }
+    el.prompt.appendChild(card);
+  }
+
+  function studyMark(knew) {
+    const item = current();
+    if (!item) return;
+    if (!knew && state.missed.indexOf(item) === -1) state.missed.push(item);
+    state.at += 1;
+    state.revealed = false;
+    draw();
+  }
+
   function drawFinished() {
     el.prompt.innerHTML = "";
     const card = make("div", "cc-map-card cc-map-card--done");
     const find = state.mode === "find";
+    const study = state.mode === "study";
+    const oneAtATime = find || study;          // a list of features, not weeks
     const list = find ? state.helped : state.missed;
 
     card.appendChild(make("p", "cc-map-q", find
       ? "Found all " + state.queue.length + (list.length ? " — " + list.length + " needed showing." : ", every one on the first or second try.")
-      : (list.length ? list.length + (list.length === 1 ? " week" : " weeks") + " to work on." : "Every week said right.")));
+      : study
+        ? (list.length ? list.length + " to work on." : "You knew every one of them.")
+        : (list.length ? list.length + (list.length === 1 ? " week" : " weeks") + " to work on." : "Every week said right.")));
 
     if (list.length) {
       const ul = make("ul", "cc-map-list");
       list.forEach(function (x) {
-        ul.appendChild(make("li", null, find ? x.name + " · week " + x.week : "Week " + x + " · " + weekLabel(x)));
+        ul.appendChild(make("li", null, oneAtATime ? x.name + " · week " + x.week : "Week " + x + " · " + weekLabel(x)));
       });
       card.appendChild(ul);
     }
 
     const row = make("div", "game-actions");
-    if (!find && state.trail.length) row.appendChild(button("← Back", "btn btn-secondary cc-back", back_));
+    if (state.mode === "name" && state.trail.length) row.appendChild(button("← Back", "btn btn-secondary cc-back", back_));
     row.appendChild(button("Go again", "btn btn-primary", begin));
-    if (find && list.length) {
+    if (oneAtATime && list.length) {
       row.appendChild(button("Just these " + list.length, "btn btn-secondary", function () {
         const only = list.slice();
         begin();
@@ -863,8 +971,16 @@
     if (on && (on.tagName === "BUTTON" || on.tagName === "INPUT" || on.tagName === "SELECT")) return;
 
     if (event.key === " ") {
+      if (state.mode === "study" && current()) {
+        event.preventDefault();
+        if (!state.revealed) { state.revealed = true; draw(); } else studyMark(true);
+        return;
+      }
       if (state.mode === "name" && current()) { event.preventDefault(); judge(true); }
       else if (state.mode === "find" && state.solved) { event.preventDefault(); next(); }
+    } else if ((event.key === "n" || event.key === "N") && state.mode === "study" && current() && state.revealed) {
+      event.preventDefault();
+      studyMark(false);
     } else if ((event.key === "n" || event.key === "N") && state.mode === "name" && current()) {
       event.preventDefault();
       judge(false);
