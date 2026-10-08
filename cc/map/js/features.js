@@ -743,6 +743,7 @@
       if (state.picked.length) mark(state.picked[0], "is-target", true);   // the one named
     } else if (state.mode === "find") {
       state.queue.slice(0, state.at).forEach(function (item) { mark(item.id, "is-right", true); });
+      if (state.solved && current()) mark(current().id, "is-right", true);
     } else if (state.mode === "study") {
       const item = current();
       if (item) mark(item.id, "is-target", true);
@@ -803,6 +804,23 @@
     state.missed = [];
     state.trail = [];
     state.picked = [];
+    state.lastTap = null;
+    drawControls();
+    drawMap();
+    drawLegend();
+    draw();
+  }
+
+  /**
+   * A new level changes how the map looks, not where you are: the same
+   * question stays up, the run carries on, and the level is remembered
+   * until it is changed again.
+   */
+  function setLevel(level) {
+    if (level === state.level) return;
+    state.level = level;
+    try { window.localStorage.setItem(LEVEL_KEY, level); } catch (err) { /* fine */ }
+    state.zoomedOn = null;
     state.lastTap = null;
     drawControls();
     drawMap();
@@ -1150,9 +1168,7 @@
       el.levels.innerHTML = "";
       LEVELS.forEach(function (lv) {
         el.levels.appendChild(chip(lv.label, lv.id === state.level, function () {
-          state.level = lv.id;
-          try { window.localStorage.setItem(LEVEL_KEY, lv.id); } catch (err) { /* fine */ }
-          begin();
+          setLevel(lv.id);
         }, lv.why));
       });
       const lv = LEVELS.filter(function (l) { return l.id === state.level; })[0];
