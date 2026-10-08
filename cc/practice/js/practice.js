@@ -128,7 +128,7 @@
    */
   function answerNode(card) {
     if (!card.rows) return make("p", "cc-a" + (card.whole ? " cc-a--passage" : ""), CC.spoken(card));
-    const table = make("table", "cc-a cc-rows");
+    const table = make("table", "cc-a cc-rows" + (card.whole ? " cc-rows--list" : ""));
     const body = make("tbody");
     card.rows.forEach(function (row) {
       const tr = make("tr");

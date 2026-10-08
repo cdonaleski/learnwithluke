@@ -139,5 +139,27 @@
     ["Presidents 45 on", "Trump"],
   ]);
 
+  /*
+   * The whole timeline, 1 to 161, said straight through. Built from ORDER
+   * itself, so it is the same words as the weekly cards and cannot drift.
+   * Numbered as the proof sheet numbers it, and the seven eras in capitals
+   * the way the sheet prints them.
+   */
+  const ERAS = ["Age of Ancient Empires", "The Middle Ages", "Age of Exploration",
+    "Age of Absolute Monarchs", "Age of Enlightenment", "Age of Industry",
+    "Age of Information and Globalization"];
+  const rows = ORDER.map(function (name, i) {
+    return [String(i + 1), ERAS.indexOf(name) !== -1 ? name.toUpperCase() : name];
+  });
+  window.CC_CYCLE3.cards.push({
+    strand: "timeline",
+    section: 23,
+    label: "The whole timeline",
+    whole: true,               // too long for a Match tile
+    q: "Say the whole timeline, 1 to 161.",
+    a: rows.map(function (r) { return r[1]; }).join("\n"),
+    rows: rows,
+  });
+
   window.CC_CYCLE3.timelineOrder = ORDER;
 })();

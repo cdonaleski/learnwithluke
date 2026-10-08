@@ -1152,6 +1152,10 @@
 }
 .cc-rows td { font-weight: 700; color: var(--color-purple); }
 .cc-rows tr + tr th, .cc-rows tr + tr td { border-top: 1px dashed #e4dccd; }
+/* A numbered list said straight through -- the whole timeline. */
+.cc-rows--list { font-size: clamp(0.95rem, 2.2vw, 1.1rem); }
+.cc-rows--list th { text-align: right; font-weight: 600; }
+.cc-rows--list td { font-weight: 600; }
 
 /* ---------------- Which map ----------------
    The two maps as one switch, the one you are on picked out. A single pill
