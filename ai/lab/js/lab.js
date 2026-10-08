@@ -89,7 +89,6 @@
     var pad = 30, gw = W - pad * 2, gh = H - pad * 2;
     var m = centroids();
     if (m.zib && m.zog) {
-      var img = c.createImageData(1, 1);
       for (var px = 0; px <= gw; px += 7) {
         for (var py = 0; py <= gh; py += 7) {
           var sx = px / gw, sy = 1 - py / gh;
@@ -101,7 +100,6 @@
         }
       }
       c.globalAlpha = 1;
-      void img;
     }
     c.strokeStyle = k.line; c.lineWidth = 1.5;
     c.strokeRect(pad, pad, gw, gh);
@@ -134,41 +132,43 @@
   }
 
   function teachNext() {
-    T.cur = newCreature(); T.pending = null; teachRefresh();
+    T.cur = newCreature(); T.pending = null; guessMode(false); teachRefresh();
+  }
+
+  /* The machine's guess replaces the Zib/Zog buttons, right under the creature. */
+  function guessMode(on) {
+    $("teach-label").hidden = on;
+    $("teach-guess").hidden = !on;
   }
 
   $("lab-zib").addEventListener("click", function () { T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: "zib" }); teachNext(); teachSays("<b>Noted.</b> The purple side of the map just grew. The machine is not following a rule — it is only copying the examples you give it."); });
-  $("lab-zog").addEventListener("click", function () { T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: "zog" }); teachNext(); teachSays("<b>Noted.</b> The orange side of the map just grew. Teach it a few of each, then press <b>Let it try one</b>."); });
+  $("lab-zog").addEventListener("click", function () { T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: "zog" }); teachNext(); teachSays("<b>Noted.</b> The orange side of the map just grew. Teach it a few of each, then press <b>Let it try this one</b>."); });
   $("teach-skip").addEventListener("click", teachNext);
   $("teach-reset").addEventListener("click", function () { T.ex = []; T.tally = { agree: 0, total: 0 }; teachNext(); teachSays("Everything it knew is gone. Machines have no memory of their own — only the examples they were given."); });
 
   $("teach-test").addEventListener("click", function () {
     var p = predict(T.cur);
     if (!p) { teachSays("<b>It cannot guess yet.</b> Show it at least one Zib and one Zog first — with only one kind of example, every answer would be the same."); return; }
-    var box = $("teach-says");
-    box.innerHTML = "";
-    var line = el("p", null, "");
-    line.innerHTML = "The machine says: <b>this is a " + (p.label === "zib" ? "Zib" : "Zog") + "</b>, and it is " + p.conf + "% sure. It decided that by asking which group of your examples this creature sits closest to.";
-    box.appendChild(line);
-    var row = el("div", "ai-row");
-    row.style.marginTop = "10px";
-    var yes = el("button", "ai-btn ai-btn-a", "It's right");
-    var no = el("button", "ai-btn", "It's wrong");
-    yes.addEventListener("click", function () {
-      T.tally.agree++; T.tally.total++;
-      T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: p.label });
-      teachNext();
-      teachSays("<b>Agreed.</b> That example got added to its collection, so it is now a bit more sure about creatures like that one.");
-    });
-    no.addEventListener("click", function () {
-      T.tally.total++;
-      var other = p.label === "zib" ? "zog" : "zib";
-      T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: other });
-      teachNext();
-      teachSays("<b>Corrected.</b> You just did what an AI trainer does all day: catch a wrong answer and hand back the right one. Watch the boundary on the map shift.");
-    });
-    row.appendChild(yes); row.appendChild(no);
-    box.appendChild(row);
+    T.pending = p;
+    $("teach-guess-text").innerHTML = "The machine says: <b>a " + (p.label === "zib" ? "Zib" : "Zog") + "</b>, " + p.conf + "% sure.";
+    guessMode(true);
+    teachSays("It decided by asking which group of your examples this creature sits closest to. <b>Is it right?</b>");
+  });
+  $("teach-yes").addEventListener("click", function () {
+    var p = T.pending;
+    if (!p) { return; }
+    T.tally.agree++; T.tally.total++;
+    T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: p.label });
+    teachNext();
+    teachSays("<b>Agreed.</b> That example got added to its collection, so it is now a bit more sure about creatures like that one.");
+  });
+  $("teach-no").addEventListener("click", function () {
+    var p = T.pending;
+    if (!p) { return; }
+    T.tally.total++;
+    T.ex.push({ size: T.cur.size, spots: T.cur.spots, label: p.label === "zib" ? "zog" : "zib" });
+    teachNext();
+    teachSays("<b>Corrected.</b> You just did what an AI trainer does all day: catch a wrong answer and hand back the right one. Watch the boundary on the map shift.");
   });
 
   /* =====================================================
@@ -190,6 +190,11 @@
       map[a][b] = (map[a][b] || 0) + 1;
     }
     Wm.map = map; Wm.name = name;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-corpus]"), function (b) {
+      var on = b.dataset.corpus === name;
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
     Wm.words = ["the"];
     Wm.last = "the";
     renderWords();
@@ -198,12 +203,14 @@
   function renderWords() {
     var s = $("sentence");
     s.innerHTML = "";
+    // A full stop is a word to the machine, but it is written against the
+    // word before it, not floating on its own.
     Wm.words.forEach(function (w, i) {
+      if (i > 0 && w !== ".") { s.appendChild(document.createTextNode(" ")); }
       if (i === Wm.words.length - 1) {
-        var sp = el("span", "ai-last", w);
-        s.appendChild(sp);
+        s.appendChild(el("span", "ai-last", w));
       } else {
-        s.appendChild(document.createTextNode(w + " "));
+        s.appendChild(document.createTextNode(w));
       }
     });
     var opts = Wm.map[Wm.last] || {};
@@ -229,7 +236,7 @@
       od.appendChild(row);
     });
     $("words-says").innerHTML = "This machine has seen " + list.length +
-      " different word" + (list.length === 1 ? "" : "s") + " that could follow <b>" + Wm.last + "</b>. It rolls a weighted dice and picks one. A real chatbot does the same thing, except it looks at everything written so far instead of just the last word — and it has read a large part of the internet instead of five sentences.";
+      " different word" + (list.length === 1 ? "" : "s") + " that could follow <b>" + Wm.last + "</b>. It rolls a weighted die and picks one — the longer the bar, the more likely. A real chatbot does the same thing, except it looks at everything written so far instead of just the last word — and it has read a large part of the internet instead of a handful of sentences.";
   }
 
   function stepWord() {
@@ -264,39 +271,93 @@
     buildModel(Wm.name);
   });
   Array.prototype.forEach.call(document.querySelectorAll("[data-corpus]"), function (b) {
-    b.addEventListener("click", function () { buildModel(b.dataset.corpus); });
+    b.addEventListener("click", function () {
+      if (Wm.run) { clearInterval(Wm.run); Wm.run = null; $("w-run").textContent = "Write 15 words"; }
+      buildModel(b.dataset.corpus);
+    });
   });
 
   /* =====================================================
      3. TOKENIZER
      ===================================================== */
   var PREFIX = ["under", "over", "un", "re", "pre", "dis", "mis", "non"];
-  var SUFFIX = ["ation", "ible", "able", "ness", "ment", "tion", "ing", "teen", "est", "ful", "ies", "ly", "ed", "es", "s"];
+  var SUFFIX = ["ation", "ible", "able", "ness", "ment", "tion", "ing", "teen", "est", "ful", "ly", "ed", "es", "s"];
+  var VOWEL = /[aeiouy]/i;
+  var PAIRS = ["th", "sh", "ch", "ph", "wh", "gh", "ck", "qu"];
+  /* Two consonants a syllable can start with: but-ter-fly, not butterf-ly. */
+  var ONSETS = ["bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sc", "sk", "sl", "sm",
+    "sn", "sp", "st", "sw", "tr", "tw"];
+
+  /*
+   * Where a word can be broken without looking broken: before the consonant
+   * that starts a new syllable (pan|cake, won|der), keeping th, sh, ch and
+   * friends together (mo|ther). Real tokenizers learn their pieces from data;
+   * this only has to look sensible to a nine-year-old.
+   */
+  function syllables(w) {
+    var cuts = [0];
+    for (var i = 2; i < w.length - 1; i++) {
+      if (VOWEL.test(w[i]) || !VOWEL.test(w[i + 1])) { continue; }   // w[i] starts a syllable
+      var j = i;
+      while (j > 0 && !VOWEL.test(w[j - 1])) { j--; }                  // start of the consonant run
+      if (j === 0) { continue; }
+      var at = i, two = w.slice(i - 1, i + 1).toLowerCase();
+      if (i - j >= 1 && PAIRS.indexOf(two) !== -1) { at = i - 1; }
+      else if (i - j >= 2 && ONSETS.indexOf(two) !== -1) { at = i - 1; }
+      if (at - cuts[cuts.length - 1] >= 2 && w.length - at >= 2) { cuts.push(at); }
+    }
+    return cuts.map(function (c, k) { return w.slice(c, cuts[k + 1]); });
+  }
+
+  /* Syllables joined back up into chunks of about six letters. */
+  function chunks(w) {
+    var out = [], cur = "";
+    syllables(w).forEach(function (sy) {
+      if (cur && cur.length + sy.length > 6) { out.push(cur); cur = sy; } else { cur += sy; }
+    });
+    if (cur) { out.push(cur); }
+    return out;
+  }
+
   function tokenize(text) {
     var out = [];
     /*
-       * The u flag matters here: without it an emoji is two surrogate halves
-       * and each half renders as a broken box. With it, one emoji is one token,
-       * which is also closer to what a real tokenizer does.
-       */
-      var chunks = text.match(/\s+|[A-Za-z]+|[0-9]+|[^\sA-Za-z0-9]/gu) || [];
-    chunks.forEach(function (ch) {
+     * The u flag matters here: without it an emoji is two surrogate halves
+     * and each half renders as a broken box. With it, one emoji is one token,
+     * which is also closer to what a real tokenizer does.
+     */
+    var pieces = text.match(/\s+|[A-Za-z]+|[0-9]+|[^\sA-Za-z0-9]/gu) || [];
+    pieces.forEach(function (ch) {
       if (/^\s+$/.test(ch)) { return; }
       if (ch.length <= 5 || /^[0-9]+$/.test(ch)) { out.push(ch); return; }
       var head = "", tail = "", body = ch, i;
       for (i = 0; i < PREFIX.length; i++) {
         var p = PREFIX[i];
-        if (body.toLowerCase().indexOf(p) === 0 && body.length - p.length >= 4) {
+        // mis-take, but not mis-sing: a doubled letter means it was never a prefix.
+        var doubled = p !== "un" && body[p.length] && body[p.length].toLowerCase() === p[p.length - 1];
+        if (body.toLowerCase().indexOf(p) === 0 && body.length - p.length >= 4 && !doubled) {
           head = body.slice(0, p.length); body = body.slice(p.length); break;
         }
       }
       for (i = 0; i < SUFFIX.length; i++) {
         var s = SUFFIX[i], at = body.length - s.length;
-        if (at >= 4 && body.slice(at).toLowerCase() === s) { tail = body.slice(at); body = body.slice(0, at); break; }
+        if (at < 4 || body.slice(at).toLowerCase() !== s) { continue; }
+        // "es" only where English adds it: box-es, wish-es -- not pancak-es.
+        if (s === "es" && !/(s|x|z|ch|sh)$/i.test(body.slice(0, at))) { continue; }
+        // ...and a plain s only on a plain plural: not glas-s, octopu-s, synthesi-s, butterflie-s.
+        if (s === "s" && /(ss|us|is|ies)$/i.test(body)) { continue; }
+        tail = body.slice(at); body = body.slice(0, at);
+        // run-ning, not runn-ing: a doubled letter goes with the ending.
+        if (/^(ing|ed|er|est)$/i.test(s) && body.length >= 3 &&
+            body[body.length - 1] === body[body.length - 2] && !VOWEL.test(body[body.length - 1]) &&
+            !/(ll|ss|ff|zz)$/i.test(body)) {
+          tail = body.slice(-1) + tail; body = body.slice(0, -1);
+        }
+        break;
       }
       if (head) { out.push(head); }
-      while (body.length > 7) { out.push(body.slice(0, 4)); body = body.slice(4); }
-      if (body) { out.push(body); }
+      if (body.length > 7) { chunks(body).forEach(function (c) { out.push(c); }); }
+      else if (body) { out.push(body); }
       if (tail) { out.push(tail); }
     });
     return out;
@@ -312,7 +373,7 @@
       s.style.background = "hsl(" + TOKHUE[i % TOKHUE.length] + ",52%,42%)";
       host.appendChild(s);
     });
-    $("c-chars").textContent = text.replace(/\s/g, "").length;
+    $("c-chars").textContent = (text.match(/\p{L}/gu) || []).length;   // letters, not commas or emoji
     $("c-words").textContent = (text.trim() ? text.trim().split(/\s+/).length : 0);
     $("c-toks").textContent = toks.length;
     $("tokens-says").innerHTML = "Notice that short common words survive whole, while long ones get broken into pieces. That is why an AI can spell <b>cat</b> perfectly but sometimes fumbles a long unusual word — it never saw the whole word, only the chunks. <b>This is a simplified version:</b> a real tokenizer works out its own list of chunks by reading enormous amounts of text first.";
@@ -368,7 +429,7 @@
     function X(x) { return pad + x * gw; }
     function Y(y) { return pad + gh - y * gh; }
     /*
-     * w1·x + w2·y + b = 0 is a line. When the colour weight is zero that line
+     * w1·x + w2·y + b = 0 is a line. When the redness weight is zero that line
      * is vertical, and solving for y would divide by zero — so it gets drawn
      * the other way round instead of vanishing off the page.
      */
@@ -393,8 +454,6 @@
     label(c, "size →", pad + gw / 2, H - 6, 11, k.soft, "center");
     c.save(); c.translate(11, pad + gh / 2); c.rotate(-Math.PI / 2);
     label(c, "redness →", 0, 0, 11, k.soft, "center"); c.restore();
-    label(c, "sweet", X(0.82), Y(0.9), 11, k.hot, "center", true);
-    label(c, "sour", X(0.2), Y(0.12), 11, k.cool, "center", true);
     $("v-w1").textContent = w.w1.toFixed(2);
     $("v-w2").textContent = w.w2.toFixed(2);
     $("v-b").textContent = w.b.toFixed(2);

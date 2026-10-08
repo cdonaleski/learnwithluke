@@ -45,16 +45,26 @@
         <div class="ai-box">
           <h3>This creature</h3>
           <canvas id="creature" height="240" role="img" aria-label="A made-up creature, drawn from its size and how many spots it has"></canvas>
-          <div class="ai-row" style="margin-top:0.8rem">
+          <!-- Teaching and testing happen right under the creature, so the
+               machine's answer is never below the fold. -->
+          <div class="ai-row" id="teach-label" style="margin-top:0.8rem">
             <button type="button" class="ai-btn ai-btn-a" id="lab-zib">It's a Zib</button>
             <button type="button" class="ai-btn ai-btn-hot" id="lab-zog">It's a Zog</button>
             <button type="button" class="ai-btn" id="teach-skip">Skip</button>
+            <button type="button" class="ai-btn" id="teach-test">Let it try this one</button>
+          </div>
+          <div class="ai-guess" id="teach-guess" hidden>
+            <p id="teach-guess-text"></p>
+            <div class="ai-row">
+              <button type="button" class="ai-btn ai-btn-a" id="teach-yes">It's right</button>
+              <button type="button" class="ai-btn" id="teach-no">It's wrong</button>
+            </div>
           </div>
           <p class="ai-tally" id="teach-tally" style="margin-top:0.7rem"></p>
         </div>
         <div class="ai-box">
           <h3>What the machine learned</h3>
-          <canvas id="teach-map" height="240" role="img" aria-label="A map of every creature you have labelled, with size across and spots up"></canvas>
+          <canvas id="teach-map" height="240" role="img" aria-label="A map of every creature you have labeled, with size across and spots up"></canvas>
           <ul class="ai-legend">
             <li><span class="ai-key ai-key--zib"></span>a Zib you taught it</li>
             <li><span class="ai-key ai-key--zog"></span>a Zog you taught it</li>
@@ -62,7 +72,6 @@
           </ul>
           <p class="ai-tally ai-legend-note">The shaded background is its answer for every creature that could exist.</p>
           <div class="ai-row" style="margin-top:0.8rem">
-            <button type="button" class="ai-btn" id="teach-test">Let it try one</button>
             <button type="button" class="ai-btn" id="teach-reset">Start over</button>
           </div>
         </div>
@@ -77,9 +86,9 @@
       <p class="ai-lede">A chatbot does not know what it is going to say. It picks one word, looks at what it just wrote, and picks the next. This machine works exactly the same way — just with a much smaller memory.</p>
       <div class="ai-row" style="margin-bottom:1rem">
         <span class="ai-tally">Read from:</span>
-        <button type="button" class="ai-btn" data-corpus="pirate">Pirate talk</button>
-        <button type="button" class="ai-btn" data-corpus="space">Space facts</button>
-        <button type="button" class="ai-btn" data-corpus="silly">Silly rhymes</button>
+        <button type="button" class="ai-btn is-on" data-corpus="pirate" aria-pressed="true">Pirate talk</button>
+        <button type="button" class="ai-btn" data-corpus="space" aria-pressed="false">Space facts</button>
+        <button type="button" class="ai-btn" data-corpus="silly" aria-pressed="false">Silly rhymes</button>
       </div>
       <div class="ai-stage">
         <div>
@@ -103,7 +112,7 @@
       <p class="ai-kicker">Tokens</p>
       <h2>How a Machine Reads</h2>
       <p class="ai-lede">An AI never sees letters the way you do. Your sentence gets chopped into chunks called tokens, and each chunk becomes a number. Type something and watch it get chopped.</p>
-      <label class="visually-hidden" for="tokin">Type a sentence to tokenise</label>
+      <label class="visually-hidden" for="tokin">Type a sentence to tokenize</label>
       <textarea id="tokin" spellcheck="false">The unbelievable dinosaur ate seventeen pancakes.</textarea>
       <div class="ai-toks" id="toks"></div>
       <div class="ai-counts">
@@ -123,14 +132,20 @@
         <div class="ai-box">
           <h3>Sweet or sour?</h3>
           <canvas id="neuron" height="270" role="img" aria-label="Fruit plotted by size and redness, with the neuron's dividing line"></canvas>
+          <ul class="ai-legend">
+            <li><span class="ai-key ai-key--sweet"></span>sweet fruit</li>
+            <li><span class="ai-key ai-key--sour"></span>sour fruit</li>
+            <li><span class="ai-key ai-key--miss"></span>circled: it has this one wrong</li>
+          </ul>
         </div>
         <div class="ai-box">
           <h3>The neuron's three numbers</h3>
           <div class="ai-sliders">
             <div class="ai-slider"><label for="w1">weight on size <span id="v-w1">0</span></label><input id="w1" type="range" min="-2" max="2" step="0.05" value="0.4"></div>
-            <div class="ai-slider"><label for="w2">weight on colour <span id="v-w2">0</span></label><input id="w2" type="range" min="-2" max="2" step="0.05" value="-0.4"></div>
+            <div class="ai-slider"><label for="w2">weight on redness <span id="v-w2">0</span></label><input id="w2" type="range" min="-2" max="2" step="0.05" value="-0.4"></div>
             <div class="ai-slider"><label for="b">bias <span id="v-b">0</span></label><input id="b" type="range" min="-2" max="2" step="0.05" value="0"></div>
           </div>
+          <p class="ai-tally ai-note">The two weights tilt the line; the bias slides it without tilting it. (A different “bias” from the one in Bias Detective — here it is just a number.)</p>
           <p class="ai-tally" style="margin:0.9rem 0 0.2rem">It gets right</p>
           <div class="ai-score" id="n-score">0%</div>
           <div class="ai-row" style="margin-top:0.8rem">
@@ -154,34 +169,42 @@
         <button type="button" class="option-btn" data-job="dog">Is it a dog?</button>
       </div>
 
-      <div class="ai-box bd-missions-box">
-        <h3>Missions</h3>
-        <ul class="bd-missions" id="bd-missions"></ul>
+      <!-- Teach on the left, test on the right: every tap on a card changes
+           the answers beside it, in view, instead of 700px further down. -->
+      <div class="bd-grid">
+        <div class="bd-col">
+          <div class="ai-box bd-missions-box">
+            <h3>Missions</h3>
+            <ul class="bd-missions" id="bd-missions"></ul>
+          </div>
+
+          <h3 class="bd-step">Step 1 · Teach it</h3>
+          <p class="bd-hint">Tap a card to change it: <b>not used</b> → <b>this one is a match</b> → <b>this one is not</b>. The machine only ever sees what you put in.</p>
+          <div class="bd-pool" id="bd-pool"></div>
+          <p class="ai-tally" id="bd-count" style="margin-top:0.7rem"></p>
+          <div class="ai-row bd-presets" id="bd-presets" style="margin-top:0.7rem"></div>
+        </div>
+
+        <div class="bd-col">
+          <h3 class="bd-step bd-step--first">Step 2 · Test it on things it has never seen</h3>
+          <p class="bd-empty" id="bd-empty" hidden>Teach it at least one of each — a match and not a match — and its answers appear here.</p>
+          <div id="bd-result" hidden>
+            <p class="bd-hint" id="bd-ask-line">Six new items. It has to answer <b id="bd-ask">Is it an apple?</b> for each one on its own.</p>
+            <div class="bd-tests" id="bd-tests"></div>
+            <p class="bd-score" id="bd-score"></p>
+          </div>
+          <div class="ai-says" id="bias-says"></div>
+        </div>
       </div>
 
-      <h3 class="bd-step">Step 1 · Teach it</h3>
-      <p class="bd-hint">Tap a card to change it: <b>not used</b> → <b>this one is a match</b> → <b>this one is not</b>. The machine only ever sees what you put in.</p>
-      <div class="bd-pool" id="bd-pool"></div>
-      <p class="ai-tally" id="bd-count" style="margin-top:0.7rem"></p>
-      <div class="ai-row bd-presets" id="bd-presets" style="margin-top:0.7rem"></div>
-
-      <p class="bd-empty" id="bd-empty" hidden>Pick at least one of each above and the machine will get to work.</p>
-
-      <div id="bd-result" hidden>
-        <h3 class="bd-step">Step 2 · What it worked out</h3>
+      <div id="bd-why" hidden>
+        <h3 class="bd-step">Step 3 · Why it answered that way</h3>
         <p class="bd-hint">These are the averages it built from your examples. The longest bar is the thing it is really going on — its shortcut.</p>
         <div class="ai-box">
           <table class="ai-feat bd-feat" id="bd-feat"></table>
         </div>
-
-        <h3 class="bd-step">Step 3 · Test it on things it has never seen</h3>
-        <p class="bd-hint" id="bd-ask-line">Six new items. It has to answer <b id="bd-ask">Is it an apple?</b> for each one on its own.</p>
-        <div class="bd-tests" id="bd-tests"></div>
-        <p class="bd-score" id="bd-score"></p>
       </div>
-
-      <div class="ai-says" id="bias-says"></div>
-      <p class="bd-foot">The percentages are a rough measure of how far each answer sat from the alternative, not a real probability. Being sure and being right are different things — which is rather the point of this one.</p>
+      <p class="bd-foot">The percentages are a rough measure of how far each answer sat from the alternative, not a real probability. Being sure and being right are different things — which is the whole point of this one.</p>
     </section>
   </main>
 

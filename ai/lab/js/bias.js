@@ -10,7 +10,8 @@
  * ADDING A JOB
  * ------------
  * Copy a block in JOBS. A job needs:
- *   feats     the four things the machine can measure, in plain words
+ *   feats     the four things the machine can measure, as table headings
+ *   says      the same four, as they read in a sentence ("whether it is red")
  *   pool      the examples the child can teach it, each with f: [0/1, 0/1, 0/1, 0/1]
  *   tests     six held-out items it gets judged on, each with truth: true/false
  *   trap      the pool item that shares its features with something on the other
@@ -29,7 +30,8 @@
       label: "Is it an apple?",
       word: "APPLE",
       notWord: "NOT AN APPLE",
-      feats: ["is it red", "is it round", "has a stem", "is it big"],
+      feats: ["Red?", "Round?", "Has a stem?", "Big?"],
+      says: ["whether it is red", "whether it is round", "whether it has a stem", "whether it is big"],
       pool: [
         { id: "redapple",  icon: "🍎", name: "Red apple",   f: [1, 1, 1, 1], truth: true },
         { id: "redapple2", icon: "🍎", name: "Another red apple", f: [1, 1, 1, 1], truth: true },
@@ -64,7 +66,7 @@
       ],
       presets: {
         "Only red apples": { yes: ["redapple", "redapple2"], no: ["grape", "lemon", "banana"] },
-        "Apples of every colour": { yes: ["redapple", "greenapple"], no: ["orange", "lemon", "banana"] },
+        "Apples of every color": { yes: ["redapple", "greenapple"], no: ["orange", "lemon", "banana"] },
         "Everything": { yes: ["redapple", "redapple2", "greenapple"], no: ["tomato", "cherry", "grape", "orange", "lemon", "banana", "pear"] }
       }
     },
@@ -73,7 +75,8 @@
       label: "Is it a dog?",
       word: "DOG",
       notWord: "NOT A DOG",
-      feats: ["four legs", "furry", "pointy ears", "wags its tail"],
+      feats: ["Four legs?", "Furry?", "Pointy ears?", "Wags its tail?"],
+      says: ["whether it has four legs", "whether it is furry", "whether it has pointy ears", "whether it wags its tail"],
       pool: [
         { id: "lab",    icon: "🐕", name: "Labrador",  f: [1, 1, 0, 1], truth: true },
         { id: "husky",  icon: "🐕", name: "Husky",     f: [1, 1, 1, 1], truth: true },
@@ -213,7 +216,7 @@
     });
 
     var best = gaps.indexOf(Math.max.apply(null, gaps));
-    return { feature: j.feats[best], gap: gaps[best] };
+    return { feature: j.says[best], gap: gaps[best] };
   }
 
   function renderTests(yes, no) {
@@ -266,6 +269,7 @@
 
     var ready = !!(yes && no);
     $("bd-result").hidden = !ready;
+    $("bd-why").hidden = !ready;
     $("bd-empty").hidden = ready;
 
     if (!ready) {
@@ -294,7 +298,7 @@
       return;
     }
 
-    var msg = "It is leaning hardest on <b>" + lean.feature + "</b>. ";
+    var msg = "It is going mostly on <b>" + lean.feature + "</b>. ";
     if (lean.gap < 0.34) {
       msg += "Nothing it measures separates the two groups cleanly, so it is guessing more than deciding. ";
     }
