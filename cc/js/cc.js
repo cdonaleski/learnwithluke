@@ -365,8 +365,26 @@
    * at easy it is the shape of it, at medium the start of it, at hard
    * nothing. Returns "" when there is no help to give.
    */
+  /**
+   * A capital card's answer is "Augusta, ME": the city IS the answer, and its
+   * first word is usually all of it. So capitals never get the opening word
+   * as a hint -- only its first letter (Easy) or its length (Medium).
+   */
+  function capitalOf(card) {
+    if (!card || card.label !== "States and Capitals") return null;
+    const m = String(card.a).match(/^(.+), ([A-Z]{2})$/);
+    return m ? m[1] : null;
+  }
+
+  function lettersIn(city) {
+    const lens = city.split(/\s+/).map(function (w) { return w.replace(/[^A-Za-z]/g, "").length; });
+    return lens.join(" + ") + " letters";
+  }
+
   function hintFor(card, level) {
     if (!card || !card.a || !level || level === "hard") return "";
+    const city = capitalOf(card);
+    if (city) return level === "easy" ? city.split(/\s+/).map(skeleton).join(" ") : lettersIn(city);
     const answer = String(card.a);
     const words = answer.split(/\s+/).filter(Boolean);
     if (!words.length) return "";
@@ -399,6 +417,13 @@
    */
   function nudgeFor(card, level) {
     if (!card || !card.a || !level || level === "hard") return "";
+    const city = capitalOf(card);
+    if (city) {
+      const n = city.split(/\s+/).length;
+      return level === "easy"
+        ? "It starts with \u201c" + city.charAt(0) + "\u201d"
+        : n === 1 ? "The capital is one word" : "The capital is " + (n === 2 ? "two" : n) + " words";
+    }
     // Deliberately `a`, not the spoken form: the stem repeats the question
     // back, so prompting with it would give away nothing and count wrong.
     const words = String(card.a).split(/\s+/).filter(Boolean);
