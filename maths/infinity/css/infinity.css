@@ -1,0 +1,170 @@
+/* Infinity — page styles */
+
+.inf-page { max-width: 1000px; }
+
+/* ---- parts as tabs, like the AI Lab ---- */
+.inf-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.inf-tab {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.45rem 1rem;
+  border: 2px solid #e8e2d8;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.inf-tab:hover, .inf-tab:focus-visible { border-color: var(--color-purple); color: var(--color-text); outline: none; }
+.inf-tab[aria-selected="true"] { background: var(--color-purple); border-color: var(--color-purple); color: #fff; }
+
+.inf-part h2 { font-family: var(--font-display); font-size: 1.35rem; margin: 0 0 0.25rem; }
+.inf-lede { color: var(--color-text-muted); margin: 0 0 0.9rem; }
+.inf-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.inf-row .btn { font-size: 0.95rem; }
+
+.inf-label {
+  display: block;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.inf-sub { margin: 0.2rem 0 0; font-size: 0.9rem; color: var(--color-text-muted); }
+.inf-fact { margin: 0.9rem 0 0; }
+
+.inf-says {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 2px solid #e8e2d8;
+  border-left: 6px solid var(--color-purple);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  max-width: 72ch;
+  line-height: 1.55;
+}
+
+/* ---- 1. biggest number ---- */
+.inf-big {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  background: #f3effe;
+}
+.inf-number {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  line-height: 1.25;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.inf-label--more { margin-top: 0.8rem; }
+.inf-number--more { color: #6d4fd8; font-size: clamp(1.1rem, 3vw, 1.6rem); }
+
+/* ---- 2. hotel ---- */
+.inf-hotel {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.4rem, 1fr));
+  gap: 0.5rem;
+}
+.inf-room {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.3rem 0.45rem;
+  border: 2px solid #e8e2d8;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  text-align: center;
+}
+.inf-room-no { font-family: var(--font-display); font-weight: 700; font-size: 0.82rem; }
+.inf-guest { font-size: 1.7rem; line-height: 1.25; }
+.inf-room-who { font-size: 0.72rem; color: var(--color-text-muted); }
+.inf-room--one { border-color: #f0a35e; background: #fff6ec; }
+.inf-room--bus { border-color: var(--color-sky); background: #ecfbf9; }
+.inf-room.is-new { box-shadow: 0 0 0 3px var(--color-sun); }
+.inf-more-rooms { margin: 0.5rem 0 0; color: var(--color-text-muted); font-style: italic; }
+
+/* ---- 3. halfway ---- */
+.inf-track {
+  position: relative;
+  height: 3.2rem;
+  margin: 0.4rem 2.2rem 0.9rem 0;
+  border-radius: 999px;
+  background: var(--color-bg);
+  border: 2px solid #e8e2d8;
+}
+.inf-track-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c7f0e6, var(--color-sky));
+  transition: width 0.35s ease;
+}
+.inf-frog { position: absolute; top: 50%; left: 0; transform: translateY(-50%); font-size: 1.8rem; transition: left 0.35s ease; }
+.inf-wall { position: absolute; top: 50%; right: -2.2rem; transform: translateY(-50%); font-size: 1.8rem; }
+.inf-track--zoom { height: 1.2rem; margin: 0.35rem 0 0; }
+
+.inf-half-nums { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-top: 1rem; }
+.inf-half-nums b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.inf-half-nums > div { min-width: 0; max-width: 100%; }
+.inf-sum { margin: 0.7rem 0 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.inf-zoom-box { margin-top: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); background: var(--color-bg); }
+
+/* ---- 4. same size ---- */
+.inf-pairs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3.6rem, 1fr));
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+.inf-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.35rem 0.2rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #b9b2a6;
+}
+.inf-pair.is-paired { background: #f3effe; color: var(--color-text); }
+.inf-pair-top { color: #6d4fd8; }
+.inf-pair:not(.is-paired) .inf-pair-top { color: inherit; }
+.inf-pair-link { min-height: 1.2em; color: var(--color-text-muted); }
+.inf-pair-bottom { color: #1f9e7a; }
+.inf-pair:not(.is-paired) .inf-pair-bottom { color: inherit; }
+.inf-try { margin-top: 1.1rem; }
+.inf-try label { display: block; font-weight: 700; margin-bottom: 0.4rem; }
+.inf-try input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  font-size: 1.05rem;
+  border: 2px solid #d8cfc2;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+.inf-try input:focus { outline: none; border-color: var(--color-sky); }
+
+@media (prefers-reduced-motion: reduce) {
+  .inf-track-fill, .inf-frog { transition: none; }
+}

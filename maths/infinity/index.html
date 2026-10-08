@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Infinity for curious kids — no biggest number, a hotel that is always full but always has room, halfway forever, and two infinities the same size. On Learn With Luke">
+  <title>Infinity · Learn With Luke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/game.css">
+  <link rel="stylesheet" href="css/infinity.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main-content" class="game-page inf-page">
+    <header class="tool-bar">
+      <a href="../../stem/index.html#math" class="tool-bar-back" title="All of STEM"><span aria-hidden="true">←</span><span class="tool-bar-back-label">STEM</span></a>
+      <h1 class="tool-bar-title">♾️ Infinity</h1>
+      <details class="tool-more">
+        <summary>How it works</summary>
+        <div class="tool-more-body">
+          <p><strong>Infinity is not a number.</strong> It is the idea of something that never ends — you can never count to it or reach it, however long you go on.</p>
+          <p>The four parts here are real mathematics. Hilbert’s Hotel is a puzzle the mathematician David Hilbert used in 1924; the pairing idea is how Georg Cantor compared infinities in the 1870s and 1890s.</p>
+        </div>
+      </details>
+    </header>
+    <p class="tool-lead" role="note">Four ways to poke at something that never ends.</p>
+
+    <div class="inf-tabs" role="tablist" aria-label="Choose a part">
+      <button type="button" class="inf-tab" role="tab" data-p="biggest" id="tab-biggest" aria-controls="p-biggest" aria-selected="true">The biggest number</button>
+      <button type="button" class="inf-tab" role="tab" data-p="hotel" id="tab-hotel" aria-controls="p-hotel" aria-selected="false">Hilbert’s Hotel</button>
+      <button type="button" class="inf-tab" role="tab" data-p="half" id="tab-half" aria-controls="p-half" aria-selected="false">Halfway forever</button>
+      <button type="button" class="inf-tab" role="tab" data-p="pairs" id="tab-pairs" aria-controls="p-pairs" aria-selected="false">Same size?</button>
+    </div>
+
+    <!-- 1 · No biggest number -->
+    <section class="game-panel inf-part" id="p-biggest" role="tabpanel" aria-labelledby="tab-biggest" tabindex="0">
+      <h2>Is there a biggest number?</h2>
+      <p class="inf-lede">Build the biggest number you can. Whatever you make, watch what happens.</p>
+      <div class="inf-row">
+        <button type="button" class="btn btn-secondary" id="big-plus">+ 1</button>
+        <button type="button" class="btn btn-secondary" id="big-times">× 10</button>
+        <button type="button" class="btn btn-secondary" id="big-million">A million</button>
+        <button type="button" class="btn btn-secondary" id="big-googol">A googol</button>
+        <button type="button" class="btn btn-secondary" id="big-reset">Back to 1</button>
+      </div>
+      <div class="inf-big">
+        <p class="inf-label">Your number</p>
+        <p class="inf-number" id="big-n"></p>
+        <p class="inf-sub" id="big-name"></p>
+        <p class="inf-label inf-label--more">And one bigger</p>
+        <p class="inf-number inf-number--more" id="big-more"></p>
+      </div>
+      <p class="inf-fact" id="big-count"></p>
+      <div class="inf-says">Whatever number you build, adding 1 makes a bigger one — every time, forever. So <b>there is no biggest number.</b> That is what infinity means: not a giant number at the end, but the fact that there is <b>no end</b>.</div>
+    </section>
+
+    <!-- 2 · Hilbert's Hotel -->
+    <section class="game-panel inf-part" id="p-hotel" role="tabpanel" aria-labelledby="tab-hotel" tabindex="0" hidden>
+      <h2>Hilbert’s Hotel</h2>
+      <p class="inf-lede">This hotel has infinitely many rooms — 1, 2, 3, 4, and on forever. Tonight <b>every room is full.</b> Can it fit anyone else?</p>
+      <div class="inf-row">
+        <button type="button" class="btn btn-primary" id="hotel-one">🧳 One new guest arrives</button>
+        <button type="button" class="btn btn-primary" id="hotel-bus">🚌 A bus with infinitely many guests</button>
+        <button type="button" class="btn btn-secondary" id="hotel-reset">Start again</button>
+      </div>
+      <ol class="inf-hotel" id="hotel" aria-label="The first rooms of the hotel"></ol>
+      <p class="inf-more-rooms">…and the rooms go on forever.</p>
+      <div class="inf-says" id="hotel-says"></div>
+    </section>
+
+    <!-- 3 · Halfway forever -->
+    <section class="game-panel inf-part" id="p-half" role="tabpanel" aria-labelledby="tab-half" tabindex="0" hidden>
+      <h2>Halfway forever</h2>
+      <p class="inf-lede">The frog jumps toward the wall, but each jump only goes <b>half of the way that is left.</b> How far does it get if it jumps forever?</p>
+      <div class="inf-track" aria-hidden="true">
+        <div class="inf-track-fill" id="half-fill"></div>
+        <span class="inf-frog" id="half-frog">🐸</span>
+        <span class="inf-wall">🧱</span>
+      </div>
+      <div class="inf-row">
+        <button type="button" class="btn btn-primary" id="half-jump">Jump</button>
+        <button type="button" class="btn btn-secondary" id="half-ten">Jump 10 times</button>
+        <button type="button" class="btn btn-secondary" id="half-reset">Start again</button>
+      </div>
+      <div class="inf-half-nums">
+        <div><span class="inf-label">Jumps</span><b id="half-n">0</b></div>
+        <div><span class="inf-label">Covered</span><b id="half-done">0</b></div>
+        <div><span class="inf-label">Still to go</span><b id="half-left">1</b></div>
+      </div>
+      <p class="inf-sum" id="half-sum"></p>
+      <div class="inf-zoom-box">
+        <p class="inf-label">Zoomed in on the gap the frog just jumped into</p>
+        <div class="inf-track inf-track--zoom" aria-hidden="true"><div class="inf-track-fill" id="half-zoom"></div></div>
+        <p class="inf-sub" id="half-zoom-note"></p>
+      </div>
+      <div class="inf-says" id="half-says"></div>
+    </section>
+
+    <!-- 4 · Same size? -->
+    <section class="game-panel inf-part" id="p-pairs" role="tabpanel" aria-labelledby="tab-pairs" tabindex="0" hidden>
+      <h2>Same size?</h2>
+      <p class="inf-lede">Are there more counting numbers (1, 2, 3, …) than even numbers (2, 4, 6, …)? The even numbers are only half of them… aren’t they? Pair them up and see.</p>
+      <div class="inf-row">
+        <button type="button" class="btn btn-primary" id="pairs-next">Pair the next one</button>
+        <button type="button" class="btn btn-secondary" id="pairs-ten">Pair 10 more</button>
+        <button type="button" class="btn btn-secondary" id="pairs-reset">Start again</button>
+      </div>
+      <div class="inf-pairs" id="pairs" aria-label="Counting numbers paired with even numbers"></div>
+      <div class="inf-try">
+        <label for="pairs-in">Try to find a number with no partner:</label>
+        <div class="inf-row">
+          <input type="text" id="pairs-in" inputmode="numeric" autocomplete="off" placeholder="any whole number, like 1000">
+          <button type="button" class="btn btn-secondary" id="pairs-check">Find its partner</button>
+        </div>
+        <p class="inf-fact" id="pairs-out" role="status" aria-live="polite"></p>
+      </div>
+      <div class="inf-says" id="pairs-says"></div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="../../js/nav.js"></script>
+  <script src="js/infinity.js"></script>
+</body>
+</html>
