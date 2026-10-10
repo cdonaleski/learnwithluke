@@ -274,8 +274,11 @@
    * What today asks for. `upTo` is the week the family has actually reached:
    * reviewing week 17 in October would be drilling material nobody has been
    * taught yet, so the slice is only ever drawn from weeks 1..upTo.
+   *
+   * `current`, when the family has said which week they are on, is added to
+   * every day as well: this week's new material, plus one older week.
    */
-  function reviewDay(when, upTo) {
+  function reviewDay(when, upTo, current) {
     const day = when.getDay();                 // 0 Sunday .. 6 Saturday
     const evenDate = when.getDate() % 2 === 0;
     const reached = Math.max(1, Number(upTo) || 1);
@@ -296,7 +299,10 @@
     for (let week = 1; week <= reached; week++) {
       if ((week - 1) % span === slot) weeks.push(week);
     }
-    return { kind: "weeks", day: day, even: evenDate, bucket: bucket, weeks: weeks };
+    const now = Number(current) >= 1 && Number(current) <= reached ? Number(current) : 0;
+    if (now && weeks.indexOf(now) === -1) weeks.push(now);
+    weeks.sort(function (a, b) { return a - b; });
+    return { kind: "weeks", day: day, even: evenDate, bucket: bucket, weeks: weeks, current: now };
   }
 
   const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -306,10 +312,13 @@
     if (!plan || plan.kind === "catchup") {
       return "Sunday — whatever has been missed, rather than a slice of the year.";
     }
-    return DAY_NAMES[plan.day] + " on an " + (plan.even ? "even" : "odd") +
-      " date, so " + (plan.weeks.length === 1
-        ? "week " + plan.weeks[0] + "."
-        : "weeks " + plan.weeks.join(" and ") + ".");
+    const older = plan.weeks.filter(function (w) { return w !== plan.current; });
+    const day = DAY_NAMES[plan.day] + " on an " + (plan.even ? "even" : "odd") + " date";
+    if (plan.current && !older.length) return "Week " + plan.current + ", the week you are on.";
+    const rest = older.length === 1 ? "week " + older[0] : "weeks " + older.join(" and ");
+    return plan.current
+      ? "Week " + plan.current + ", the week you are on, plus " + rest + " (" + day + ")."
+      : day + ", so " + rest + ".";
   }
 
   /** Cards missed at some point and not yet learned -- Sunday's work. */

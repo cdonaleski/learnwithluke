@@ -63,7 +63,7 @@
     }
     onWeek.value = saved ? String(saved) : "";
     onWeekWhy.textContent = saved
-      ? "Today’s review only uses weeks 1 to " + saved + ". Weeks after that are faded below until you get there."
+      ? "Today’s review is week " + saved + " plus one older week, never a week you haven’t been taught yet. Later weeks are faded below."
       : "Pick the week your class is on, so today’s review doesn’t jump ahead to weeks you haven’t been taught.";
     onWeekWhy.classList.toggle("is-prompt", !saved);
     if (todayLink) {
@@ -117,7 +117,7 @@
 
     const strands = CC.strandsWithCards(cycleNumber);
     const upTo = reached();
-    const plan = CC.reviewDay(new Date(), upTo);
+    const plan = CC.reviewDay(new Date(), upTo, savedWeek());
     const todayWeeks = plan.kind === "weeks" ? plan.weeks : [];
     drawOnWeek(plan);
 

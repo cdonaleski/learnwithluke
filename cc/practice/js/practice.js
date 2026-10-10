@@ -63,6 +63,13 @@
     return saved;
   }
 
+  /** The week the family said they are on, or 0 if they never said. */
+  function readCurrent() {
+    let saved = 0;
+    try { saved = Number(window.localStorage.getItem(REACHED_STORE)); } catch (err) { saved = 0; }
+    return saved >= 1 && saved <= WEEKS_IN_CYCLE ? saved : 0;
+  }
+
   function saveReached(week) {
     try { window.localStorage.setItem(REACHED_STORE, String(week)); } catch (err) { /* fine */ }
   }
@@ -161,7 +168,7 @@
   /** What the folded-up week button says it is showing. */
   function summaryOfWeeks(weeks) {
     if (state.today) {
-      const plan = CC.reviewDay(new Date(), state.reached);
+      const plan = CC.reviewDay(new Date(), state.reached, readCurrent());
       if (plan.kind === "catchup") return "★ Today — catch-up";
       return "★ Today — week" + (plan.weeks.length === 1 ? " " : "s ") + plan.weeks.join(", ");
     }
@@ -260,7 +267,7 @@
     if (weeks.length > 1) {
       el.today.classList.toggle("is-on", state.today);
       el.today.setAttribute("aria-pressed", String(state.today));
-      el.todayWhy.textContent = CC.reviewWhy(CC.reviewDay(new Date(), state.reached));
+      el.todayWhy.textContent = CC.reviewWhy(CC.reviewDay(new Date(), state.reached, readCurrent()));
 
       drawRanges(weeks);
       drawWeeks(weeks);
@@ -308,7 +315,7 @@
       const levelWhy = state.mode === "recite" ? RECITE_WHY[level.id]
         : state.mode === "match" ? level.pairs + " pairs on screen at a time."
         : level.why;
-      el.why.textContent = (state.today ? CC.reviewWhy(CC.reviewDay(new Date(), state.reached)) + " " : "") +
+      el.why.textContent = (state.today ? CC.reviewWhy(CC.reviewDay(new Date(), state.reached, readCurrent())) + " " : "") +
         mode.why + " · " + levelWhy +
         (twoSided && dir && dir.id !== "taught" ? " · " + dir.why : "");
     }
@@ -347,7 +354,7 @@
     }
 
     const everything = CC.pick(state.cycle, state.strand, [], direction);
-    const plan = CC.reviewDay(new Date(), state.reached);
+    const plan = CC.reviewDay(new Date(), state.reached, readCurrent());
     // Sunday asks for what has gone wrong rather than a slice of the calendar.
     if (plan.kind === "catchup") return CC.stillShaky(everything);
     return everything.filter(function (card) {
@@ -393,7 +400,7 @@
       const strand = CC.strandOf(state.strand);
       // History is deliberately absent from the published site, so say that
       // rather than letting it look broken.
-      const sundayPlan = state.today ? CC.reviewDay(new Date(), state.reached) : null;
+      const sundayPlan = state.today ? CC.reviewDay(new Date(), state.reached, readCurrent()) : null;
       el.empty.textContent = sundayPlan && sundayPlan.kind === "catchup"
         ? "Nothing to catch up on — there is no card you have missed and not since learned. "
           + "Pick a week, or come back tomorrow for the next slice."
