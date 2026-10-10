@@ -22,10 +22,65 @@
   const WEEKS = 24;
   const REACHED_STORE = "cc-week-reached";
 
-  function reached() {
+  function savedWeek() {
     let saved = 0;
     try { saved = Number(window.localStorage.getItem(REACHED_STORE)); } catch (err) { saved = 0; }
-    return (!saved || saved < 1 || saved > WEEKS) ? WEEKS : saved;
+    return (!saved || saved < 1 || saved > WEEKS) ? 0 : saved;
+  }
+
+  /** The week the class is on; until it is set, the whole year counts. */
+  function reached() {
+    return savedWeek() || WEEKS;
+  }
+
+  /*
+   * "We're on week 7" -- shared with the practice page's own picker (same
+   * store), so setting it in either place sets both.
+   */
+  const onWeek = document.getElementById("on-week");
+  const onWeekWhy = document.getElementById("on-week-why");
+  const todayLink = document.getElementById("today-link");
+
+  function weekList(weeks) {
+    if (weeks.length === 1) return "week " + weeks[0];
+    return "weeks " + weeks.slice(0, -1).join(", ") + " and " + weeks[weeks.length - 1];
+  }
+
+  function drawOnWeek(plan) {
+    if (!onWeek) return;
+    const saved = savedWeek();
+    if (onWeek.options.length === 0) {
+      const pick = document.createElement("option");
+      pick.value = "";
+      pick.textContent = "pick…";
+      onWeek.appendChild(pick);
+      for (let w = 1; w <= WEEKS; w++) {
+        const option = document.createElement("option");
+        option.value = String(w);
+        option.textContent = String(w);
+        onWeek.appendChild(option);
+      }
+    }
+    onWeek.value = saved ? String(saved) : "";
+    onWeekWhy.textContent = saved
+      ? "Today’s review only uses weeks 1 to " + saved + ". Weeks after that are faded below until you get there."
+      : "Pick the week your class is on, so today’s review doesn’t jump ahead to weeks you haven’t been taught.";
+    onWeekWhy.classList.toggle("is-prompt", !saved);
+    if (todayLink) {
+      todayLink.textContent = "★ Today’s review · " +
+        (plan.kind === "weeks" ? weekList(plan.weeks) : "catch-up");
+    }
+  }
+
+  if (onWeek) {
+    onWeek.addEventListener("change", function () {
+      const w = Number(onWeek.value);
+      try {
+        if (w >= 1 && w <= WEEKS) window.localStorage.setItem(REACHED_STORE, String(w));
+        else window.localStorage.removeItem(REACHED_STORE);
+      } catch (err) { /* fine */ }
+      draw(3);
+    });
   }
 
   function make(tag, className, text) {
@@ -64,6 +119,7 @@
     const upTo = reached();
     const plan = CC.reviewDay(new Date(), upTo);
     const todayWeeks = plan.kind === "weeks" ? plan.weeks : [];
+    drawOnWeek(plan);
 
     const table = make("table", "cc-glance");
     table.setAttribute("aria-label", "Progress through " + cycle.label + ", week by week");

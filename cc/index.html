@@ -31,8 +31,17 @@
         <p>Every week, every strand. Tap a dot to practice it, a week number for the whole
         week, or a heading for one strand all year. The dots fill in as cards are learned in Recite.</p>
       </div>
+      <!-- Which week the class is on, beside the button it changes: today's
+           review only ever draws from weeks already taught. -->
+      <div class="cc-onweek-row">
+        <label class="cc-onweek" for="on-week">
+          <span>We’re on week</span>
+          <select id="on-week"></select>
+        </label>
+        <p class="cc-onweek-why" id="on-week-why"></p>
+      </div>
       <div class="cc-glance-actions">
-        <a class="btn btn-primary" href="practice/index.html?cycle=3&amp;today=1">★ Today’s review</a>
+        <a class="btn btn-primary" id="today-link" href="practice/index.html?cycle=3&amp;today=1">★ Today’s review</a>
         <a class="btn btn-secondary" href="practice/index.html?cycle=3">Everything</a>
         <a class="btn btn-secondary" href="map/index.html">🗺️ States and capitals</a>
         <a class="btn btn-secondary" href="map/features.html">🏔️ Mountains, rivers and more</a>
